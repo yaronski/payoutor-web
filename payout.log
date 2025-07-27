@@ -1,0 +1,35 @@
+[2025-07-23 18:16:29] [INFO] Starting payoutor.sh v2.0
+[2025-07-23 18:16:29] [INFO] All dependencies are available
+[2025-07-23 18:16:29] [INFO] USD amount validated: 1000
+[2025-07-23 18:16:29] [INFO] Recipient address validated: 0x41D4B02022165Fcd47b4E0F64Aa41eEF9ef1da38
+[2025-07-23 18:16:29] [INFO] Processing USD amount: 1000
+[2025-07-23 18:16:29] [INFO] Using ratios: GLMR=0.6, MOVR=0.4
+[2025-07-23 18:16:29] [INFO] Recipient address provided: 0x41D4B02022165Fcd47b4E0F64Aa41eEF9ef1da38
+[2025-07-23 18:16:29] [INFO] Calculated USD splits: GLMR=600.0, MOVR=400.0
+[2025-07-23 18:16:29] [INFO] Fetching Moonbeam block...
+[2025-07-23 18:16:29] [INFO] Fetching recent block for moonbeam via HTML scraping
+[2025-07-23 18:16:31] [SUCCESS] Got latest block 11852876 for moonbeam, using adjusted block 11852676 for price calculation
+[2025-07-23 18:16:31] [INFO] Fetching Moonriver block...
+[2025-07-23 18:16:31] [INFO] Fetching recent block for moonriver via HTML scraping
+[2025-07-23 18:16:33] [SUCCESS] Got latest block 12477999 for moonriver, using adjusted block 12477799 for price calculation
+[2025-07-23 18:16:33] [INFO] Fetching GLMR price for block 11852676...
+[2025-07-23 18:16:33] [INFO] Fetching GLMR EMA30 price for block 11852676 on moonbeam
+[2025-07-23 18:16:34] [INFO] Raw EMA30 value: '0.0698146953831177'
+[2025-07-23 18:16:34] [INFO] Validation result: VALID
+[2025-07-23 18:16:34] [SUCCESS] Got GLMR EMA30 price: 0.0698146953831177 USD
+[2025-07-23 18:16:34] [INFO] Fetching MOVR price for block 12477799...
+[2025-07-23 18:16:34] [INFO] Fetching MOVR EMA30 price for block 12477799 on moonriver
+[2025-07-23 18:16:36] [INFO] Raw EMA30 value: '5.9717284606194328'
+[2025-07-23 18:16:36] [INFO] Validation result: VALID
+[2025-07-23 18:16:36] [SUCCESS] Got MOVR EMA30 price: 5.9717284606194328 USD
+[2025-07-23 18:16:36] [INFO] Fetching proposal IDs for council proposals
+[2025-07-23 18:16:36] [INFO] Fetching Moonbeam proposal ID...
+[2025-07-23 18:16:36] [INFO] Fetching latest proposal ID for moonbeam
+[2025-07-23 18:16:37] [SUCCESS] Got latest proposal ID 52 for moonbeam, next proposal will be 53
+[2025-07-23 18:16:37] [INFO] Fetching Moonriver proposal ID...
+[2025-07-23 18:16:37] [INFO] Fetching latest proposal ID for moonriver
+[2025-07-23 18:16:39] [SUCCESS] Got latest proposal ID 50 for moonriver, next proposal will be 51
+[2025-07-23 18:16:39] [INFO] Generating Moonbeam council proposal call data
+[2025-07-23 18:16:39] [INFO] Generating council proposal call data for moonbeam
+[2025-07-23 18:16:39] [INFO] Amount: 8594180000000000000000 planck, Recipient: 0x41D4B02022165Fcd47b4E0F64Aa41eEF9ef1da38
+[2025-07-23 18:16:39] [ERROR] Node.js script generate-council-proposal.js not found
