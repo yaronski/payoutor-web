@@ -23,8 +23,18 @@ export interface PayoutInput {
 export interface PayoutResult {
   glmrAmount: number;
   movrAmount: number;
-  glmrCallData: any;
-  movrCallData: any;
+  glmrCallData: {
+    treasuryCallHex: string;
+    treasuryCallHash: string;
+    councilCallHex: string;
+    councilCallHash: string;
+  };
+  movrCallData: {
+    treasuryCallHex: string;
+    treasuryCallHash: string;
+    councilCallHex: string;
+    councilCallHash: string;
+  };
 }
 
 export interface PayoutDetails {
@@ -38,10 +48,30 @@ export interface PayoutDetails {
   movrAmount: number;
   moonbeamBlock: number;
   moonriverBlock: number;
-  glmrCallData: any;
-  movrCallData: any;
-  glmrProxyCallData?: any;
-  movrProxyCallData?: any;
+  glmrCallData: {
+    treasuryCallHex: string;
+    treasuryCallHash: string;
+    councilCallHex: string;
+    councilCallHash: string;
+  };
+  movrCallData: {
+    treasuryCallHex: string;
+    treasuryCallHash: string;
+    councilCallHex: string;
+    councilCallHash: string;
+  };
+  glmrProxyCallData?: {
+    treasuryCallHex: string;
+    treasuryCallHash: string;
+    councilCallHex: string;
+    councilCallHash: string;
+  };
+  movrProxyCallData?: {
+    treasuryCallHex: string;
+    treasuryCallHash: string;
+    councilCallHex: string;
+    councilCallHash: string;
+  };
   recipient: string;
   proxy?: boolean;
   proxyAddress?: string;
@@ -66,12 +96,7 @@ async function fetchEma30Price(network: 'moonbeam' | 'moonriver', token: 'GLMR' 
   return parseFloat(match[1]);
 }
 
-// Fetch real token price using Subscan (30d EMA at recent block)
-async function fetchTokenPrice(token: 'GLMR' | 'MOVR'): Promise<number> {
-  const network = token === 'GLMR' ? 'moonbeam' : 'moonriver';
-  const block = await fetchRecentBlock(network);
-  return fetchEma30Price(network, token, block);
-}
+
 
 // Calculate payout split
 export async function calculatePayout(input: PayoutInput): Promise<PayoutDetails> {

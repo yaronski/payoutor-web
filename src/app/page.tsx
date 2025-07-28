@@ -32,7 +32,36 @@ export default function Home() {
   const [proxyAddress, setProxyAddress] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [result, setResult] = useState<any>(null);
+  const [result, setResult] = useState<{
+    summary: string;
+    glmrAmount: number;
+    movrAmount: number;
+    glmrCallData: {
+      treasuryCallHex: string;
+      treasuryCallHash: string;
+      councilCallHex: string;
+      councilCallHash: string;
+    };
+    movrCallData: {
+      treasuryCallHex: string;
+      treasuryCallHash: string;
+      councilCallHex: string;
+      councilCallHash: string;
+    };
+    glmrProxyCallData?: {
+      treasuryCallHex: string;
+      treasuryCallHash: string;
+      councilCallHex: string;
+      councilCallHash: string;
+    };
+    movrProxyCallData?: {
+      treasuryCallHex: string;
+      treasuryCallHash: string;
+      councilCallHex: string;
+      councilCallHash: string;
+    };
+    proxy?: boolean;
+  } | null>(null);
   const [showResult, setShowResult] = useState(false);
   const resultRef = useRef<HTMLDivElement>(null);
 
@@ -57,8 +86,9 @@ export default function Home() {
       if (!res.ok) throw new Error(data.error || "Unknown error");
       setResult(data);
       setTimeout(() => setShowResult(true), 100); // allow DOM update before animating
-    } catch (err: any) {
-      setError(err.message || "Failed to calculate payout");
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : "Failed to calculate payout";
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }
