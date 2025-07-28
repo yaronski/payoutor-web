@@ -1,10 +1,13 @@
-[payoutor-web](https://payoutor-web.vercel.app/) is a simplified web app of the much nicer [payoutor](https://github.com/yaronski/payoutor) bash script for members of the Moonbeam Treasury Council.
+# payoutor-web
+
+_payoutor-web_ is a simplified web app version of the much nicer [`payoutor`](https://github.com/yaronski/payoutor) bash script for members of the Moonbeam Treasury Council.
+[payoutor-web](https://payoutor-web.vercel.app/) deployed on vercel.
 
 A [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 ## Getting Started
 
-To run it yourself, first, run the development server:
+To run it locally, first, run the development server:
 
 ```bash
 npm run dev
