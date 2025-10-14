@@ -10,8 +10,8 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
     }
     const config: PayoutConfig = {
-      glmrRatio: glmrRatio ?? 0.6,
-      movrRatio: movrRatio ?? 0.4,
+      glmrRatio: glmrRatio ?? 0.5,
+      movrRatio: movrRatio ?? 0.5,
       councilThreshold: councilThreshold ?? 3,
       councilLengthBound: councilLengthBound ?? 10000,
       moonbeamWs: moonbeamWs ?? 'wss://wss.api.moonbeam.network',
