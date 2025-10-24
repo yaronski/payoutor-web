@@ -136,14 +136,16 @@ export async function calculatePayout(input: PayoutInput): Promise<PayoutDetails
       glmrAmount,
       input.config.councilThreshold,
       input.config.councilLengthBound,
-      input.config.moonbeamWs
+      input.config.moonbeamWs,
+      input.proxyAddress
     );
     movrProxyCallData = await generateCouncilProposal(
       input.recipient,
       movrAmount,
       input.config.councilThreshold,
       input.config.councilLengthBound,
-      input.config.moonriverWs
+      input.config.moonriverWs,
+      input.proxyAddress
     );
     proxySummary = `\nMoonbeam Proxy Council Proposal\n============================\n- Proxy Address: ${input.proxyAddress}\n- Amount: ${glmrAmount.toFixed(4)} GLMR (${BigInt(Math.floor(glmrAmount * 1e18)).toString()} Planck)\n- Recipient: ${input.recipient}\n- Proxy Council Proposal Call Data: ${glmrProxyCallData.councilCallHex}\n- Proxy Decode Link: https://polkadot.js.org/apps/?rpc=wss%3A%2F%2Fwss.api.moonbeam.network#/extrinsics/decode/${glmrProxyCallData.councilCallHex}\n\nMoonriver Proxy Council Proposal\n===============================\n- Proxy Address: ${input.proxyAddress}\n- Amount: ${movrAmount.toFixed(4)} MOVR (${BigInt(Math.floor(movrAmount * 1e18)).toString()} Planck)\n- Recipient: ${input.recipient}\n- Proxy Council Proposal Call Data: ${movrProxyCallData.councilCallHex}\n- Proxy Decode Link: https://polkadot.js.org/apps/?rpc=wss%3A%2F%2Fwss.api.moonriver.moonbeam.network#/extrinsics/decode/${movrProxyCallData.councilCallHex}\n`;
   }
@@ -176,7 +178,8 @@ export async function generateCouncilProposal(
   amount: number,
   threshold: number,
   lengthBound: number,
-  wsEndpoint: string
+  wsEndpoint: string,
+  proxyAddress?: string
 ) {
   const wsProvider = new WsProvider(wsEndpoint);
   const api = await ApiPromise.create({ provider: wsProvider });
@@ -185,11 +188,18 @@ export async function generateCouncilProposal(
   const amountPlanck = BigInt(Math.floor(amount * 1e18)).toString();
   const treasuryCall = api.tx.treasury.spend({ Native: null }, amountPlanck, recipient, null);
   const councilCall = api.tx.treasuryCouncilCollective.propose(threshold, treasuryCall, lengthBound);
+  
+  let finalCall = councilCall;
+  if (proxyAddress) {
+    // Wrap the council call in a proxy.proxy call
+    finalCall = api.tx.proxy.proxy(proxyAddress, null, councilCall);
+  }
+  
   const result = {
     treasuryCallHex: treasuryCall.method.toHex(),
     treasuryCallHash: treasuryCall.method.hash.toHex(),
-    councilCallHex: councilCall.method.toHex(),
-    councilCallHash: councilCall.method.hash.toHex(),
+    councilCallHex: finalCall.method.toHex(),
+    councilCallHash: finalCall.method.hash.toHex(),
   };
   await api.disconnect();
   return result;
