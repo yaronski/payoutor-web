@@ -1,7 +1,35 @@
 "use client";
 
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useCallback } from "react";
 import styles from "./page.module.css";
+
+const usdFormatter = new Intl.NumberFormat("en-US", {
+  style: "currency",
+  currency: "USD",
+  maximumFractionDigits: 2,
+});
+
+function sanitizeAmountInput(value: string) {
+  if (!value) return "";
+  const cleaned = value.replace(/[^0-9.]/g, "");
+  const [integer, ...decimals] = cleaned.split(".");
+  const decimalPart = decimals.join("");
+  return decimals.length ? `${integer}.${decimalPart}` : integer;
+}
+
+const FX_SOURCE_REFERENCES: Record<
+  string,
+  { name: string; href: string }
+> = {
+  ExchangerateHost: {
+    name: "ExchangerateHost",
+    href: "https://exchangerate.host/#/#docs",
+  },
+  Frankfurter: {
+    name: "Frankfurter",
+    href: "https://www.frankfurter.app/docs/",
+  },
+};
 
 function renderSummaryWithLinks(summary: string) {
   // Regex to match URLs
@@ -27,6 +55,12 @@ function renderSummaryWithLinks(summary: string) {
 
 export default function Home() {
   const [usdAmount, setUsdAmount] = useState("");
+  const [currency, setCurrency] = useState<"USD" | "EUR">("USD");
+  const [fxRate, setFxRate] = useState<number | null>(1);
+  const [fxRateLoading, setFxRateLoading] = useState(false);
+  const [fxRateError, setFxRateError] = useState<string | null>(null);
+  const [fxLastUpdated, setFxLastUpdated] = useState<string | null>(null);
+  const [fxSource, setFxSource] = useState<string | null>(null);
   const [recipient, setRecipient] = useState("");
   const [proxy, setProxy] = useState(false);
   const [proxyAddress, setProxyAddress] = useState("");
@@ -64,6 +98,54 @@ export default function Home() {
   } | null>(null);
   const [showResult, setShowResult] = useState(false);
   const resultRef = useRef<HTMLDivElement>(null);
+  const isWaitingForRate = currency === "EUR" && (fxRateLoading || !fxRate);
+  const isSubmitDisabled = loading || isWaitingForRate;
+  const fxMetaText = [fxSource, fxLastUpdated]
+    .filter((part): part is string => Boolean(part))
+    .join(" · ");
+  const fxSourceDetails = fxSource ? FX_SOURCE_REFERENCES[fxSource] : undefined;
+  const parsedInputAmount = parseFloat(usdAmount);
+  const hasTypedAmount = !Number.isNaN(parsedInputAmount) && parsedInputAmount > 0;
+  const liveUsdAmount =
+    currency === "EUR" && fxRate
+      ? parsedInputAmount * fxRate
+      : parsedInputAmount;
+
+  const fetchEurUsdRate = useCallback(async () => {
+    try {
+      setFxRateLoading(true);
+      setFxRateError(null);
+      const res = await fetch("/api/fx-rate");
+      if (!res.ok) {
+        throw new Error("Failed to fetch EUR → USD rate");
+      }
+      const data = await res.json();
+      if (typeof data.rate !== "number") {
+        throw new Error("Invalid rate response");
+      }
+      setFxRate(data.rate);
+      setFxLastUpdated(data.asOf ?? null);
+      setFxSource(data.source ?? null);
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : "Unable to fetch EUR → USD rate";
+      setFxRate(null);
+      setFxRateError(message);
+      setFxSource(null);
+    } finally {
+      setFxRateLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (currency === "EUR") {
+      fetchEurUsdRate();
+    } else {
+      setFxRate(1);
+      setFxRateError(null);
+      setFxLastUpdated(null);
+      setFxSource(null);
+    }
+  }, [currency, fetchEurUsdRate]);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -72,11 +154,25 @@ export default function Home() {
     setShowResult(false);
     setResult(null);
     try {
+      const parsedAmount = parseFloat(usdAmount);
+      if (Number.isNaN(parsedAmount) || parsedAmount <= 0) {
+        throw new Error("Enter a valid payout amount.");
+      }
+      let amountInUsd = parsedAmount;
+      if (currency === "EUR") {
+        if (!fxRate) {
+          throw new Error("EUR → USD rate unavailable. Please try again.");
+        }
+        amountInUsd = parsedAmount * fxRate;
+      }
       const res = await fetch("/api/calculate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          usdAmount: parseFloat(usdAmount),
+          usdAmount: amountInUsd,
+          inputAmount: parsedAmount,
+          inputCurrency: currency,
+          fxRate: currency === "EUR" ? fxRate : 1,
           recipient,
           proxy,
           proxyAddress: proxy ? proxyAddress : undefined,
@@ -146,16 +242,96 @@ export default function Home() {
           </pre>
           <form onSubmit={handleSubmit} className={styles.form} style={{ marginTop: 10, width: 400, maxWidth: '90%' }}>
             <div style={{ marginBottom: 20 }}>
-              <div style={{ fontWeight: 600, marginBottom: 6 }}>Payout Amount in USD</div>
-              <input
-                type="number"
-                min="0"
-                step="any"
-                value={usdAmount}
-                onChange={e => setUsdAmount(e.target.value)}
-                required
-                style={{ width: 220, padding: 8, fontSize: 16 }}
-              />
+              <div style={{ fontWeight: 600, marginBottom: 6 }}>Payment Amount</div>
+              <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                <div style={{ flex: 1, position: 'relative' }}>
+                  <input
+                    type="text"
+                    inputMode="decimal"
+                    value={usdAmount}
+                    onChange={e => setUsdAmount(sanitizeAmountInput(e.target.value))}
+                    required
+                    style={{
+                      width: '100%',
+                      padding: '8px',
+                      paddingRight: currency === "EUR" && hasTypedAmount ? 170 : 8,
+                      fontSize: 16,
+                    }}
+                  />
+                  {currency === "EUR" && hasTypedAmount && (
+                    <span
+                      style={{
+                        position: 'absolute',
+                        right: 12,
+                        top: '50%',
+                        transform: 'translateY(-50%)',
+                        fontSize: 12,
+                        color: '#D1D5DB',
+                        background: '#0f1112',
+                        padding: '2px 6px',
+                        borderRadius: 4,
+                        pointerEvents: 'none',
+                        boxShadow: '0 0 6px rgba(0,0,0,0.35)',
+                      }}
+                    >
+                      {currency === "EUR"
+                        ? fxRate
+                          ? `≈ ${usdFormatter.format(liveUsdAmount)} USD`
+                          : "Waiting for EUR rate..."
+                        : `= ${usdFormatter.format(liveUsdAmount)} USD`}
+                    </span>
+                  )}
+                </div>
+                <select
+                  value={currency}
+                  onChange={e => setCurrency(e.target.value as "USD" | "EUR")}
+                  style={{ width: 90, padding: 8, fontSize: 16, background: '#0f1112', color: 'white', borderRadius: 4, border: '1px solid #2d2d2d' }}
+                >
+                  <option value="USD">USD</option>
+                  <option value="EUR">EUR</option>
+                </select>
+              </div>
+              {currency === "EUR" && (
+                <div style={{ marginTop: 8, fontSize: 12, color: fxRateError ? '#ff6b6b' : '#9CA3AF' }}>
+                  {fxRateLoading && `Fetching EUR → USD rate...`}
+                  {!fxRateLoading && fxRate && (
+                    <span>
+                      1 EUR ≈ {fxRate.toFixed(4)} USD
+                      {(fxSourceDetails || fxLastUpdated) && (
+                        <>
+                          {" ("}ECB exchange rate via{" "}
+                          {fxSourceDetails ? (
+                            <a
+                              href={fxSourceDetails.href}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              style={{ color: '#9CA3AF', textDecoration: 'underline' }}
+                            >
+                              {fxSourceDetails.name}
+                            </a>
+                          ) : (
+                            "provider"
+                          )}
+                          {fxLastUpdated ? ` · ${fxLastUpdated}` : ""}
+                          {")"}
+                        </>
+                      )}
+                    </span>
+                  )}
+                  {!fxRateLoading && fxRateError && (
+                    <span>
+                      {fxRateError}{" "}
+                      <button
+                        type="button"
+                        onClick={fetchEurUsdRate}
+                        style={{ background: "none", border: "none", color: "#39ff14", cursor: "pointer", textDecoration: "underline" }}
+                      >
+                        Retry
+                      </button>
+                    </span>
+                  )}
+                </div>
+              )}
             </div>
             <div style={{ marginBottom: 20 }}>
               <div style={{ fontWeight: 600, marginBottom: 6 }}>Recipient Address</div>
@@ -191,7 +367,7 @@ export default function Home() {
             </div>
             <button
               type="submit"
-              disabled={loading}
+              disabled={isSubmitDisabled}
               style={{
                 marginTop: 24,
                 padding: '16px 40px',
@@ -201,12 +377,12 @@ export default function Home() {
                 color: 'white',
                 border: 'none',
                 borderRadius: 8,
-                cursor: loading ? 'not-allowed' : 'pointer',
+                cursor: isSubmitDisabled ? 'not-allowed' : 'pointer',
                 boxShadow: '0 2px 8px rgba(30,144,255,0.12)',
                 transition: 'background 0.2s',
               }}
             >
-              {loading ? "Calculating..." : "Calculate Payout"}
+              {loading ? "Calculating..." : isWaitingForRate ? "Waiting for EUR rate..." : "Calculate Payout"}
             </button>
           </form>
           {error && <div className={styles.error} style={{ textAlign: 'center', marginTop: 12 }}>{error}</div>}
