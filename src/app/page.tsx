@@ -11,10 +11,23 @@ const usdFormatter = new Intl.NumberFormat("en-US", {
 
 function sanitizeAmountInput(value: string) {
   if (!value) return "";
-  const cleaned = value.replace(/[^0-9.]/g, "");
+  const cleaned = value.replace(/,/g, "").replace(/[^0-9.]/g, "");
   const [integer, ...decimals] = cleaned.split(".");
   const decimalPart = decimals.join("");
   return decimals.length ? `${integer}.${decimalPart}` : integer;
+}
+
+function formatAmountWithGrouping(value: string) {
+  if (!value) return "";
+  const [integer, decimalPart = ""] = value.split(".");
+  const intNum = Number(integer);
+  if (Number.isNaN(intNum)) return value;
+  const grouped = intNum.toLocaleString("en-US");
+  // Preserve a trailing "." while the user is still typing decimals
+  if (decimalPart === "" && value.endsWith(".")) {
+    return `${grouped}.`;
+  }
+  return decimalPart ? `${grouped}.${decimalPart}` : grouped;
 }
 
 const FX_SOURCE_REFERENCES: Record<
@@ -104,7 +117,7 @@ export default function Home() {
     .filter((part): part is string => Boolean(part))
     .join(" · ");
   const fxSourceDetails = fxSource ? FX_SOURCE_REFERENCES[fxSource] : undefined;
-  const parsedInputAmount = parseFloat(usdAmount);
+  const parsedInputAmount = parseFloat(usdAmount.replace(/,/g, ""));
   const hasTypedAmount = !Number.isNaN(parsedInputAmount) && parsedInputAmount > 0;
   const liveUsdAmount =
     currency === "EUR" && fxRate
@@ -154,7 +167,7 @@ export default function Home() {
     setShowResult(false);
     setResult(null);
     try {
-      const parsedAmount = parseFloat(usdAmount);
+      const parsedAmount = parseFloat(usdAmount.replace(/,/g, ""));
       if (Number.isNaN(parsedAmount) || parsedAmount <= 0) {
         throw new Error("Enter a valid payout amount.");
       }
@@ -249,7 +262,10 @@ export default function Home() {
                     type="text"
                     inputMode="decimal"
                     value={usdAmount}
-                    onChange={e => setUsdAmount(sanitizeAmountInput(e.target.value))}
+                    onChange={e => {
+                      const cleaned = sanitizeAmountInput(e.target.value);
+                      setUsdAmount(formatAmountWithGrouping(cleaned));
+                    }}
                     required
                     style={{
                       width: '100%',
