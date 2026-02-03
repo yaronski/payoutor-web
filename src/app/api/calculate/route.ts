@@ -9,9 +9,21 @@ export async function POST(req: NextRequest) {
     if (!usdAmount || !recipient) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
     }
+    
+    // Validate ratio values
+    const finalGlmrRatio = glmrRatio ?? 0.5;
+    const finalMovrRatio = movrRatio ?? 0.5;
+    
+    // Validate that ratios sum to 1 (with some tolerance for floating point errors)
+    if (Math.abs(finalGlmrRatio + finalMovrRatio - 1.0) > 0.01) {
+      return NextResponse.json({ 
+        error: 'GLMR and MOVR ratios must sum to 100%' 
+      }, { status: 400 });
+    }
+    
     const config: PayoutConfig = {
-      glmrRatio: glmrRatio ?? 0.5,
-      movrRatio: movrRatio ?? 0.5,
+      glmrRatio: finalGlmrRatio,
+      movrRatio: finalMovrRatio,
       councilThreshold: councilThreshold ?? 3,
       councilLengthBound: councilLengthBound ?? 10000,
       moonbeamWs: moonbeamWs ?? 'wss://wss.api.moonbeam.network',

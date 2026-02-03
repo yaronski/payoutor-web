@@ -77,6 +77,7 @@ export default function Home() {
   const [recipient, setRecipient] = useState("");
   const [proxy, setProxy] = useState(false);
   const [proxyAddress, setProxyAddress] = useState("");
+  const [glmrRatio, setGlmrRatio] = useState(50); // Default 50% GLMR, 50% MOVR
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [result, setResult] = useState<{
@@ -189,6 +190,8 @@ export default function Home() {
           recipient,
           proxy,
           proxyAddress: proxy ? proxyAddress : undefined,
+          glmrRatio: glmrRatio / 100, // Convert to decimal
+          movrRatio: (100 - glmrRatio) / 100, // Convert to decimal
         }),
       });
       const data = await res.json();
@@ -358,6 +361,85 @@ export default function Home() {
                 required
                 style={{ width: 320, padding: 8, fontSize: 16 }}
               />
+            </div>
+            <div style={{ marginBottom: 20 }}>
+              <div style={{ fontWeight: 600, marginBottom: 6 }}>Payout Ratio</div>
+              <div style={{ 
+                background: '#0f1112', 
+                padding: '16px', 
+                borderRadius: 8, 
+                border: '1px solid #2d2d2d',
+                marginBottom: 12 
+              }}>
+                <div style={{ 
+                  display: 'flex', 
+                  justifyContent: 'space-between', 
+                  marginBottom: 8,
+                  fontSize: 14,
+                  fontWeight: 600
+                }}>
+                  <span style={{ color: '#39ff14' }}>GLMR: {glmrRatio}%</span>
+                  <span style={{ color: '#00d4ff' }}>MOVR: {100 - glmrRatio}%</span>
+                </div>
+                <div style={{ 
+                  height: '8px', 
+                  background: '#1a1d1f', 
+                  borderRadius: 4, 
+                  overflow: 'hidden',
+                  display: 'flex',
+                  marginBottom: 12
+                }}>
+                  <div style={{ 
+                    width: `${glmrRatio}%`, 
+                    background: 'linear-gradient(90deg, #39ff14 0%, #32c411 100%)',
+                    transition: 'width 0.2s ease'
+                  }} />
+                  <div style={{ 
+                    width: `${100 - glmrRatio}%`, 
+                    background: 'linear-gradient(90deg, #00d4ff 0%, #00a3cc 100%)',
+                    transition: 'width 0.2s ease'
+                  }} />
+                </div>
+                <input
+                  type="range"
+                  min="0"
+                  max="100"
+                  value={glmrRatio}
+                  onChange={e => setGlmrRatio(parseInt(e.target.value))}
+                  style={{
+                    width: '100%',
+                    height: '6px',
+                    background: '#2d2d2d',
+                    borderRadius: 3,
+                    outline: 'none',
+                    marginBottom: 12
+                  }}
+                />
+                <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                  {[0, 25, 50, 75, 100].map(preset => (
+                    <button
+                      key={preset}
+                      type="button"
+                      onClick={() => setGlmrRatio(preset)}
+                      style={{
+                        flex: 1,
+                        minWidth: '50px',
+                        padding: '6px 8px',
+                        fontSize: 12,
+                        background: glmrRatio === preset ? '#39ff14' : '#3D3D3D',
+                        color: glmrRatio === preset ? '#000' : '#fff',
+                        border: 'none',
+                        borderRadius: 4,
+                        cursor: 'pointer',
+                        fontWeight: 600,
+                        transition: 'background 0.2s'
+                      }}
+                    >
+                      {preset}% GLMR
+                    </button>
+                  ))}
+                </div>
+              </div>
             </div>
             <div style={{ marginBottom: 20 }}>
               <label style={{ display: "flex", alignItems: "center", gap: 8, fontWeight: 600 }}>
