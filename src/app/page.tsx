@@ -366,78 +366,218 @@ export default function Home() {
               <div style={{ fontWeight: 600, marginBottom: 6 }}>Payout Ratio</div>
               <div style={{ 
                 background: '#0f1112', 
-                padding: '16px', 
+                padding: '20px', 
                 borderRadius: 8, 
                 border: '1px solid #2d2d2d',
-                marginBottom: 12 
               }}>
-                <div style={{ 
-                  display: 'flex', 
-                  justifyContent: 'space-between', 
-                  marginBottom: 8,
-                  fontSize: 14,
-                  fontWeight: 600
-                }}>
-                  <span style={{ color: '#39ff14' }}>GLMR: {glmrRatio}%</span>
-                  <span style={{ color: '#00d4ff' }}>MOVR: {100 - glmrRatio}%</span>
-                </div>
-                <div style={{ 
-                  height: '8px', 
-                  background: '#1a1d1f', 
-                  borderRadius: 4, 
-                  overflow: 'hidden',
-                  display: 'flex',
-                  marginBottom: 12
-                }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 24, marginBottom: 16 }}>
+                  {/* Pie Chart */}
                   <div style={{ 
-                    width: `${glmrRatio}%`, 
-                    background: 'linear-gradient(90deg, #39ff14 0%, #32c411 100%)',
-                    transition: 'width 0.2s ease'
-                  }} />
-                  <div style={{ 
-                    width: `${100 - glmrRatio}%`, 
-                    background: 'linear-gradient(90deg, #00d4ff 0%, #00a3cc 100%)',
-                    transition: 'width 0.2s ease'
-                  }} />
+                    position: 'relative', 
+                    width: 80, 
+                    height: 80,
+                    flexShrink: 0
+                  }}>
+                    <svg width="80" height="80" viewBox="0 0 80 80">
+                      <circle
+                        cx="40"
+                        cy="40"
+                        r="36"
+                        fill="none"
+                        stroke="#1a1d1f"
+                        strokeWidth="8"
+                      />
+                      <circle
+                        cx="40"
+                        cy="40"
+                        r="36"
+                        fill="none"
+                        stroke="#ffffff"
+                        strokeWidth="8"
+                        strokeDasharray={`${glmrRatio * 2.26} ${226 - glmrRatio * 2.26}`}
+                        transform="rotate(-90 40 40)"
+                        style={{ transition: 'stroke-dasharray 0.3s ease' }}
+                      />
+                    </svg>
+                    <div style={{
+                      position: 'absolute',
+                      top: '50%',
+                      left: '50%',
+                      transform: 'translate(-50%, -50%)',
+                      fontSize: 11,
+                      fontWeight: 600,
+                      color: '#ffffff'
+                    }}>
+                      {glmrRatio}%
+                    </div>
+                  </div>
+                  
+                  {/* Ratio Display */}
+                  <div style={{ flex: 1 }}>
+                    <div style={{ marginBottom: 12 }}>
+                      <div style={{ 
+                        display: 'flex', 
+                        justifyContent: 'space-between',
+                        marginBottom: 4,
+                        fontSize: 13
+                      }}>
+                        <span style={{ color: '#9CA3AF' }}>GLMR</span>
+                        <span style={{ fontWeight: 600, color: '#ffffff' }}>{glmrRatio}%</span>
+                      </div>
+                      <div style={{ 
+                        height: '4px', 
+                        background: '#1a1d1f', 
+                        borderRadius: 2, 
+                        overflow: 'hidden',
+                        marginBottom: 8
+                      }}>
+                        <div style={{ 
+                          width: `${glmrRatio}%`, 
+                          background: '#ffffff',
+                          transition: 'width 0.3s ease',
+                          height: '100%'
+                        }} />
+                      </div>
+                    </div>
+                    <div>
+                      <div style={{ 
+                        display: 'flex', 
+                        justifyContent: 'space-between',
+                        marginBottom: 4,
+                        fontSize: 13
+                      }}>
+                        <span style={{ color: '#9CA3AF' }}>MOVR</span>
+                        <span style={{ fontWeight: 600, color: '#ffffff' }}>{100 - glmrRatio}%</span>
+                      </div>
+                      <div style={{ 
+                        height: '4px', 
+                        background: '#1a1d1f', 
+                        borderRadius: 2, 
+                        overflow: 'hidden'
+                      }}>
+                        <div style={{ 
+                          width: `${100 - glmrRatio}%`, 
+                          background: '#6b7280',
+                          transition: 'width 0.3s ease',
+                          height: '100%'
+                        }} />
+                      </div>
+                    </div>
+                  </div>
                 </div>
-                <input
-                  type="range"
-                  min="0"
-                  max="100"
-                  value={glmrRatio}
-                  onChange={e => setGlmrRatio(parseInt(e.target.value))}
-                  style={{
-                    width: '100%',
-                    height: '6px',
-                    background: '#2d2d2d',
-                    borderRadius: 3,
-                    outline: 'none',
-                    marginBottom: 12
-                  }}
-                />
-                <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-                  {[0, 25, 50, 75, 100].map(preset => (
-                    <button
-                      key={preset}
-                      type="button"
-                      onClick={() => setGlmrRatio(preset)}
-                      style={{
-                        flex: 1,
-                        minWidth: '50px',
-                        padding: '6px 8px',
-                        fontSize: 12,
-                        background: glmrRatio === preset ? '#39ff14' : '#3D3D3D',
-                        color: glmrRatio === preset ? '#000' : '#fff',
-                        border: 'none',
-                        borderRadius: 4,
-                        cursor: 'pointer',
-                        fontWeight: 600,
-                        transition: 'background 0.2s'
+                
+                {/* Slider Control */}
+                <div style={{ marginBottom: 16 }}>
+                  <input
+                    type="range"
+                    min="0"
+                    max="100"
+                    value={glmrRatio}
+                    onChange={e => setGlmrRatio(parseInt(e.target.value))}
+                    style={{
+                      width: '100%',
+                      height: '6px',
+                      background: '#1a1d1f',
+                      borderRadius: 3,
+                      outline: 'none',
+                      WebkitAppearance: 'none',
+                      appearance: 'none'
+                    }}
+                  />
+                  <style>{`
+                    input[type="range"]::-webkit-slider-thumb {
+                      -webkit-appearance: none;
+                      appearance: none;
+                      width: 16px;
+                      height: 16px;
+                      border-radius: 50%;
+                      background: #ffffff;
+                      cursor: pointer;
+                      border: 2px solid #0f1112;
+                    }
+                    input[type="range"]::-moz-range-thumb {
+                      width: 16px;
+                      height: 16px;
+                      border-radius: 50%;
+                      background: #ffffff;
+                      cursor: pointer;
+                      border: 2px solid #0f1112;
+                    }
+                  `}</style>
+                </div>
+                
+                {/* Ratio Input Controls */}
+                <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
+                  <div style={{ flex: 1 }}>
+                    <label style={{ 
+                      display: 'block', 
+                      fontSize: 12, 
+                      color: '#9CA3AF', 
+                      marginBottom: 4 
+                    }}>
+                      GLMR %
+                    </label>
+                    <input
+                      type="number"
+                      min="0"
+                      max="100"
+                      value={glmrRatio}
+                      onChange={e => {
+                        const val = Math.min(100, Math.max(0, parseInt(e.target.value) || 0));
+                        setGlmrRatio(val);
                       }}
-                    >
-                      {preset}% GLMR
-                    </button>
-                  ))}
+                      style={{
+                        width: '100%',
+                        padding: '8px',
+                        fontSize: 14,
+                        background: '#1a1d1f',
+                        border: '1px solid #2d2d2d',
+                        borderRadius: 4,
+                        color: '#ffffff',
+                        outline: 'none'
+                      }}
+                    />
+                  </div>
+                  <div style={{ 
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    justifyContent: 'center',
+                    fontSize: 16,
+                    color: '#6b7280',
+                    fontWeight: 600
+                  }}>
+                    =
+                  </div>
+                  <div style={{ flex: 1 }}>
+                    <label style={{ 
+                      display: 'block', 
+                      fontSize: 12, 
+                      color: '#9CA3AF', 
+                      marginBottom: 4 
+                    }}>
+                      MOVR %
+                    </label>
+                    <input
+                      type="number"
+                      min="0"
+                      max="100"
+                      value={100 - glmrRatio}
+                      onChange={e => {
+                        const val = Math.min(100, Math.max(0, parseInt(e.target.value) || 0));
+                        setGlmrRatio(100 - val);
+                      }}
+                      style={{
+                        width: '100%',
+                        padding: '8px',
+                        fontSize: 14,
+                        background: '#1a1d1f',
+                        border: '1px solid #2d2d2d',
+                        borderRadius: 4,
+                        color: '#ffffff',
+                        outline: 'none'
+                      }}
+                    />
+                  </div>
                 </div>
               </div>
             </div>
