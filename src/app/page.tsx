@@ -358,9 +358,21 @@ export default function Home() {
                 type="text"
                 value={recipient}
                 onChange={e => setRecipient(e.target.value)}
+                placeholder="0x..."
                 required
-                style={{ width: '100%', padding: 8, fontSize: 16 }}
+                style={{ 
+                  width: '100%', 
+                  padding: 8, 
+                  fontSize: 16,
+                  color: '#ffffff'
+                }}
               />
+              <style>{`
+                input[placeholder="0x..."]::placeholder {
+                  color: #6b7280;
+                  opacity: 0.7;
+                }
+              `}</style>
             </div>
             <div style={{ marginBottom: 20 }}>
               <div style={{ fontWeight: 600, marginBottom: 6 }}>Payout Ratio</div>
