@@ -379,14 +379,16 @@ export default function Home() {
                     flexShrink: 0
                   }}>
                     <svg width="80" height="80" viewBox="0 0 80 80">
+                      {/* Background circle (MOVR portion) */}
                       <circle
                         cx="40"
                         cy="40"
                         r="36"
                         fill="none"
-                        stroke="#1a1d1f"
+                        stroke="#6b7280"
                         strokeWidth="8"
                       />
+                      {/* Foreground circle (GLMR portion) */}
                       <circle
                         cx="40"
                         cy="40"
