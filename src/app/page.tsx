@@ -359,7 +359,7 @@ export default function Home() {
                 value={recipient}
                 onChange={e => setRecipient(e.target.value)}
                 required
-                style={{ width: 320, padding: 8, fontSize: 16 }}
+                style={{ width: '100%', padding: 8, fontSize: 16 }}
               />
             </div>
             <div style={{ marginBottom: 20 }}>
