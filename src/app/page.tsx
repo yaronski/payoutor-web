@@ -230,19 +230,25 @@ export default function Home() {
     <div className={styles.page}>
       <main className={styles.main} style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'center', paddingTop: 24, padding: '20px' }}>
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%', maxWidth: 800 }}>
-          <pre style={{ 
-            fontFamily: 'monospace', 
-            fontSize: 'clamp(4px, 2vw, 14px)', 
-            color: '#D4D4D4', 
-            marginBottom: 0, 
-            marginTop: 10, 
-            lineHeight: 1.1, 
-            textAlign: 'center', 
-            width: '100%',
-            overflow: 'hidden',
-            whiteSpace: 'pre-wrap',
-            wordBreak: 'break-all'
-          }}>
+          {/* ASCII Art - Hidden on mobile */}
+          <div>
+            <style>{`
+              @media (max-width: 768px) {
+                .ascii-header { display: none !important; }
+              }
+            `}</style>
+            <pre className="ascii-header" style={{ 
+              fontFamily: 'monospace', 
+              fontSize: 14, 
+              color: '#D4D4D4', 
+              marginBottom: 0, 
+              marginTop: 10, 
+              lineHeight: 1.1, 
+              textAlign: 'center', 
+              width: '100%',
+              overflow: 'hidden',
+              whiteSpace: 'pre',
+            }}>
 {`
     ████████╗██████╗ ███████╗ █████╗ ███████╗██╗   ██╗██████╗ ██╗   ██╗
     ╚══██╔══╝██╔══██╗██╔════╝██╔══██╗██╔════╝██║   ██║██╔══██╗╚██╗ ██╔╝
@@ -267,7 +273,8 @@ export default function Home() {
 
     
 `}
-          </pre>
+            </pre>
+          </div>
           <form onSubmit={handleSubmit} className={styles.form} style={{ marginTop: 10, width: '100%', maxWidth: 400 }}>
             <div style={{ marginBottom: 20 }}>
               <div style={{ fontWeight: 600, marginBottom: 6 }}>Payment Amount</div>
@@ -501,6 +508,8 @@ export default function Home() {
                     max="100"
                     value={glmrRatio}
                     onChange={e => setGlmrRatio(parseInt(e.target.value))}
+                    onTouchStart={e => e.stopPropagation()}
+                    onTouchMove={e => e.stopPropagation()}
                     style={{
                       width: '100%',
                       height: '6px',
@@ -508,7 +517,8 @@ export default function Home() {
                       borderRadius: 3,
                       outline: 'none',
                       WebkitAppearance: 'none',
-                      appearance: 'none'
+                      appearance: 'none',
+                      touchAction: 'none'
                     }}
                   />
                   <style>{`
@@ -529,6 +539,9 @@ export default function Home() {
                       background: #ffffff;
                       cursor: pointer;
                       border: 2px solid #0f1112;
+                    }
+                    input[type="range"] {
+                      touch-action: none;
                     }
                   `}</style>
                 </div>
