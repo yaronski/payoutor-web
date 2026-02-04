@@ -228,9 +228,21 @@ export default function Home() {
 
   return (
     <div className={styles.page}>
-      <main className={styles.main} style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'center', paddingTop: 24 }}>
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%' }}>
-          <pre style={{ fontFamily: 'monospace', fontSize: 14, color: '#D4D4D4', marginBottom: 0, marginTop: 10, lineHeight: 1.1, textAlign: 'center', maxWidth: 800, width: '100%' }}>
+      <main className={styles.main} style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'center', paddingTop: 24, padding: '20px' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%', maxWidth: 800 }}>
+          <pre style={{ 
+            fontFamily: 'monospace', 
+            fontSize: 'clamp(4px, 2vw, 14px)', 
+            color: '#D4D4D4', 
+            marginBottom: 0, 
+            marginTop: 10, 
+            lineHeight: 1.1, 
+            textAlign: 'center', 
+            width: '100%',
+            overflow: 'hidden',
+            whiteSpace: 'pre-wrap',
+            wordBreak: 'break-all'
+          }}>
 {`
     ████████╗██████╗ ███████╗ █████╗ ███████╗██╗   ██╗██████╗ ██╗   ██╗
     ╚══██╔══╝██╔══██╗██╔════╝██╔══██╗██╔════╝██║   ██║██╔══██╗╚██╗ ██╔╝
@@ -256,11 +268,11 @@ export default function Home() {
     
 `}
           </pre>
-          <form onSubmit={handleSubmit} className={styles.form} style={{ marginTop: 10, width: 400, maxWidth: '90%' }}>
+          <form onSubmit={handleSubmit} className={styles.form} style={{ marginTop: 10, width: '100%', maxWidth: 400 }}>
             <div style={{ marginBottom: 20 }}>
               <div style={{ fontWeight: 600, marginBottom: 6 }}>Payment Amount</div>
-              <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-                <div style={{ flex: 1, position: 'relative' }}>
+              <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexDirection: 'row', flexWrap: 'wrap' }}>
+                <div style={{ flex: 1, minWidth: 120, position: 'relative' }}>
                   <input
                     type="text"
                     inputMode="decimal"
@@ -273,7 +285,7 @@ export default function Home() {
                     style={{
                       width: '100%',
                       padding: '8px',
-                      paddingRight: currency === "EUR" && hasTypedAmount ? 170 : 8,
+                      paddingRight: currency === "EUR" && hasTypedAmount ? 120 : 8,
                       fontSize: 16,
                     }}
                   />
@@ -284,19 +296,20 @@ export default function Home() {
                         right: 12,
                         top: '50%',
                         transform: 'translateY(-50%)',
-                        fontSize: 12,
+                        fontSize: 11,
                         color: '#D1D5DB',
                         background: '#0f1112',
-                        padding: '2px 6px',
+                        padding: '2px 4px',
                         borderRadius: 4,
                         pointerEvents: 'none',
                         boxShadow: '0 0 6px rgba(0,0,0,0.35)',
+                        whiteSpace: 'nowrap'
                       }}
                     >
                       {currency === "EUR"
                         ? fxRate
                           ? `≈ ${usdFormatter.format(liveUsdAmount)} USD`
-                          : "Waiting for EUR rate..."
+                          : "Waiting..."
                         : `= ${usdFormatter.format(liveUsdAmount)} USD`}
                     </span>
                   )}
@@ -304,7 +317,7 @@ export default function Home() {
                 <select
                   value={currency}
                   onChange={e => setCurrency(e.target.value as "USD" | "EUR")}
-                  style={{ width: 90, padding: 8, fontSize: 16, background: '#0f1112', color: 'white', borderRadius: 4, border: '1px solid #2d2d2d' }}
+                  style={{ width: 80, padding: 8, fontSize: 16, background: '#0f1112', color: 'white', borderRadius: 4, border: '1px solid #2d2d2d' }}
                 >
                   <option value="USD">USD</option>
                   <option value="EUR">EUR</option>
@@ -378,19 +391,19 @@ export default function Home() {
               <div style={{ fontWeight: 600, marginBottom: 6 }}>Payout Ratio</div>
               <div style={{ 
                 background: '#0f1112', 
-                padding: '20px', 
+                padding: '16px', 
                 borderRadius: 8, 
                 border: '1px solid #2d2d2d',
               }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 24, marginBottom: 16 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 16, flexDirection: 'row', flexWrap: 'wrap' }}>
                   {/* Pie Chart */}
                   <div style={{ 
                     position: 'relative', 
-                    width: 80, 
-                    height: 80,
+                    width: 60, 
+                    height: 60,
                     flexShrink: 0
                   }}>
-                    <svg width="80" height="80" viewBox="0 0 80 80">
+                    <svg width="60" height="60" viewBox="0 0 80 80">
                       {/* Background circle (MOVR portion) */}
                       <circle
                         cx="40"
@@ -521,11 +534,11 @@ export default function Home() {
                 </div>
                 
                 {/* Ratio Input Controls */}
-                <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
-                  <div style={{ flex: 1 }}>
+                <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexDirection: 'row', flexWrap: 'wrap' }}>
+                  <div style={{ flex: 1, minWidth: 80 }}>
                     <label style={{ 
                       display: 'block', 
-                      fontSize: 12, 
+                      fontSize: 11, 
                       color: '#9CA3AF', 
                       marginBottom: 4 
                     }}>
@@ -542,8 +555,8 @@ export default function Home() {
                       }}
                       style={{
                         width: '100%',
-                        padding: '8px',
-                        fontSize: 14,
+                        padding: '6px',
+                        fontSize: 13,
                         background: '#1a1d1f',
                         border: '1px solid #2d2d2d',
                         borderRadius: 4,
@@ -556,16 +569,17 @@ export default function Home() {
                     display: 'flex', 
                     alignItems: 'center', 
                     justifyContent: 'center',
-                    fontSize: 16,
+                    fontSize: 14,
                     color: '#6b7280',
-                    fontWeight: 600
+                    fontWeight: 600,
+                    flexShrink: 0
                   }}>
                     =
                   </div>
-                  <div style={{ flex: 1 }}>
+                  <div style={{ flex: 1, minWidth: 80 }}>
                     <label style={{ 
                       display: 'block', 
-                      fontSize: 12, 
+                      fontSize: 11, 
                       color: '#9CA3AF', 
                       marginBottom: 4 
                     }}>
@@ -582,8 +596,8 @@ export default function Home() {
                       }}
                       style={{
                         width: '100%',
-                        padding: '8px',
-                        fontSize: 14,
+                        padding: '6px',
+                        fontSize: 13,
                         background: '#1a1d1f',
                         border: '1px solid #2d2d2d',
                         borderRadius: 4,
@@ -611,8 +625,9 @@ export default function Home() {
                     type="text"
                     value={proxyAddress}
                     onChange={e => setProxyAddress(e.target.value)}
+                    placeholder="0x..."
                     required={proxy}
-                    style={{ width: 320, padding: 8, fontSize: 16 }}
+                    style={{ width: '100%', padding: 8, fontSize: 16 }}
                   />
                 </div>
               )}
@@ -622,8 +637,8 @@ export default function Home() {
               disabled={isSubmitDisabled}
               style={{
                 marginTop: 24,
-                padding: '16px 40px',
-                fontSize: 20,
+                padding: '14px 32px',
+                fontSize: 18,
                 fontWeight: 700,
                 background: '#3D3D3D',
                 color: 'white',
@@ -632,6 +647,7 @@ export default function Home() {
                 cursor: isSubmitDisabled ? 'not-allowed' : 'pointer',
                 boxShadow: '0 2px 8px rgba(30,144,255,0.12)',
                 transition: 'background 0.2s',
+                width: '100%'
               }}
             >
               {loading ? "Calculating..." : isWaitingForRate ? "Waiting for EUR rate..." : "Calculate Payout"}
@@ -639,7 +655,7 @@ export default function Home() {
           </form>
           {error && <div className={styles.error} style={{ textAlign: 'center', marginTop: 12 }}>{error}</div>}
         </div>
-        <div style={{ minHeight: 400, width: "100%" }}>
+        <div style={{ minHeight: 400, width: "100%", padding: '0 16px' }}>
           <div
             ref={resultRef}
             style={{
@@ -648,9 +664,9 @@ export default function Home() {
               transition: 'opacity 0.7s cubic-bezier(.4,2,.6,1), transform 0.7s cubic-bezier(.4,2,.6,1)',
               filter: showResult ? 'drop-shadow(0 4px 24px #39ff1433)' : 'none',
               background: showResult ? '#181c1f' : 'none',
-              borderRadius: 18,
-              padding: showResult ? 32 : 0,
-              marginTop: showResult ? 32 : 0,
+              borderRadius: 12,
+              padding: showResult ? '16px' : 0,
+              marginTop: showResult ? 24 : 0,
               boxShadow: showResult ? '0 8px 32px #39ff1422' : 'none',
               pointerEvents: showResult ? 'auto' : 'none',
               maxWidth: 800,
@@ -661,10 +677,10 @@ export default function Home() {
             {showResult && result && (
               <div className={styles.result}>
                 {/* Removed Results heading */}
-                <pre style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word', fontSize: 16, background: 'none', color: '#39ff14', marginBottom: 16, fontFamily: 'monospace', textShadow: '0 0 0px #39ff14, 0 0 4px #39ff14' }}>{renderSummaryWithLinks(result.summary)}</pre>
-                <button onClick={() => handleCopy(result.summary)} style={{ marginBottom: 18, fontSize: 16, padding: '8px 24px', borderRadius: 6, background: '#3D3D3D', color: 'white', border: 'none', fontWeight: 600, cursor: 'pointer', boxShadow: '0 2px 8px #1e90ff22' }}>Copy Full Summary</button>
+                <pre style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word', fontSize: 'clamp(11px, 2.5vw, 14px)', background: 'none', color: '#39ff14', marginBottom: 16, fontFamily: 'monospace', textShadow: '0 0 0px #39ff14, 0 0 4px #39ff14', overflowX: 'auto' }}>{renderSummaryWithLinks(result.summary)}</pre>
+                <button onClick={() => handleCopy(result.summary)} style={{ marginBottom: 18, fontSize: 14, padding: '8px 16px', borderRadius: 6, background: '#3D3D3D', color: 'white', border: 'none', fontWeight: 600, cursor: 'pointer', boxShadow: '0 2px 8px #1e90ff22', width: '100%' }}>Copy Full Summary</button>
                 <details>
-                  <summary style={{ fontSize: 16, fontWeight: 600, color: 'white', cursor: 'pointer' }}>Show advanced details</summary>
+                  <summary style={{ fontSize: 14, fontWeight: 600, color: 'white', cursor: 'pointer' }}>Show advanced details</summary>
                   <div style={{ marginTop: 12 }}>
                     <strong>GLMR Amount:</strong> {result.glmrAmount}
                     <button onClick={() => handleCopy(result.glmrAmount.toString())} style={{ marginLeft: 8 }}>Copy</button>
