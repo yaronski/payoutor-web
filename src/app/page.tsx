@@ -775,7 +775,7 @@ export default function Home() {
 
                 {/* Forum Reply Section - at the end */}
                 <div style={{ marginTop: 24, paddingTop: 20, borderTop: '1px solid #2d2d2d' }}>
-                  <div style={{ fontSize: 14, fontWeight: 600, color: '#9CA3AF', marginBottom: 10 }}>Forum Reply</div>
+                  <div style={{ fontSize: 14, fontWeight: 600, color: '#9CA3AF', marginBottom: 10 }}>3. Reply</div>
                   <pre style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word', fontSize: 'clamp(11px, 2.5vw, 13px)', background: 'none', color: '#39ff14', padding: 12, marginBottom: 12, fontFamily: 'monospace', textShadow: '0 0 0px #39ff14, 0 0 4px #39ff14' }}>{renderSummaryWithLinks(result.forumReply)}</pre>
                   <button onClick={() => handleCopy(result.forumReply)} style={{ fontSize: 14, padding: '8px 16px', borderRadius: 6, background: '#3D3D3D', color: 'white', border: 'none', fontWeight: 600, cursor: 'pointer', boxShadow: '0 2px 8px #1e90ff22', width: '100%' }}>Copy Forum Reply</button>
                 </div>
