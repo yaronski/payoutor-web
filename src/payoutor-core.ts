@@ -207,9 +207,9 @@ export async function calculatePayout(input: PayoutInput): Promise<PayoutDetails
   
   let fxLine = '';
   if (inputCurrency === 'EUR' && input.fxRate) {
-    fxLine = `Your total of EUR ${formatNumber(displayInputAmount)} was converted to USD ${formatNumber(input.usdAmount)} at an exchange rate of ${input.fxRate.toFixed(4)} EUR/USD as of today (source: ${input.fxDate || 'Frankfurter'}).`;
+    fxLine = `Your payout is a grand total of EUR ${formatNumber(displayInputAmount)} which was converted to USD ${formatNumber(input.usdAmount)} at an exchange rate of ${input.fxRate.toFixed(4)} EUR/USD as of today (source: ${input.fxDate || 'Frankfurter'}).`;
   } else {
-    fxLine = `Your total of USD ${formatNumber(input.usdAmount)} (no EUR conversion needed).`;
+    fxLine = `Your payout is a grand total of USD ${formatNumber(input.usdAmount)}.`;
   }
 
   const forumReply = `Hey @${input.recipient.slice(0, 6)}...${input.recipient.slice(-4)}
