@@ -37,3 +37,7 @@ Open [http://localhost:3000](http://localhost:3000)
 ## Live
 
 Deployed at [https://payoutor-web.vercel.app/](https://payoutor-web.vercel.app/)
+
+## Disclaimer
+
+This tool is provided as-is without any warranties. Always double-check all calculations, proposal data, and on-chain interactions before submitting. The author assumes no liability for any loss of funds or errors in the payout process.

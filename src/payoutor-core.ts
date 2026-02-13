@@ -21,6 +21,7 @@ export interface PayoutInput {
   inputAmount?: number;
   inputCurrency?: string;
   fxRate?: number;
+  fxDate?: string | null;
 }
 
 export interface PayoutResult {
@@ -195,15 +196,28 @@ export async function calculatePayout(input: PayoutInput): Promise<PayoutDetails
   const inputCurrency = input.inputCurrency || 'USD';
   const displayInputAmount = input.inputAmount || input.usdAmount;
   const displayFxRate = input.fxRate || 1;
-  const fxRateDisplay = inputCurrency === 'EUR' ? displayFxRate.toFixed(4) : 'N/A';
-  const fxSourceDisplay = inputCurrency === 'EUR' ? 'Frankfurter' : 'N/A';
+  
+  const formatNumber = (num: number, decimals: number = 2) => {
+    return num.toLocaleString('en-US', { minimumFractionDigits: decimals, maximumFractionDigits: decimals });
+  };
+  
+  const formatTokenAmount = (num: number) => {
+    return num.toLocaleString('en-US', { minimumFractionDigits: 4, maximumFractionDigits: 4 });
+  };
+  
+  let fxLine = '';
+  if (inputCurrency === 'EUR' && input.fxRate) {
+    fxLine = `Your total of EUR ${formatNumber(displayInputAmount)} was converted to USD ${formatNumber(input.usdAmount)} at an exchange rate of ${input.fxRate.toFixed(4)} EUR/USD as of today (source: ${input.fxDate || 'Frankfurter'}).`;
+  } else {
+    fxLine = `Your total of USD ${formatNumber(input.usdAmount)} (no EUR conversion needed).`;
+  }
 
   const forumReply = `Hey @${input.recipient.slice(0, 6)}...${input.recipient.slice(-4)}
 
-Your total of ${inputCurrency} ${displayInputAmount.toFixed(2)} was converted to USD ${input.usdAmount.toFixed(2)} at an exchange rate of ${fxRateDisplay} ${inputCurrency}/USD as of today${fxSourceDisplay !== 'N/A' ? ` (source: ${fxSourceDisplay})` : ''}.
+${fxLine}
 
 That USD total was divided between GLMR and MOVR tokens in a ${glmrRatioPct}:${movrRatioPct} ratio.
-We've captured 30d EMA prices at [$ ${glmrPrice.toFixed(4)}](https://moonbeam.subscan.io/tools/price_converter?value=1&type=block&from=GLMR&to=USD&time=${moonbeamBlock}) for GLMR at block [${moonbeamBlock}](https://moonbeam.subscan.io/block/${moonbeamBlock}) and [$ ${movrPrice.toFixed(4)}](https://moonriver.subscan.io/tools/price_converter?value=1&type=block&from=MOVR&to=USD&time=${moonriverBlock}) for MOVR at block [${moonriverBlock}](https://moonriver.subscan.io/block/${moonriverBlock}). This will result in a payout of **${glmrAmount.toFixed(4)} GLMR** and **${movrAmount.toFixed(4)} MOVR**.
+We've captured 30d EMA prices at $${glmrPrice.toFixed(4)} (https://moonbeam.subscan.io/tools/price_converter?value=1&type=block&from=GLMR&to=USD&time=${moonbeamBlock}) for GLMR at block ${moonbeamBlock} (https://moonbeam.subscan.io/block/${moonbeamBlock}) and $${movrPrice.toFixed(4)} (https://moonriver.subscan.io/tools/price_converter?value=1&type=block&from=MOVR&to=USD&time=${moonriverBlock}) for MOVR at block ${moonriverBlock} (https://moonriver.subscan.io/block/${moonriverBlock}). This will result in a payout of ${formatTokenAmount(glmrAmount)} GLMR and ${formatTokenAmount(movrAmount)} MOVR.
 
 Both proposals were put on-chain moments ago and are currently awaiting additional votes of members of the Treasury Council. Expect their confirmations and payouts to hit your wallets *very* soon.
 

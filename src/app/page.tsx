@@ -196,6 +196,7 @@ export default function Home() {
           inputAmount: parsedAmount,
           inputCurrency: currency,
           fxRate: currency === "EUR" ? fxRate : 1,
+          fxDate: currency === "EUR" ? fxLastUpdated : null,
           recipient,
           proxy,
           proxyAddress: proxy ? proxyAddress : undefined,
@@ -698,13 +699,6 @@ export default function Home() {
           >
             {showResult && result && (
               <div className={styles.result}>
-                {/* Forum Reply Section */}
-                <div style={{ marginBottom: 24, paddingBottom: 20, borderBottom: '1px solid #2d2d2d' }}>
-                  <div style={{ fontSize: 14, fontWeight: 600, color: 'white', marginBottom: 10 }}>Forum Reply</div>
-                  <pre style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word', fontSize: 'clamp(11px, 2.5vw, 13px)', background: '#0f1112', color: '#d4d4d4', padding: 12, borderRadius: 8, marginBottom: 12, fontFamily: 'monospace', maxHeight: 300, overflowY: 'auto' }}>{result.forumReply}</pre>
-                  <button onClick={() => handleCopy(result.forumReply)} style={{ fontSize: 14, padding: '8px 16px', borderRadius: 6, background: '#3D3D3D', color: 'white', border: 'none', fontWeight: 600, cursor: 'pointer', boxShadow: '0 2px 8px #1e90ff22' }}>Copy Forum Reply</button>
-                </div>
-
                 {/* Voting Links Section */}
                 <div style={{ marginBottom: 24, paddingBottom: 20, borderBottom: '1px solid #2d2d2d' }}>
                   <div style={{ fontSize: 14, fontWeight: 600, color: 'white', marginBottom: 10 }}>Submit Proposals (Step 1)</div>
@@ -780,8 +774,18 @@ export default function Home() {
                     <button onClick={() => handleDownload("movr_call_data.json", JSON.stringify(result.movrCallData, null, 2))}>Download</button>
                   </div>
                 </details>
+
+                {/* Forum Reply Section - at the end */}
+                <div style={{ marginTop: 24, paddingTop: 20, borderTop: '1px solid #2d2d2d' }}>
+                  <div style={{ fontSize: 14, fontWeight: 600, color: '#39ff14', marginBottom: 10, textShadow: '0 0 4px #39ff14' }}>Forum Reply</div>
+                  <pre style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word', fontSize: 'clamp(11px, 2.5vw, 13px)', background: 'none', color: '#39ff14', padding: 12, marginBottom: 12, fontFamily: 'monospace', textShadow: '0 0 0px #39ff14, 0 0 4px #39ff14' }}>{renderSummaryWithLinks(result.forumReply)}</pre>
+                  <button onClick={() => handleCopy(result.forumReply)} style={{ fontSize: 14, padding: '8px 16px', borderRadius: 6, background: '#3D3D3D', color: 'white', border: 'none', fontWeight: 600, cursor: 'pointer', boxShadow: '0 2px 8px #1e90ff22', width: '100%' }}>Copy Forum Reply</button>
+                </div>
               </div>
             )}
+          </div>
+          <div style={{ textAlign: 'center', marginTop: 32, marginBottom: 24, fontSize: 11, color: '#6b7280', fontStyle: 'italic' }}>
+            Disclaimer: This tool is provided as-is. Always double-check all calculations and on-chain data before submitting any proposals or votes.
           </div>
         </div>
       </main>
