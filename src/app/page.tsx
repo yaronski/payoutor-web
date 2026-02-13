@@ -701,49 +701,47 @@ export default function Home() {
               <div className={styles.result}>
                 {/* Voting Links Section */}
                 <div style={{ marginBottom: 24, paddingBottom: 20, borderBottom: '1px solid #2d2d2d' }}>
-                  <div style={{ fontSize: 14, fontWeight: 600, color: 'white', marginBottom: 10 }}>Submit Proposals (Step 1)</div>
-                  <div style={{ fontSize: 12, color: '#9CA3AF', marginBottom: 12 }}>Click to decode and submit the treasury spend proposals</div>
+                  <div style={{ fontSize: 14, fontWeight: 600, color: 'white', marginBottom: 10 }}>1. Submit Proposals</div>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 20 }}>
                     <a 
                       href={`https://polkadot.js.org/apps/?rpc=wss%3A%2F%2Fwss.api.moonbeam.network#/extrinsics/decode/${result.glmrCallData.councilCallHex}`}
                       target="_blank"
                       rel="noopener noreferrer"
-                      style={{ display: 'block', padding: '10px 14px', background: '#1a1d1f', borderRadius: 6, color: '#39ff14', textDecoration: 'none', fontSize: 13, fontFamily: 'monospace', border: '1px solid #2d2d2d' }}
+                      style={{ display: 'block', padding: '10px 14px', background: '#1a1d1f', borderRadius: 6, color: '#39ff14', textDecoration: 'none', fontSize: 13, fontFamily: 'monospace', border: '1px solid #2d2d2d', textShadow: '0 0 4px #39ff14' }}
                     >
-                      🟢 Moonbeam: Submit Proposal #{result.moonbeamProposalIndex}
+                      Moonbeam: Submit Proposal #{result.moonbeamProposalIndex}
                     </a>
                     <a 
                       href={`https://polkadot.js.org/apps/?rpc=wss%3A%2F%2Fwss.api.moonriver.moonbeam.network#/extrinsics/decode/${result.movrCallData.councilCallHex}`}
                       target="_blank"
                       rel="noopener noreferrer"
-                      style={{ display: 'block', padding: '10px 14px', background: '#1a1d1f', borderRadius: 6, color: '#f97316', textDecoration: 'none', fontSize: 13, fontFamily: 'monospace', border: '1px solid #2d2d2d' }}
+                      style={{ display: 'block', padding: '10px 14px', background: '#1a1d1f', borderRadius: 6, color: '#39ff14', textDecoration: 'none', fontSize: 13, fontFamily: 'monospace', border: '1px solid #2d2d2d', textShadow: '0 0 4px #39ff14' }}
                     >
-                      🟠 Moonriver: Submit Proposal #{result.moonriverProposalIndex}
+                      Moonriver: Submit Proposal #{result.moonriverProposalIndex}
                     </a>
                   </div>
 
-                  <div style={{ fontSize: 14, fontWeight: 600, color: 'white', marginBottom: 10 }}>Vote AYE (Step 2 - After Submission)</div>
-                  <div style={{ fontSize: 12, color: '#9CA3AF', marginBottom: 12 }}>Click to decode and submit your AYE vote (replace placeholder hash first!)</div>
+                  <div style={{ fontSize: 14, fontWeight: 600, color: 'white', marginBottom: 10 }}>2. Vote AYE</div>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
                     <a 
                       href={`https://polkadot.js.org/apps/?rpc=wss%3A%2F%2Fwss.api.moonbeam.network#/extrinsics/decode/${result.glmrVoteCallData.voteCallHex}`}
                       target="_blank"
                       rel="noopener noreferrer"
-                      style={{ display: 'block', padding: '10px 14px', background: '#1a1d1f', borderRadius: 6, color: '#39ff14', textDecoration: 'none', fontSize: 13, fontFamily: 'monospace', border: '1px solid #2d2d2d' }}
+                      style={{ display: 'block', padding: '10px 14px', background: '#1a1d1f', borderRadius: 6, color: '#39ff14', textDecoration: 'none', fontSize: 13, fontFamily: 'monospace', border: '1px solid #2d2d2d', textShadow: '0 0 4px #39ff14' }}
                     >
-                      🟢 Moonbeam: Vote AYE (Proposal #{result.moonbeamProposalIndex})
+                      Moonbeam: Vote AYE (Proposal #{result.moonbeamProposalIndex})
                     </a>
                     <a 
                       href={`https://polkadot.js.org/apps/?rpc=wss%3A%2F%2Fwss.api.moonriver.moonbeam.network#/extrinsics/decode/${result.movrVoteCallData.voteCallHex}`}
                       target="_blank"
                       rel="noopener noreferrer"
-                      style={{ display: 'block', padding: '10px 14px', background: '#1a1d1f', borderRadius: 6, color: '#f97316', textDecoration: 'none', fontSize: 13, fontFamily: 'monospace', border: '1px solid #2d2d2d' }}
+                      style={{ display: 'block', padding: '10px 14px', background: '#1a1d1f', borderRadius: 6, color: '#39ff14', textDecoration: 'none', fontSize: 13, fontFamily: 'monospace', border: '1px solid #2d2d2d', textShadow: '0 0 4px #39ff14' }}
                     >
-                      🟠 Moonriver: Vote AYE (Proposal #{result.moonriverProposalIndex})
+                      Moonriver: Vote AYE (Proposal #{result.moonriverProposalIndex})
                     </a>
                   </div>
-                  <div style={{ marginTop: 12, fontSize: 11, color: '#ef4444', fontStyle: 'italic' }}>
-                    ⚠️ Important: Before voting, replace the placeholder hash (0x0000...) in Polkadot.js with the actual on-chain proposal hash
+                  <div style={{ marginTop: 12, fontSize: 11, color: '#6b7280', fontStyle: 'italic' }}>
+                    Note: Before voting, replace the placeholder hash (0x0000...) in Polkadot.js with the actual on-chain proposal hash
                   </div>
                 </div>
 
@@ -777,7 +775,7 @@ export default function Home() {
 
                 {/* Forum Reply Section - at the end */}
                 <div style={{ marginTop: 24, paddingTop: 20, borderTop: '1px solid #2d2d2d' }}>
-                  <div style={{ fontSize: 14, fontWeight: 600, color: '#39ff14', marginBottom: 10, textShadow: '0 0 4px #39ff14' }}>Forum Reply</div>
+                  <div style={{ fontSize: 14, fontWeight: 600, color: '#9CA3AF', marginBottom: 10 }}>Forum Reply</div>
                   <pre style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word', fontSize: 'clamp(11px, 2.5vw, 13px)', background: 'none', color: '#39ff14', padding: 12, marginBottom: 12, fontFamily: 'monospace', textShadow: '0 0 0px #39ff14, 0 0 4px #39ff14' }}>{renderSummaryWithLinks(result.forumReply)}</pre>
                   <button onClick={() => handleCopy(result.forumReply)} style={{ fontSize: 14, padding: '8px 16px', borderRadius: 6, background: '#3D3D3D', color: 'white', border: 'none', fontWeight: 600, cursor: 'pointer', boxShadow: '0 2px 8px #1e90ff22', width: '100%' }}>Copy Forum Reply</button>
                 </div>
