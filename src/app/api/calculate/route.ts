@@ -29,7 +29,16 @@ export async function POST(req: NextRequest) {
       moonbeamWs: moonbeamWs ?? 'wss://wss.api.moonbeam.network',
       moonriverWs: moonriverWs ?? 'wss://wss.api.moonriver.moonbeam.network',
     };
-    const result = await calculatePayout({ usdAmount, recipient, config, proxy, proxyAddress });
+    const result = await calculatePayout({ 
+      usdAmount, 
+      recipient, 
+      config, 
+      proxy, 
+      proxyAddress,
+      inputAmount: body.inputAmount,
+      inputCurrency: body.inputCurrency,
+      fxRate: body.fxRate,
+    });
     return NextResponse.json(result);
   } catch (error: unknown) {
     const errorMessage = error instanceof Error ? error.message : 'Internal server error';

@@ -18,6 +18,9 @@ export interface PayoutInput {
   config: PayoutConfig;
   proxy?: boolean;
   proxyAddress?: string;
+  inputAmount?: number;
+  inputCurrency?: string;
+  fxRate?: number;
 }
 
 export interface PayoutResult {
@@ -39,7 +42,13 @@ export interface PayoutResult {
 
 export interface PayoutDetails {
   summary: string;
+  forumReply: string;
   usdAmount: number;
+  inputAmount?: number;
+  inputCurrency?: string;
+  fxRate?: number;
+  fxSource?: string;
+  fxDate?: string;
   glmrUsd: number;
   movrUsd: number;
   glmrPrice: number;
@@ -48,6 +57,8 @@ export interface PayoutDetails {
   movrAmount: number;
   moonbeamBlock: number;
   moonriverBlock: number;
+  moonbeamProposalIndex: number;
+  moonriverProposalIndex: number;
   glmrCallData: {
     treasuryCallHex: string;
     treasuryCallHash: string;
@@ -59,6 +70,12 @@ export interface PayoutDetails {
     treasuryCallHash: string;
     councilCallHex: string;
     councilCallHash: string;
+  };
+  glmrVoteCallData: {
+    voteCallHex: string;
+  };
+  movrVoteCallData: {
+    voteCallHex: string;
   };
   glmrProxyCallData?: {
     treasuryCallHex: string;
@@ -96,6 +113,16 @@ async function fetchEma30Price(network: 'moonbeam' | 'moonriver', token: 'GLMR' 
   return parseFloat(match[1]);
 }
 
+// Helper: fetch current council proposal count
+async function fetchProposalCount(network: 'moonbeam' | 'moonriver'): Promise<number> {
+  const wsProvider = new WsProvider(network === 'moonbeam' ? 'wss://wss.api.moonbeam.network' : 'wss://wss.api.moonriver.moonbeam.network');
+  const api = await ApiPromise.create({ provider: wsProvider });
+  await api.isReady;
+  const proposalCount = await api.query.treasuryCouncilCollective.proposalCount();
+  await api.disconnect();
+  return Number(proposalCount);
+}
+
 
 
 // Calculate payout split
@@ -106,6 +133,9 @@ export async function calculatePayout(input: PayoutInput): Promise<PayoutDetails
   // Fetch prices
   const glmrPrice = await fetchEma30Price('moonbeam', 'GLMR', moonbeamBlock);
   const movrPrice = await fetchEma30Price('moonriver', 'MOVR', moonriverBlock);
+  // Fetch current proposal counts (next index = count)
+  const moonbeamProposalIndex = await fetchProposalCount('moonbeam');
+  const moonriverProposalIndex = await fetchProposalCount('moonriver');
   // USD splits
   const glmrUsd = input.usdAmount * input.config.glmrRatio;
   const movrUsd = input.usdAmount * input.config.movrRatio;
@@ -127,6 +157,10 @@ export async function calculatePayout(input: PayoutInput): Promise<PayoutDetails
     input.config.councilLengthBound,
     input.config.moonriverWs
   );
+  // Vote call data for voting AYE on the proposals
+  const glmrVoteCallData = await generateVoteCall(moonbeamProposalIndex, input.config.moonbeamWs);
+  const movrVoteCallData = await generateVoteCall(moonriverProposalIndex, input.config.moonriverWs);
+  
   let glmrProxyCallData = undefined;
   let movrProxyCallData = undefined;
   let proxySummary = '';
@@ -151,9 +185,38 @@ export async function calculatePayout(input: PayoutInput): Promise<PayoutDetails
   }
   // Format summary string
   const summary = `==================================\n=== PAYOUT CALCULATION RESULTS ===\n==================================\n\nUSD Amount: ${input.usdAmount.toFixed(2)}\nGLMR Allocation: ${glmrUsd.toFixed(2)} USD\nMOVR Allocation: ${movrUsd.toFixed(2)} USD\nGLMR EMA30 Price: ${glmrPrice.toFixed(4)} USD\nMOVR EMA30 Price: ${movrPrice.toFixed(4)} USD\nGLMR Amount: ${glmrAmount.toFixed(4)}\nMOVR Amount: ${movrAmount.toFixed(4)}\nMoonbeam Block: ${moonbeamBlock}\nMoonriver Block: ${moonriverBlock}\n\n\nMoonbeam\n========\n- GLMR EMA30 price block: ${moonbeamBlock}\n- https://moonbeam.subscan.io/tools/price_converter?value=1&type=block&from=GLMR&to=USD&time=${moonbeamBlock}\n- ${Math.round(input.config.glmrRatio * 100)}% share in GLMR: ${glmrAmount.toFixed(4)}\n- https://moonbeam.subscan.io/tools/price_converter?value=${glmrAmount.toFixed(4)}&type=block&from=GLMR&to=USD&time=${moonbeamBlock}\n\nMoonriver\n=========\n- MOVR EMA30 price block: ${moonriverBlock}\n- https://moonriver.subscan.io/tools/price_converter?value=1&type=block&from=MOVR&to=USD&time=${moonriverBlock}\n- ${Math.round(input.config.movrRatio * 100)}% share in MOVR: ${movrAmount.toFixed(4)}\n- https://moonriver.subscan.io/tools/price_converter?value=${movrAmount.toFixed(4)}&type=block&from=MOVR&to=USD&time=${moonriverBlock}\n\n==================================\n=== COUNCIL PROPOSAL CALL DATA ===\n==================================\n\nMoonbeam Council Proposal\n=========================\n- Amount: ${glmrAmount.toFixed(4)} GLMR (${BigInt(Math.floor(glmrAmount * 1e18)).toString()} Planck)\n- Recipient: ${input.recipient}\n- Council Proposal Call Data: ${glmrCallData.councilCallHex}\n- Decode Link: https://polkadot.js.org/apps/?rpc=wss%3A%2F%2Fwss.api.moonbeam.network#/extrinsics/decode/${glmrCallData.councilCallHex}\n\nMoonriver Council Proposal\n==========================\n- Amount: ${movrAmount.toFixed(4)} MOVR (${BigInt(Math.floor(movrAmount * 1e18)).toString()} Planck)\n- Recipient: ${input.recipient}\n- Council Proposal Call Data: ${movrCallData.councilCallHex}\n- Decode Link: https://polkadot.js.org/apps/?rpc=wss%3A%2F%2Fwss.api.moonriver.moonbeam.network#/extrinsics/decode/${movrCallData.councilCallHex}\n${proxySummary}\n==================================`;
+  const glmrRatioPct = Math.round(input.config.glmrRatio * 100);
+  const movrRatioPct = Math.round(input.config.movrRatio * 100);
+
+  const placeholderHash = '0x0000000000000000000000000000000000000000000000000000000000000000';
+  const glmrVoteUrl = `https://polkadot.js.org/apps/?rpc=wss%3A%2F%2Fwss.api.moonbeam.network#/council/vote/${moonbeamProposalIndex}`;
+  const movrVoteUrl = `https://polkadot.js.org/apps/?rpc=wss%3A%2F%2Fwss.api.moonriver.moonbeam.network#/council/vote/${moonriverProposalIndex}`;
+
+  const inputCurrency = input.inputCurrency || 'USD';
+  const displayInputAmount = input.inputAmount || input.usdAmount;
+  const displayFxRate = input.fxRate || 1;
+  const fxRateDisplay = inputCurrency === 'EUR' ? displayFxRate.toFixed(4) : 'N/A';
+  const fxSourceDisplay = inputCurrency === 'EUR' ? 'Frankfurter' : 'N/A';
+
+  const forumReply = `Hey @${input.recipient.slice(0, 6)}...${input.recipient.slice(-4)}
+
+Your total of ${inputCurrency} ${displayInputAmount.toFixed(2)} was converted to USD ${input.usdAmount.toFixed(2)} at an exchange rate of ${fxRateDisplay} ${inputCurrency}/USD as of today${fxSourceDisplay !== 'N/A' ? ` (source: ${fxSourceDisplay})` : ''}.
+
+That USD total was divided between GLMR and MOVR tokens in a ${glmrRatioPct}:${movrRatioPct} ratio.
+We've captured 30d EMA prices at [$ ${glmrPrice.toFixed(4)}](https://moonbeam.subscan.io/tools/price_converter?value=1&type=block&from=GLMR&to=USD&time=${moonbeamBlock}) for GLMR at block [${moonbeamBlock}](https://moonbeam.subscan.io/block/${moonbeamBlock}) and [$ ${movrPrice.toFixed(4)}](https://moonriver.subscan.io/tools/price_converter?value=1&type=block&from=MOVR&to=USD&time=${moonriverBlock}) for MOVR at block [${moonriverBlock}](https://moonriver.subscan.io/block/${moonriverBlock}). This will result in a payout of **${glmrAmount.toFixed(4)} GLMR** and **${movrAmount.toFixed(4)} MOVR**.
+
+Both proposals were put on-chain moments ago and are currently awaiting additional votes of members of the Treasury Council. Expect their confirmations and payouts to hit your wallets *very* soon.
+
+Thank you for your contributions to the Moonbeam ecosystem — Much appreciated!
+@yaron`;
+
   return {
     summary,
+    forumReply,
     usdAmount: input.usdAmount,
+    inputAmount: input.inputAmount,
+    inputCurrency: input.inputCurrency,
+    fxRate: input.fxRate,
     glmrUsd,
     movrUsd,
     glmrPrice,
@@ -162,8 +225,12 @@ export async function calculatePayout(input: PayoutInput): Promise<PayoutDetails
     movrAmount,
     moonbeamBlock,
     moonriverBlock,
+    moonbeamProposalIndex,
+    moonriverProposalIndex,
     glmrCallData,
     movrCallData,
+    glmrVoteCallData,
+    movrVoteCallData,
     glmrProxyCallData,
     movrProxyCallData,
     recipient: input.recipient,
@@ -200,6 +267,25 @@ export async function generateCouncilProposal(
     treasuryCallHash: treasuryCall.method.hash.toHex(),
     councilCallHex: finalCall.method.toHex(),
     councilCallHash: finalCall.method.hash.toHex(),
+  };
+  await api.disconnect();
+  return result;
+}
+
+// Generate vote extrinsic call data (for voting AYE on a council proposal)
+export async function generateVoteCall(
+  proposalIndex: number,
+  wsEndpoint: string
+) {
+  const wsProvider = new WsProvider(wsEndpoint);
+  const api = await ApiPromise.create({ provider: wsProvider });
+  await api.isReady;
+  
+  const placeholderHash = '0x0000000000000000000000000000000000000000000000000000000000000000';
+  const voteCall = api.tx.treasuryCouncilCollective.vote(placeholderHash, proposalIndex, true);
+  
+  const result = {
+    voteCallHex: voteCall.method.toHex(),
   };
   await api.disconnect();
   return result;
