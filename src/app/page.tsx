@@ -241,27 +241,26 @@ export default function Home() {
       <main className={styles.main} style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'center', paddingTop: 24, padding: '20px' }}>
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%', maxWidth: 800 }}>
           {/* ASCII Art - Responsive */}
-          <div style={{ width: '100%', overflow: 'hidden', display: 'flex', justifyContent: 'center' }}>
+          <div style={{ width: '100%', overflowX: 'auto', display: 'flex', justifyContent: 'center', textAlign: 'center' }}>
             <style>{`
               @media (max-width: 400px) {
-                .ascii-header { transform: scale(0.55); transform-origin: top center; }
+                .ascii-header { font-size: 3.5px !important; }
               }
               @media (min-width: 401px) and (max-width: 500px) {
-                .ascii-header { transform: scale(0.7); transform-origin: top center; }
+                .ascii-header { font-size: 5px !important; }
               }
               @media (min-width: 501px) and (max-width: 600px) {
-                .ascii-header { transform: scale(0.85); transform-origin: top center; }
+                .ascii-header { font-size: 7px !important; }
               }
             `}</style>
             <pre className="ascii-header" style={{ 
               fontFamily: 'monospace', 
-              fontSize: 14, 
               color: '#D4D4D4', 
               marginBottom: 0, 
               marginTop: 10, 
               lineHeight: 1.1, 
-              textAlign: 'center', 
               whiteSpace: 'pre',
+              display: 'inline-block',
             }}>
 {`
     ████████╗██████╗ ███████╗ █████╗ ███████╗██╗   ██╗██████╗ ██╗   ██╗
