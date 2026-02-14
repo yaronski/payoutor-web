@@ -241,16 +241,20 @@ export default function Home() {
       <main className={styles.main} style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'center', paddingTop: 24, padding: '20px' }}>
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%', maxWidth: 800 }}>
           {/* ASCII Art - Responsive */}
-          <div style={{ width: '100%', overflow: 'hidden', textAlign: 'center' }}>
-            <pre style={{ 
+          <div style={{ width: '100%', overflow: 'hidden', textAlign: 'center', padding: '0 5px' }}>
+            <style>{`
+              @media (max-width: 480px) {
+                .ascii-art { font-size: 5.5px !important; line-height: 1.15 !important; }
+              }
+            `}</style>
+            <pre className="ascii-art" style={{ 
               fontFamily: 'monospace', 
-              fontSize: 'clamp(6px, 2vw, 14px)', 
+              fontSize: 14, 
               color: '#D4D4D4', 
               marginBottom: 0, 
               marginTop: 10, 
               lineHeight: 1.1, 
               whiteSpace: 'pre',
-              display: 'inline-block',
             }}>
 {`
     ████████╗██████╗ ███████╗ █████╗ ███████╗██╗   ██╗██████╗ ██╗   ██╗
