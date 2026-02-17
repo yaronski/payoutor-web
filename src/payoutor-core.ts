@@ -358,37 +358,29 @@ async function generateUsdcProposal(
   // USDC has 6 decimals
   const amountRaw = BigInt(Math.floor(usdcAmount * 1e6));
   
-  // Build the asset location for USDC on AssetHub
-  // AssetHub parachain ID: 1000
-  // USDC is in Assets pallet (50) with GeneralIndex for USDC
-  // Based on Polkadot forum: USDC has generalIndex 1984 on AssetHub
-  const assetLocation = {
-    parents: 1,
-    interior: {
-      X1: [{ Parachain: 1000 }]
-    }
-  };
-  
-  const assetId = {
-    parents: 0,
-    interior: {
-      X2: [
-        { PalletInstance: 50 },
-        { GeneralIndex: 1984 }  // USDC asset ID on AssetHub
-      ]
-    }
-  };
-  
-  // Create the asset kind for treasury.spend
-  const assetKind = api.createType('PalletRuntimeCommonImplsVersionedLocatableAsset', {
+  // Build the asset kind for treasury.spend
+  // USDC on AssetHub: parents:1, parachain:1000, pallet:50, generalIndex:1984
+  // The assetKind is a VersionedMultiLocation with the asset ID and amount
+  const assetKind = {
     V3: {
-      id: { Concrete: assetId },
-      fun: { Fungible: amountRaw }
+      id: {
+        Concrete: {
+          parents: 0,
+          interior: {
+            X2: [
+              { PalletInstance: 50 },
+              { GeneralIndex: 1984 }  // USDC asset ID on AssetHub
+            ]
+          }
+        }
+      },
+      fun: {
+        Fungible: amountRaw
+      }
     }
-  });
+  };
   
   // Use treasury.spend for multi-asset treasury payouts
-  // This is the new Treasury flow for stablecoins on Moonbeam
   const treasuryCall = api.tx.treasury.spend(
     assetKind,
     recipient
