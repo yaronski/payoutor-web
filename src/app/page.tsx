@@ -349,9 +349,17 @@ export default function Home() {
                 </label>
               </div>
               {/* Treasury Balances - shown below toggle */}
-              <div style={{ marginTop: 12, fontSize: 11, color: '#9CA3AF', fontFamily: 'monospace', textAlign: 'left', paddingLeft: 20, minHeight: 32 }}>
-                <div><span style={{ color: '#39ff14', textShadow: '0 0 4px #39ff14', display: 'inline-block', width: 80 }}>Moonbeam</span> {payoutType === "native" ? (treasuryBalances.glmr === "Fetching..." ? "Fetching..." : treasuryBalances.glmr + " GLMR") : (treasuryBalances.usdc === "Fetching..." ? "Fetching..." : treasuryBalances.usdc + " USDC")}</div>
-                {payoutType === "native" && <div><span style={{ color: '#39ff14', textShadow: '0 0 4px #39ff14', display: 'inline-block', width: 80 }}>Moonriver</span> {treasuryBalances.movr === "Fetching..." ? "Fetching..." : treasuryBalances.movr + " MOVR"}</div>}
+              <div style={{ marginTop: 12, fontSize: 11, color: '#9CA3AF', fontFamily: 'monospace', minHeight: 32 }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', paddingRight: 40 }}>
+                  <span style={{ color: '#39ff14', textShadow: '0 0 4px #39ff14' }}>Moonbeam</span>
+                  <span>{payoutType === "native" ? (treasuryBalances.glmr === "Fetching..." ? "Fetching..." : treasuryBalances.glmr + " GLMR") : (treasuryBalances.usdc === "Fetching..." ? "Fetching..." : treasuryBalances.usdc + " USDC")}</span>
+                </div>
+                {payoutType === "native" && (
+                  <div style={{ display: 'flex', justifyContent: 'space-between', paddingRight: 40 }}>
+                    <span style={{ color: '#39ff14', textShadow: '0 0 4px #39ff14' }}>Moonriver</span>
+                    <span>{treasuryBalances.movr === "Fetching..." ? "Fetching..." : treasuryBalances.movr + " MOVR"}</span>
+                  </div>
+                )}
               </div>
             </div>
 
