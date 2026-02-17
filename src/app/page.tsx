@@ -240,16 +240,11 @@ export default function Home() {
     <div className={styles.page}>
       <main className={styles.main} style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'center', paddingTop: 24, padding: '20px' }}>
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%', maxWidth: 800 }}>
-          {/* ASCII Art - Responsive */}
-          <div style={{ width: '100%', overflow: 'hidden', textAlign: 'center', padding: '0 2px' }}>
+          {/* ASCII Art - Hidden on very small screens */}
+          <div style={{ width: '100%', overflow: 'hidden', textAlign: 'center' }}>
             <style>{`
-              @media (max-width: 480px) {
-                .ascii-art { 
-                  font-size: 5px !important; 
-                  font-family: 'Courier New', Courier, monospace !important;
-                  -webkit-font-smoothing: none;
-                  -moz-osx-font-smoothing: unset;
-                }
+              @media (max-width: 380px) {
+                .ascii-art { display: none !important; }
               }
             `}</style>
             <pre className="ascii-art" style={{ 
@@ -260,7 +255,6 @@ export default function Home() {
               marginTop: 10, 
               lineHeight: 1.15, 
               whiteSpace: 'pre',
-              textRendering: 'optimizeSpeed',
             }}>
 {`
     ████████╗██████╗ ███████╗ █████╗ ███████╗██╗   ██╗██████╗ ██╗   ██╗
