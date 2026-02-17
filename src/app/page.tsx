@@ -243,13 +243,18 @@ export default function Home() {
           {/* ASCII Art */}
           <div style={{ width: '100%', overflow: 'hidden', textAlign: 'center' }}>
             <pre style={{ 
-              fontFamily: 'monospace', 
+              fontFamily: '"SF Mono", "Menlo", "DejaVu Sans Mono", "Consolas", "Liberation Mono", "Courier New", monospace',
               fontSize: 14, 
               color: '#D4D4D4', 
               marginBottom: 0, 
               marginTop: 10, 
-              lineHeight: 1.15, 
+              lineHeight: 1.2, 
               whiteSpace: 'pre',
+              fontVariantLigatures: 'none',
+              fontFeatureSettings: 'normal',
+              letterSpacing: 0,
+              fontKerning: 'normal',
+              fontStretch: 'normal',
             }}>
 {`
     ████████╗██████╗ ███████╗ █████╗ ███████╗██╗   ██╗██████╗ ██╗   ██╗
