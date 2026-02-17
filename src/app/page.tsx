@@ -240,15 +240,10 @@ export default function Home() {
     <div className={styles.page}>
       <main className={styles.main} style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'center', paddingTop: 24, padding: '20px' }}>
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%', maxWidth: 800 }}>
-          {/* ASCII Art - Hidden on very small screens */}
+          {/* ASCII Art */}
           <div style={{ width: '100%', overflow: 'hidden', textAlign: 'center' }}>
-            <style>{`
-              @media (max-width: 380px) {
-                .ascii-art { display: none !important; }
-              }
-            `}</style>
-            <pre className="ascii-art" style={{ 
-              fontFamily: "'Courier New', Courier, monospace", 
+            <pre style={{ 
+              fontFamily: 'monospace', 
               fontSize: 14, 
               color: '#D4D4D4', 
               marginBottom: 0, 
