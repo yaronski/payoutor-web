@@ -298,30 +298,67 @@ export default function Home() {
             </pre>
           </div>
           <form onSubmit={handleSubmit} className={styles.form} style={{ marginTop: 10, width: '100%', maxWidth: 400 }}>
+            {/* Payout Type Toggle */}
             <div style={{ marginBottom: 20 }}>
-              <div style={{ fontWeight: 600, marginBottom: 6 }}>Payout Type</div>
-              <select
-                value={payoutType}
-                onChange={e => setPayoutType(e.target.value as "native" | "usdc")}
-                style={{
-                  width: '100%',
-                  padding: '10px',
-                  fontSize: 16,
-                  background: '#1f2937',
-                  color: '#D4D4D4',
-                  border: '1px solid #374151',
-                  borderRadius: 6,
+              <div style={{ fontWeight: 600, marginBottom: 8 }}>Payout Type</div>
+              <div style={{ display: 'flex', gap: 0, background: '#0f1112', borderRadius: 8, padding: 4, border: '1px solid #2d2d2d' }}>
+                <label style={{ 
+                  flex: 1, 
+                  textAlign: 'center', 
+                  padding: '10px 8px', 
+                  fontSize: 14, 
                   cursor: 'pointer',
-                }}
-              >
-                <option value="native">Native Tokens (GLMR + MOVR)</option>
-                <option value="usdc">USDC Stablecoin (Moonbeam only)</option>
-              </select>
+                  borderRadius: 6,
+                  background: payoutType === "native" ? '#3D3D3D' : 'transparent',
+                  color: payoutType === "native" ? '#fff' : '#9CA3AF',
+                  transition: 'all 0.2s',
+                  fontWeight: payoutType === "native" ? 600 : 400,
+                }}>
+                  <input 
+                    type="radio" 
+                    name="payoutType" 
+                    value="native" 
+                    checked={payoutType === "native"} 
+                    onChange={() => setPayoutType("native")}
+                    style={{ display: 'none' }}
+                  />
+                  Native
+                </label>
+                <label style={{ 
+                  flex: 1, 
+                  textAlign: 'center', 
+                  padding: '10px 8px', 
+                  fontSize: 14, 
+                  cursor: 'pointer',
+                  borderRadius: 6,
+                  background: payoutType === "usdc" ? '#3D3D3D' : 'transparent',
+                  color: payoutType === "usdc" ? '#fff' : '#9CA3AF',
+                  transition: 'all 0.2s',
+                  fontWeight: payoutType === "usdc" ? 600 : 400,
+                }}>
+                  <input 
+                    type="radio" 
+                    name="payoutType" 
+                    value="usdc" 
+                    checked={payoutType === "usdc"} 
+                    onChange={() => setPayoutType("usdc")}
+                    style={{ display: 'none' }}
+                  />
+                  USDC
+                </label>
+              </div>
+              {/* Treasury Balances - shown below toggle */}
+              {treasuryBalances && (
+                <div style={{ marginTop: 12, fontSize: 11, color: '#9CA3AF', fontFamily: 'monospace', textAlign: 'center' }}>
+                  <span style={{ color: '#39ff14', textShadow: '0 0 4px #39ff14' }}>Moonbeam: </span>
+                  {treasuryBalances.usdc} USDC · {treasuryBalances.glmr} GLMR · <span style={{ color: '#39ff14', textShadow: '0 0 4px #39ff14' }}>Moonriver: </span>{treasuryBalances.movr} MOVR
+                </div>
+              )}
             </div>
 
             <div style={{ marginBottom: 20 }}>
               <div style={{ fontWeight: 600, marginBottom: 6 }}>
-                Payment Amount {payoutType === "usdc" ? "(USDC)" : ""}
+                Payment Amount
               </div>
               <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexDirection: 'row', flexWrap: 'wrap' }}>
                 <div style={{ flex: 1, minWidth: 120, position: 'relative' }}>
@@ -712,28 +749,6 @@ export default function Home() {
             </button>
           </form>
           {error && <div className={styles.error} style={{ textAlign: 'center', marginTop: 12 }}>{error}</div>}
-
-          {/* Treasury Balances */}
-          {treasuryBalances && (
-            <div style={{ marginTop: 24, textAlign: 'center' }}>
-              <div style={{ fontSize: 12, fontWeight: 600, color: '#9CA3AF', marginBottom: 8 }}>Treasury Balances</div>
-              <pre style={{ 
-                fontFamily: 'monospace', 
-                fontSize: 12, 
-                color: '#39ff14', 
-                background: '#0f1112', 
-                padding: '12px', 
-                borderRadius: 8,
-                textShadow: '0 0 4px #39ff14',
-                display: 'inline-block',
-                textAlign: 'left',
-              }}>
-{`Moonbeam: ${treasuryBalances.usdc} USDC
-           ${treasuryBalances.glmr} GLMR
-Moonriver: ${treasuryBalances.movr} MOVR`}
-              </pre>
-            </div>
-          )}
         </div>
         <div style={{ minHeight: 400, width: "100%", padding: '0 16px' }}>
           <div
