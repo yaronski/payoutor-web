@@ -350,14 +350,16 @@ export default function Home() {
               </div>
               {/* Treasury Balances - shown below toggle */}
               <div style={{ marginTop: 12, fontSize: 11, color: '#9CA3AF', fontFamily: 'monospace', minHeight: 32 }}>
-                <div style={{ display: 'grid', gridTemplateColumns: '80px 1fr', gap: '4px 12px', alignItems: 'center' }}>
-                  <span style={{ color: '#39ff14', textShadow: '0 0 4px #39ff14' }}>Moonbeam</span>
-                  <span style={{ textAlign: 'right' }}>{payoutType === "native" ? (treasuryBalances.glmr === "Fetching..." ? "Fetching..." : treasuryBalances.glmr + " GLMR") : (treasuryBalances.usdc === "Fetching..." ? "Fetching..." : treasuryBalances.usdc + " USDC")}</span>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 16 }}>
+                    <span style={{ color: '#39ff14', textShadow: '0 0 4px #39ff14', whiteSpace: 'nowrap' }}>Moonbeam</span>
+                    <span style={{ fontVariantNumeric: 'tabular-nums', textAlign: 'right' }}>{payoutType === "native" ? (treasuryBalances.glmr === "Fetching..." ? "Fetching..." : treasuryBalances.glmr + " GLMR") : (treasuryBalances.usdc === "Fetching..." ? "Fetching..." : treasuryBalances.usdc + " USDC")}</span>
+                  </div>
                   {payoutType === "native" && (
-                    <>
-                      <span style={{ color: '#39ff14', textShadow: '0 0 4px #39ff14' }}>Moonriver</span>
-                      <span style={{ textAlign: 'right' }}>{treasuryBalances.movr === "Fetching..." ? "Fetching..." : treasuryBalances.movr + " MOVR"}</span>
-                    </>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 16 }}>
+                      <span style={{ color: '#39ff14', textShadow: '0 0 4px #39ff14', whiteSpace: 'nowrap' }}>Moonriver</span>
+                      <span style={{ fontVariantNumeric: 'tabular-nums', textAlign: 'right' }}>{treasuryBalances.movr === "Fetching..." ? "Fetching..." : treasuryBalances.movr + " MOVR"}</span>
+                    </div>
                   )}
                 </div>
               </div>

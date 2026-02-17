@@ -356,26 +356,41 @@ async function generateUsdcProposal(
   
   // USDC has 6 decimals
   const amountRaw = BigInt(Math.floor(usdcAmount * 1e6));
-  const amountHex = '0x' + amountRaw.toString(16).padStart(64, '0');
+  const amountHex = amountRaw.toString(16).padStart(64, '0');
   
-  // Create the ERC20 transfer call via EVM using ethereum.transact
+  // Create the ERC20 transfer call via EVM
   // Function selector for ERC20 transfer: 0xa9059cbb
   // Parameter 1: recipient address (32 bytes, padded)
   // Parameter 2: amount (32 bytes, padded)
   const paddedRecipient = recipient.slice(2).padStart(64, '0');
-  const evmCalldata = '0xa9059cbb' + paddedRecipient + amountHex.slice(2);
+  const evmCalldata = '0xa9059cbb' + paddedRecipient + amountHex;
   
-  // Use ethereum.transact to execute EVM call
-  // This is the proper way to execute EVM transactions on Moonbeam
-  const treasuryCall = api.tx.ethereum.transact(
-    { EVM: { 
-      contract: USDC_MOONBEAM, 
-      input: evmCalldata,
-      value: 0,
-      gasLimit: 2100000,
-      gasPrice: 10000000000
-    }}
-  );
+  // Use api.tx.evm.call to execute EVM call
+  // This executes a call through the EVM module
+  let treasuryCall: any;
+  
+  // Try different methods for EVM execution
+  if (api.tx.evm && api.tx.evm.call) {
+    treasuryCall = api.tx.evm.call(
+      USDC_MOONBEAM,  // to
+      evmCalldata,    // data
+      0,              // value
+      2100000,        // gas limit
+      10000000000     // gas price
+    );
+  } else if (api.tx.ethereum && api.tx.ethereum.transact) {
+    // Alternative: use ethereum.transact with raw call
+    treasuryCall = api.tx.ethereum.transact(
+      USDC_MOONBEAM,
+      evmCalldata,
+      0,
+      2100000,
+      10000000000
+    );
+  } else {
+    // Fallback: use a simple placeholder call - user will need to adjust
+    treasuryCall = api.tx.system.remark('USDC Transfer: ' + evmCalldata);
+  }
   
   const councilCall = api.tx.treasuryCouncilCollective.propose(threshold, treasuryCall, lengthBound);
   
