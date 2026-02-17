@@ -83,8 +83,7 @@ export default function Home() {
     usdc: string;
     glmr: string;
     movr: string;
-    loading: boolean;
-  } | null>(null);
+  }>({ usdc: "Fetching...", glmr: "Fetching...", movr: "Fetching..." });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [result, setResult] = useState<{
@@ -179,16 +178,15 @@ export default function Home() {
 
   useEffect(() => {
     async function fetchBalances() {
-      setTreasuryBalances({ usdc: "Fetching...", glmr: "Fetching...", movr: "Fetching...", loading: true });
       try {
         const res = await fetch("/api/treasury-balances");
         if (res.ok) {
           const data = await res.json();
-          setTreasuryBalances({ ...data, loading: false });
+          setTreasuryBalances(data);
         }
       } catch (err) {
         console.error("Failed to fetch treasury balances:", err);
-        setTreasuryBalances({ usdc: "Error", glmr: "Error", movr: "Error", loading: false });
+        setTreasuryBalances({ usdc: "Error", glmr: "Error", movr: "Error" });
       }
     }
     fetchBalances();
@@ -351,20 +349,10 @@ export default function Home() {
                 </label>
               </div>
               {/* Treasury Balances - shown below toggle */}
-              {treasuryBalances && treasuryBalances.glmr !== "Fetching..." && (
-                <div style={{ marginTop: 12, fontSize: 11, color: '#9CA3AF', fontFamily: 'monospace', textAlign: 'left', paddingLeft: 20 }}>
-                  {payoutType === "native" ? (
-                    <>
-                      <div><span style={{ color: '#39ff14', textShadow: '0 0 4px #39ff14', display: 'inline-block', width: 80 }}>Moonbeam</span> {treasuryBalances.glmr} GLMR</div>
-                      <div><span style={{ color: '#39ff14', textShadow: '0 0 4px #39ff14', display: 'inline-block', width: 80 }}>Moonriver</span> {treasuryBalances.movr} MOVR</div>
-                    </>
-                  ) : (
-                    <>
-                      <div><span style={{ color: '#39ff14', textShadow: '0 0 4px #39ff14', display: 'inline-block', width: 80 }}>Moonbeam</span> {treasuryBalances.usdc} USDC</div>
-                    </>
-                  )}
-                </div>
-              )}
+              <div style={{ marginTop: 12, fontSize: 11, color: '#9CA3AF', fontFamily: 'monospace', textAlign: 'left', paddingLeft: 20, minHeight: 32 }}>
+                <div><span style={{ color: '#39ff14', textShadow: '0 0 4px #39ff14', display: 'inline-block', width: 80 }}>Moonbeam</span> {payoutType === "native" ? (treasuryBalances.glmr === "Fetching..." ? "Fetching..." : treasuryBalances.glmr + " GLMR") : (treasuryBalances.usdc === "Fetching..." ? "Fetching..." : treasuryBalances.usdc + " USDC")}</div>
+                {payoutType === "native" && <div><span style={{ color: '#39ff14', textShadow: '0 0 4px #39ff14', display: 'inline-block', width: 80 }}>Moonriver</span> {treasuryBalances.movr === "Fetching..." ? "Fetching..." : treasuryBalances.movr + " MOVR"}</div>}
+              </div>
             </div>
 
             <div style={{ marginBottom: 20 }}>

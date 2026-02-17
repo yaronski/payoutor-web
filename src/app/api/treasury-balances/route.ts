@@ -3,7 +3,6 @@ import { ApiPromise, WsProvider } from "@polkadot/api";
 
 const MOONBEAM_TREASURY = "0x6d6f646c70792f74727372790000000000000000";
 const MOONRIVER_TREASURY = "0x6d6f646c70792f74727372790000000000000000";
-const XCUSDC_CONTRACT = "0xFFFFFFFF7D2B0B761AF01CA8E25242976AC0AD7D";
 
 async function getNativeBalance(address: string, network: "moonbeam" | "moonriver"): Promise<string> {
   const ws = network === "moonbeam" 
@@ -19,15 +18,16 @@ async function getNativeBalance(address: string, network: "moonbeam" | "moonrive
   return (Number(raw) / 1e18).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
 
-async function getXCUSDCBalance(network: "moonbeam" | "moonriver"): Promise<string> {
-  if (network !== "moonbeam") return "N/A";
-  
+async function getXCUSDCBalance(): Promise<string> {
   const wsProvider = new WsProvider("wss://wss.api.moonbeam.network");
   const api = await ApiPromise.create({ provider: wsProvider });
   
+  // Convert EVM address to Substrate address
+  const u8a = api.createType('AccountId32', MOONBEAM_TREASURY).toU8a();
+  
+  // Try assets pallet (asset ID 133 = USDC on Moonbeam)
   try {
-    // Try querying the assets pallet for USDC (asset ID 133)
-    const assetAccount: any = await api.query.assets.account(133, MOONBEAM_TREASURY);
+    const assetAccount: any = await api.query.assets.account(133, u8a);
     if (assetAccount && assetAccount.balance) {
       const raw = assetAccount.balance.toBigInt();
       await api.disconnect();
@@ -37,23 +37,24 @@ async function getXCUSDCBalance(network: "moonbeam" | "moonriver"): Promise<stri
     console.log("Assets pallet query failed:", e);
   }
   
-  // Try querying EVM state for ERC-20 balance
+  // Try tokens pallet with ForeignAsset
   try {
-    // Get code hash first to check if contract exists
-    const codeHash: any = await api.query.evm.accountCodes(XCUSDC_CONTRACT);
-    if (codeHash.toHex() === '0x0000000000000000000000000000000000000000000000000000000000000000') {
+    const tokenAccount: any = await api.query.tokens.accounts(u8a, { ForeignAsset: 133 });
+    if (tokenAccount && tokenAccount.free) {
+      const raw = tokenAccount.free.toBigInt();
       await api.disconnect();
-      return "0.00";
+      return (Number(raw) / 1e6).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
     }
-    
-    // For ERC-20, we need to call balanceOf - this requires a different approach
-    // Let's try querying the account state
-    const accountState: any = await api.query.evm.accountStates(XCUSDC_CONTRACT, MOONBEAM_TREASURY);
-    await api.disconnect();
-    
-    // EVM account state has balance in native token terms - not the ERC-20 balance
-    // Return N/A since we can't easily query ERC-20 from RPC without a contract call
-    return "N/A";
+  } catch (e) {
+    console.log("Tokens pallet query failed:", e);
+  }
+  
+  // Try EVM account state for ERC-20 balance
+  try {
+    const erc20Address = "0xFFFFFFFF7D2B0B761AF01CA8E25242976AC0AD7D";
+    const evmAddress = "0x6d6f646c70792f74727372790000000000000000";
+    const accountState: any = await api.query.evm.accountStates(erc20Address, evmAddress);
+    // This returns EVM balance, not ERC-20 balance - won't work
   } catch (e) {
     console.log("EVM query failed:", e);
   }
@@ -67,7 +68,7 @@ export async function GET() {
     const [glmrBalance, movrBalance, usdcBalance] = await Promise.all([
       getNativeBalance(MOONBEAM_TREASURY, "moonbeam").catch(() => "N/A"),
       getNativeBalance(MOONRIVER_TREASURY, "moonriver").catch(() => "N/A"),
-      getXCUSDCBalance("moonbeam"),
+      getXCUSDCBalance(),
     ]);
 
     return NextResponse.json({
