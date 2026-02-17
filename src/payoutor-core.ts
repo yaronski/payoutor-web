@@ -342,6 +342,7 @@ export interface UsdcPayoutDetails {
 }
 
 // Generate USDC transfer call data via treasury
+// Uses the new Treasury flow: treasury.spend with assetKind for multi-asset support
 async function generateUsdcProposal(
   recipient: string,
   usdcAmount: number,
@@ -356,41 +357,42 @@ async function generateUsdcProposal(
   
   // USDC has 6 decimals
   const amountRaw = BigInt(Math.floor(usdcAmount * 1e6));
-  const amountHex = amountRaw.toString(16).padStart(64, '0');
   
-  // Create the ERC20 transfer call via EVM
-  // Function selector for ERC20 transfer: 0xa9059cbb
-  // Parameter 1: recipient address (32 bytes, padded)
-  // Parameter 2: amount (32 bytes, padded)
-  const paddedRecipient = recipient.slice(2).padStart(64, '0');
-  const evmCalldata = '0xa9059cbb' + paddedRecipient + amountHex;
+  // Build the asset location for USDC on AssetHub
+  // AssetHub parachain ID: 1000
+  // USDC is in Assets pallet (50) with GeneralIndex for USDC
+  // Based on Polkadot forum: USDC has generalIndex 1984 on AssetHub
+  const assetLocation = {
+    parents: 1,
+    interior: {
+      X1: [{ Parachain: 1000 }]
+    }
+  };
   
-  // Use api.tx.evm.call to execute EVM call
-  // This executes a call through the EVM module
-  let treasuryCall: any;
+  const assetId = {
+    parents: 0,
+    interior: {
+      X2: [
+        { PalletInstance: 50 },
+        { GeneralIndex: 1984 }  // USDC asset ID on AssetHub
+      ]
+    }
+  };
   
-  // Try different methods for EVM execution
-  if (api.tx.evm && api.tx.evm.call) {
-    treasuryCall = api.tx.evm.call(
-      USDC_MOONBEAM,  // to
-      evmCalldata,    // data
-      0,              // value
-      2100000,        // gas limit
-      10000000000     // gas price
-    );
-  } else if (api.tx.ethereum && api.tx.ethereum.transact) {
-    // Alternative: use ethereum.transact with raw call
-    treasuryCall = api.tx.ethereum.transact(
-      USDC_MOONBEAM,
-      evmCalldata,
-      0,
-      2100000,
-      10000000000
-    );
-  } else {
-    // Fallback: use a simple placeholder call - user will need to adjust
-    treasuryCall = api.tx.system.remark('USDC Transfer: ' + evmCalldata);
-  }
+  // Create the asset kind for treasury.spend
+  const assetKind = api.createType('PalletRuntimeCommonImplsVersionedLocatableAsset', {
+    V3: {
+      id: { Concrete: assetId },
+      fun: { Fungible: amountRaw }
+    }
+  });
+  
+  // Use treasury.spend for multi-asset treasury payouts
+  // This is the new Treasury flow for stablecoins on Moonbeam
+  const treasuryCall = api.tx.treasury.spend(
+    assetKind,
+    recipient
+  );
   
   const councilCall = api.tx.treasuryCouncilCollective.propose(threshold, treasuryCall, lengthBound);
   
