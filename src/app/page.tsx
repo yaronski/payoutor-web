@@ -351,7 +351,7 @@ export default function Home() {
                 </label>
               </div>
               {/* Treasury Balances - shown below toggle */}
-              {treasuryBalances && !treasuryBalances.loading && (
+              {treasuryBalances && treasuryBalances.glmr !== "Fetching..." && (
                 <div style={{ marginTop: 12, fontSize: 11, color: '#9CA3AF', fontFamily: 'monospace', textAlign: 'center' }}>
                   {payoutType === "native" ? (
                     <>
