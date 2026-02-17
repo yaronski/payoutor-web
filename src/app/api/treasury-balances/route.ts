@@ -3,6 +3,7 @@ import { ApiPromise, WsProvider } from "@polkadot/api";
 
 const MOONBEAM_TREASURY = "0x6d6f646c70792f74727372790000000000000000";
 const MOONRIVER_TREASURY = "0x6d6f646c70792f74727372790000000000000000";
+const XCUSDC_CONTRACT = "0xFFFFFFFF7D2B0B761AF01CA8E25242976AC0AD7D";
 
 async function getNativeBalance(address: string, network: "moonbeam" | "moonriver"): Promise<string> {
   const ws = network === "moonbeam" 
@@ -18,48 +19,61 @@ async function getNativeBalance(address: string, network: "moonbeam" | "moonrive
   return (Number(raw) / 1e18).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
 
-async function fetchSubscanTokenList(address: string, network: "moonbeam" | "moonriver"): Promise<{usdc: string, glmr: string, movr: string}> {
+async function getXCUSDCBalance(network: "moonbeam" | "moonriver"): Promise<string> {
+  if (network !== "moonbeam") return "N/A";
+  
+  const wsProvider = new WsProvider("wss://wss.api.moonbeam.network");
+  const api = await ApiPromise.create({ provider: wsProvider });
+  
   try {
-    const res = await fetch(`https://${network}.subscan.io/api/scan/account/token_list`, {
-      method: "POST",
-      headers: { 
-        "Content-Type": "application/json",
-        "X-API-Key": process.env.SUBSCAN_API_KEY || ""
-      },
-      body: JSON.stringify({ address })
-    });
-    const data = await res.json();
-    
-    if (data?.data) {
-      for (const token of data.data) {
-        if (network === "moonbeam") {
-          if (token.symbol === "GLMR") {
-            return { usdc: "N/A", glmr: parseFloat(token.balance).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 }), movr: "N/A" };
-          }
-          if (token.contract === "0xffffffff7d2b0b761af01ca8e25242976ac0ad7d" || token.symbol === "USDC" || token.symbol === "xcUSDC") {
-            return { usdc: parseFloat(token.balance).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 }), glmr: "N/A", movr: "N/A" };
-          }
-        }
-      }
+    // Try querying the assets pallet for USDC (asset ID 133)
+    const assetAccount: any = await api.query.assets.account(133, MOONBEAM_TREASURY);
+    if (assetAccount && assetAccount.balance) {
+      const raw = assetAccount.balance.toBigInt();
+      await api.disconnect();
+      return (Number(raw) / 1e6).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
     }
   } catch (e) {
-    console.log("Subscan fetch failed, using RPC:", e);
+    console.log("Assets pallet query failed:", e);
   }
-  return { usdc: "N/A", glmr: "N/A", movr: "N/A" };
+  
+  // Try querying EVM state for ERC-20 balance
+  try {
+    // Get code hash first to check if contract exists
+    const codeHash: any = await api.query.evm.accountCodes(XCUSDC_CONTRACT);
+    if (codeHash.toHex() === '0x0000000000000000000000000000000000000000000000000000000000000000') {
+      await api.disconnect();
+      return "0.00";
+    }
+    
+    // For ERC-20, we need to call balanceOf - this requires a different approach
+    // Let's try querying the account state
+    const accountState: any = await api.query.evm.accountStates(XCUSDC_CONTRACT, MOONBEAM_TREASURY);
+    await api.disconnect();
+    
+    // EVM account state has balance in native token terms - not the ERC-20 balance
+    // Return N/A since we can't easily query ERC-20 from RPC without a contract call
+    return "N/A";
+  } catch (e) {
+    console.log("EVM query failed:", e);
+  }
+  
+  await api.disconnect();
+  return "N/A";
 }
 
 export async function GET() {
   try {
-    const [glmrBalance, movrBalance, usdcData] = await Promise.all([
+    const [glmrBalance, movrBalance, usdcBalance] = await Promise.all([
       getNativeBalance(MOONBEAM_TREASURY, "moonbeam").catch(() => "N/A"),
       getNativeBalance(MOONRIVER_TREASURY, "moonriver").catch(() => "N/A"),
-      fetchSubscanTokenList(MOONBEAM_TREASURY, "moonbeam"),
+      getXCUSDCBalance("moonbeam"),
     ]);
 
     return NextResponse.json({
       glmr: glmrBalance,
       movr: movrBalance,
-      usdc: usdcData.usdc,
+      usdc: usdcBalance,
     });
   } catch (error) {
     console.error("Error fetching treasury balances:", error);

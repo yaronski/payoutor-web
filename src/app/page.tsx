@@ -352,15 +352,15 @@ export default function Home() {
               </div>
               {/* Treasury Balances - shown below toggle */}
               {treasuryBalances && treasuryBalances.glmr !== "Fetching..." && (
-                <div style={{ marginTop: 12, fontSize: 11, color: '#9CA3AF', fontFamily: 'monospace', textAlign: 'center' }}>
+                <div style={{ marginTop: 12, fontSize: 11, color: '#9CA3AF', fontFamily: 'monospace', textAlign: 'left', paddingLeft: 20 }}>
                   {payoutType === "native" ? (
                     <>
-                      <span style={{ color: '#39ff14', textShadow: '0 0 4px #39ff14', display: 'inline-block', minWidth: '90px', textAlign: 'left' }}>Moonbeam:</span>{treasuryBalances.glmr} GLMR<br/>
-                      <span style={{ color: '#39ff14', textShadow: '0 0 4px #39ff14', display: 'inline-block', minWidth: '90px', textAlign: 'left' }}>Moonriver:</span>{treasuryBalances.movr} MOVR
+                      <div><span style={{ color: '#39ff14', textShadow: '0 0 4px #39ff14', display: 'inline-block', width: 80 }}>Moonbeam</span> {treasuryBalances.glmr} GLMR</div>
+                      <div><span style={{ color: '#39ff14', textShadow: '0 0 4px #39ff14', display: 'inline-block', width: 80 }}>Moonriver</span> {treasuryBalances.movr} MOVR</div>
                     </>
                   ) : (
                     <>
-                      <span style={{ color: '#39ff14', textShadow: '0 0 4px #39ff14', display: 'inline-block', minWidth: '90px', textAlign: 'left' }}>Moonbeam:</span>{treasuryBalances.usdc} USDC
+                      <div><span style={{ color: '#39ff14', textShadow: '0 0 4px #39ff14', display: 'inline-block', width: 80 }}>Moonbeam</span> {treasuryBalances.usdc} USDC</div>
                     </>
                   )}
                 </div>
