@@ -1,10 +1,33 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { calculatePayout, PayoutConfig } from '../../../payoutor-core';
+import { calculatePayout, calculateUsdcPayout, PayoutConfig } from '../../../payoutor-core';
 
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { usdAmount, recipient, glmrRatio, movrRatio, councilThreshold, councilLengthBound, moonbeamWs, moonriverWs, proxy, proxyAddress } = body;
+    const { payoutType, usdAmount, recipient, glmrRatio, movrRatio, councilThreshold, councilLengthBound, moonbeamWs, moonriverWs, proxy, proxyAddress } = body;
+    
+    // Handle USDC payouts
+    if (payoutType === "usdc") {
+      if (!usdAmount || !recipient) {
+        return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
+      }
+      const result = await calculateUsdcPayout({
+        usdAmount,
+        recipient,
+        config: {
+          councilThreshold: councilThreshold ?? 3,
+          councilLengthBound: councilLengthBound ?? 10000,
+          moonbeamWs: moonbeamWs ?? 'wss://wss.api.moonbeam.network',
+        },
+        proxy,
+        proxyAddress,
+      });
+      return NextResponse.json(result);
+    }
+    
+    // Handle native token payouts (existing logic)
+    const { inputAmount, inputCurrency, fxRate, fxDate } = body;
+    
     // Basic validation
     if (!usdAmount || !recipient) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
@@ -35,9 +58,10 @@ export async function POST(req: NextRequest) {
       config, 
       proxy, 
       proxyAddress,
-      inputAmount: body.inputAmount,
-      inputCurrency: body.inputCurrency,
-      fxRate: body.fxRate,
+      inputAmount,
+      inputCurrency,
+      fxRate,
+      fxDate,
     });
     return NextResponse.json(result);
   } catch (error: unknown) {

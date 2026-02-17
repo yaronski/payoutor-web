@@ -69,6 +69,7 @@ function renderSummaryWithLinks(summary: string) {
 export default function Home() {
   const [usdAmount, setUsdAmount] = useState("");
   const [currency, setCurrency] = useState<"USD" | "EUR">("USD");
+  const [payoutType, setPayoutType] = useState<"native" | "usdc">("native");
   const [fxRate, setFxRate] = useState<number | null>(1);
   const [fxRateLoading, setFxRateLoading] = useState(false);
   const [fxRateError, setFxRateError] = useState<string | null>(null);
@@ -78,6 +79,11 @@ export default function Home() {
   const [proxy, setProxy] = useState(false);
   const [proxyAddress, setProxyAddress] = useState("");
   const [glmrRatio, setGlmrRatio] = useState(50); // Default 50% GLMR, 50% MOVR
+  const [treasuryBalances, setTreasuryBalances] = useState<{
+    usdc: string;
+    glmr: string;
+    movr: string;
+  } | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [result, setResult] = useState<{
@@ -170,6 +176,21 @@ export default function Home() {
     }
   }, [currency, fetchEurUsdRate]);
 
+  useEffect(() => {
+    async function fetchBalances() {
+      try {
+        const res = await fetch("/api/treasury-balances");
+        if (res.ok) {
+          const data = await res.json();
+          setTreasuryBalances(data);
+        }
+      } catch (err) {
+        console.error("Failed to fetch treasury balances:", err);
+      }
+    }
+    fetchBalances();
+  }, []);
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true);
@@ -192,6 +213,7 @@ export default function Home() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
+          payoutType,
           usdAmount: amountInUsd,
           inputAmount: parsedAmount,
           inputCurrency: currency,
@@ -200,8 +222,8 @@ export default function Home() {
           recipient,
           proxy,
           proxyAddress: proxy ? proxyAddress : undefined,
-          glmrRatio: glmrRatio / 100, // Convert to decimal
-          movrRatio: (100 - glmrRatio) / 100, // Convert to decimal
+          glmrRatio: payoutType === "native" ? glmrRatio / 100 : 0,
+          movrRatio: payoutType === "native" ? (100 - glmrRatio) / 100 : 0,
         }),
       });
       const data = await res.json();
@@ -277,7 +299,30 @@ export default function Home() {
           </div>
           <form onSubmit={handleSubmit} className={styles.form} style={{ marginTop: 10, width: '100%', maxWidth: 400 }}>
             <div style={{ marginBottom: 20 }}>
-              <div style={{ fontWeight: 600, marginBottom: 6 }}>Payment Amount</div>
+              <div style={{ fontWeight: 600, marginBottom: 6 }}>Payout Type</div>
+              <select
+                value={payoutType}
+                onChange={e => setPayoutType(e.target.value as "native" | "usdc")}
+                style={{
+                  width: '100%',
+                  padding: '10px',
+                  fontSize: 16,
+                  background: '#1f2937',
+                  color: '#D4D4D4',
+                  border: '1px solid #374151',
+                  borderRadius: 6,
+                  cursor: 'pointer',
+                }}
+              >
+                <option value="native">Native Tokens (GLMR + MOVR)</option>
+                <option value="usdc">USDC Stablecoin (Moonbeam only)</option>
+              </select>
+            </div>
+
+            <div style={{ marginBottom: 20 }}>
+              <div style={{ fontWeight: 600, marginBottom: 6 }}>
+                Payment Amount {payoutType === "usdc" ? "(USDC)" : ""}
+              </div>
               <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexDirection: 'row', flexWrap: 'wrap' }}>
                 <div style={{ flex: 1, minWidth: 120, position: 'relative' }}>
                   <input
@@ -667,6 +712,28 @@ export default function Home() {
             </button>
           </form>
           {error && <div className={styles.error} style={{ textAlign: 'center', marginTop: 12 }}>{error}</div>}
+
+          {/* Treasury Balances */}
+          {treasuryBalances && (
+            <div style={{ marginTop: 24, textAlign: 'center' }}>
+              <div style={{ fontSize: 12, fontWeight: 600, color: '#9CA3AF', marginBottom: 8 }}>Treasury Balances</div>
+              <pre style={{ 
+                fontFamily: 'monospace', 
+                fontSize: 12, 
+                color: '#39ff14', 
+                background: '#0f1112', 
+                padding: '12px', 
+                borderRadius: 8,
+                textShadow: '0 0 4px #39ff14',
+                display: 'inline-block',
+                textAlign: 'left',
+              }}>
+{`Moonbeam: ${treasuryBalances.usdc} USDC
+           ${treasuryBalances.glmr} GLMR
+Moonriver: ${treasuryBalances.movr} MOVR`}
+              </pre>
+            </div>
+          )}
         </div>
         <div style={{ minHeight: 400, width: "100%", padding: '0 16px' }}>
           <div

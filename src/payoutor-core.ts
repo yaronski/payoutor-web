@@ -303,4 +303,146 @@ export async function generateVoteCall(
   };
   await api.disconnect();
   return result;
+}
+
+// USDC on Moonbeam
+const USDC_MOONBEAM = '0xFFfffffF7D2B0B761Af01Ca8e25242976ac0aD7D';
+
+export interface UsdcPayoutInput {
+  usdAmount: number;
+  recipient: string;
+  config: {
+    councilThreshold: number;
+    councilLengthBound: number;
+    moonbeamWs: string;
+  };
+  proxy?: boolean;
+  proxyAddress?: string;
+}
+
+export interface UsdcPayoutDetails {
+  summary: string;
+  forumReply: string;
+  usdAmount: number;
+  usdcAmount: number;
+  moonbeamBlock: number;
+  moonbeamProposalIndex: number;
+  usdcCallData: {
+    treasuryCallHex: string;
+    treasuryCallHash: string;
+    councilCallHex: string;
+    councilCallHash: string;
+  };
+  usdcVoteCallData: {
+    voteCallHex: string;
+  };
+  proxy?: boolean;
+  proxyAddress?: string;
+  recipient: string;
+}
+
+// Generate USDC transfer call data via treasury
+async function generateUsdcProposal(
+  recipient: string,
+  usdcAmount: number,
+  threshold: number,
+  lengthBound: number,
+  wsEndpoint: string,
+  proxyAddress?: string
+) {
+  const wsProvider = new WsProvider(wsEndpoint);
+  const api = await ApiPromise.create({ provider: wsProvider });
+  await api.isReady;
+  
+  // USDC has 6 decimals
+  const amountRaw = BigInt(Math.floor(usdcAmount * 1e6)).toString();
+  
+  // Create the ERC20 transfer call - using call to EVM
+  // For USDC (ERC20), we call the transfer function
+  const transferCalldata = api.tx.assets.transfer(
+    { EVM: USDC_MOONBEAM },
+    recipient,
+    amountRaw
+  );
+  
+  const treasuryCall = api.tx.treasury.spendLocal(usdcAmount * 1e6, recipient);
+  const councilCall = api.tx.treasuryCouncilCollective.propose(threshold, treasuryCall, lengthBound);
+  
+  let finalCall = councilCall;
+  if (proxyAddress) {
+    finalCall = api.tx.proxy.proxy(proxyAddress, null, councilCall);
+  }
+  
+  const result = {
+    treasuryCallHex: treasuryCall.method.toHex(),
+    treasuryCallHash: treasuryCall.method.hash.toHex(),
+    councilCallHex: finalCall.method.toHex(),
+    councilCallHash: finalCall.method.hash.toHex(),
+  };
+  await api.disconnect();
+  return result;
+}
+
+// Calculate USDC payout
+export async function calculateUsdcPayout(input: UsdcPayoutInput): Promise<UsdcPayoutDetails> {
+  const moonbeamBlock = await fetchRecentBlock('moonbeam');
+  const moonbeamProposalIndex = await fetchProposalCount('moonbeam');
+  
+  const usdcAmount = input.usdAmount; // USDC is 1:1 with USD
+  
+  const usdcCallData = await generateUsdcProposal(
+    input.recipient,
+    usdcAmount,
+    input.config.councilThreshold,
+    input.config.councilLengthBound,
+    input.config.moonbeamWs,
+    input.proxyAddress
+  );
+  
+  const usdcVoteCallData = await generateVoteCall(moonbeamProposalIndex, input.config.moonbeamWs);
+  
+  const placeholderHash = '0x0000000000000000000000000000000000000000000000000000000000000000';
+  const glmrVoteUrl = `https://polkadot.js.org/apps/?rpc=wss%3A%2F%2Fwss.api.moonbeam.network#/council/vote/${moonbeamProposalIndex}`;
+  
+  const summary = `==================================
+=== USDC PAYOUT CALCULATION RESULTS ===
+==================================
+
+USD Amount: ${input.usdAmount.toFixed(2)}
+USDC Amount: ${usdcAmount.toFixed(2)}
+Moonbeam Block: ${moonbeamBlock}
+
+Moonbeam USDC Treasury Proposal
+================================
+- Amount: ${usdcAmount.toFixed(2)} USDC
+- Recipient: ${input.recipient}
+- Council Proposal Call Data: ${usdcCallData.councilCallHex}
+- Decode Link: https://polkadot.js.org/apps/?rpc=wss%3A%2F%2Fwss.api.moonbeam.network#/extrinsics/decode/${usdcCallData.councilCallHex}
+
+Vote: index=${moonbeamProposalIndex} → ${glmrVoteUrl}
+NOTE: Replace placeholder hash in Polkadot.js after submission
+`;
+  
+  const forumReply = `Hey @${input.recipient.slice(0, 6)}...${input.recipient.slice(-4)}
+
+Your payout of USD ${input.usdAmount.toFixed(2)} will be sent as ${usdcAmount.toFixed(2)} USDC to your address.
+
+The proposal has been submitted on Moonbeam and is awaiting Treasury Council approval.
+
+Thank you for your contributions to the Moonbeam ecosystem — Much appreciated!
+@yaron`;
+  
+  return {
+    summary,
+    forumReply,
+    usdAmount: input.usdAmount,
+    usdcAmount,
+    moonbeamBlock,
+    moonbeamProposalIndex,
+    usdcCallData,
+    usdcVoteCallData,
+    proxy: input.proxy,
+    proxyAddress: input.proxyAddress,
+    recipient: input.recipient,
+  };
 } 
