@@ -350,16 +350,16 @@ export default function Home() {
               </div>
               {/* Treasury Balances - shown below toggle */}
               <div style={{ marginTop: 12, fontSize: 11, color: '#9CA3AF', fontFamily: 'monospace', minHeight: 32 }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', paddingRight: 40 }}>
+                <div style={{ display: 'grid', gridTemplateColumns: '80px 1fr', gap: '4px 12px', alignItems: 'center' }}>
                   <span style={{ color: '#39ff14', textShadow: '0 0 4px #39ff14' }}>Moonbeam</span>
-                  <span>{payoutType === "native" ? (treasuryBalances.glmr === "Fetching..." ? "Fetching..." : treasuryBalances.glmr + " GLMR") : (treasuryBalances.usdc === "Fetching..." ? "Fetching..." : treasuryBalances.usdc + " USDC")}</span>
+                  <span style={{ textAlign: 'right' }}>{payoutType === "native" ? (treasuryBalances.glmr === "Fetching..." ? "Fetching..." : treasuryBalances.glmr + " GLMR") : (treasuryBalances.usdc === "Fetching..." ? "Fetching..." : treasuryBalances.usdc + " USDC")}</span>
+                  {payoutType === "native" && (
+                    <>
+                      <span style={{ color: '#39ff14', textShadow: '0 0 4px #39ff14' }}>Moonriver</span>
+                      <span style={{ textAlign: 'right' }}>{treasuryBalances.movr === "Fetching..." ? "Fetching..." : treasuryBalances.movr + " MOVR"}</span>
+                    </>
+                  )}
                 </div>
-                {payoutType === "native" && (
-                  <div style={{ display: 'flex', justifyContent: 'space-between', paddingRight: 40 }}>
-                    <span style={{ color: '#39ff14', textShadow: '0 0 4px #39ff14' }}>Moonriver</span>
-                    <span>{treasuryBalances.movr === "Fetching..." ? "Fetching..." : treasuryBalances.movr + " MOVR"}</span>
-                  </div>
-                )}
               </div>
             </div>
 

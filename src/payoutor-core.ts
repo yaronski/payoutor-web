@@ -355,17 +355,28 @@ async function generateUsdcProposal(
   await api.isReady;
   
   // USDC has 6 decimals
-  const amountRaw = BigInt(Math.floor(usdcAmount * 1e6)).toString();
+  const amountRaw = BigInt(Math.floor(usdcAmount * 1e6));
+  const amountHex = '0x' + amountRaw.toString(16).padStart(64, '0');
   
-  // Create the ERC20 transfer call - using call to EVM
-  // For USDC (ERC20), we call the transfer function
-  const transferCalldata = api.tx.assets.transfer(
-    { EVM: USDC_MOONBEAM },
-    recipient,
-    amountRaw
+  // Create the ERC20 transfer call via EVM using ethereum.transact
+  // Function selector for ERC20 transfer: 0xa9059cbb
+  // Parameter 1: recipient address (32 bytes, padded)
+  // Parameter 2: amount (32 bytes, padded)
+  const paddedRecipient = recipient.slice(2).padStart(64, '0');
+  const evmCalldata = '0xa9059cbb' + paddedRecipient + amountHex.slice(2);
+  
+  // Use ethereum.transact to execute EVM call
+  // This is the proper way to execute EVM transactions on Moonbeam
+  const treasuryCall = api.tx.ethereum.transact(
+    { EVM: { 
+      contract: USDC_MOONBEAM, 
+      input: evmCalldata,
+      value: 0,
+      gasLimit: 2100000,
+      gasPrice: 10000000000
+    }}
   );
   
-  const treasuryCall = api.tx.treasury.spendLocal(usdcAmount * 1e6, recipient);
   const councilCall = api.tx.treasuryCouncilCollective.propose(threshold, treasuryCall, lengthBound);
   
   let finalCall = councilCall;

@@ -1,61 +1,55 @@
 import { NextResponse } from "next/server";
+import { ApiPromise, WsProvider } from "@polkadot/api";
 
 const MOONBEAM_TREASURY = "0x6d6f646c70792f74727372790000000000000000";
 const MOONRIVER_TREASURY = "0x6d6f646c70792f74727372790000000000000000";
 
-export async function GET() {
-  // Fetch balances from subscan (no API key needed for basic queries)
-  const fetchFromSubscan = async (addr: string, net: string, type: 'balance' | 'tokens') => {
-    try {
-      const endpoint = type === 'balance' 
-        ? `https://${net}.subscan.io/api/scan/account`
-        : `https://${net}.subscan.io/api/scan/account/token_list`;
-      
-      const res = await fetch(endpoint, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ address: addr })
-      });
-      
-      if (!res.ok) return null;
-      const data = await res.json();
-      return data?.data || null;
-    } catch (e) {
-      console.log(`Subscan ${type} error for ${net}:`, e);
-      return null;
-    }
-  };
-
+async function getNativeBalance(address: string, network: "moonbeam" | "moonriver"): Promise<string> {
+  let api: ApiPromise | null = null;
   try {
-    // Fetch all in parallel
-    const [moonbeamData, moonriverData, moonbeamTokens] = await Promise.all([
-      fetchFromSubscan(MOONBEAM_TREASURY, "moonbeam", "balance"),
-      fetchFromSubscan(MOONRIVER_TREASURY, "moonriver", "balance"),
-      fetchFromSubscan(MOONBEAM_TREASURY, "moonbeam", "tokens")
+    const ws = network === "moonbeam" ? "wss://wss.api.moonbeam.network" : "wss://wss.api.moonriver.moonbeam.network";
+    const wsProvider = new WsProvider(ws);
+    api = await ApiPromise.create({ provider: wsProvider });
+    await api.isReady;
+    const accountInfo: any = await api.query.system.account(address);
+    const raw = accountInfo.data.free.toBigInt();
+    return (Number(raw) / 1e18).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  } catch (e) {
+    console.log(`Error fetching ${network} native:`, e);
+    return "N/A";
+  } finally {
+    if (api) {
+      try { await api.disconnect(); } catch {}
+    }
+  }
+}
+
+export async function GET() {
+  try {
+    const [glmr, movr] = await Promise.all([
+      getNativeBalance(MOONBEAM_TREASURY, "moonbeam"),
+      getNativeBalance(MOONRIVER_TREASURY, "moonriver")
     ]);
 
-    // Parse GLMR
-    let glmr = "N/A";
-    if (moonbeamData?.balance) {
-      glmr = parseFloat(moonbeamData.balance).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-    }
-
-    // Parse MOVR
-    let movr = "N/A";
-    if (moonriverData?.balance) {
-      movr = parseFloat(moonriverData.balance).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-    }
-
-    // Parse USDC from tokens
+    // Try to fetch USDC from subscan (may fail without API key)
     let usdc = "N/A";
-    if (moonbeamTokens && Array.isArray(moonbeamTokens)) {
-      for (const token of moonbeamTokens) {
-        const symbol = token.symbol?.toUpperCase() || '';
-        if (symbol === 'USDC' || symbol === 'XCUSDC') {
-          usdc = parseFloat(token.balance).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-          break;
+    try {
+      const res = await fetch("https://moonbeam.subscan.io/api/scan/account/token_list", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ address: MOONBEAM_TREASURY })
+      });
+      const data = await res.json();
+      if (data?.data) {
+        for (const t of data.data) {
+          if (t.symbol === "USDC" || t.symbol === "xcUSDC") {
+            usdc = parseFloat(t.balance).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            break;
+          }
         }
       }
+    } catch (e) {
+      console.log("USDC fetch error:", e);
     }
 
     return NextResponse.json({ glmr, movr, usdc });
