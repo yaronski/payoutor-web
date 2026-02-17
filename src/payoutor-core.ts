@@ -425,9 +425,9 @@ NOTE: Replace placeholder hash in Polkadot.js after submission
   
   const forumReply = `Hey @${input.recipient.slice(0, 6)}...${input.recipient.slice(-4)}
 
-Your payout of USD ${input.usdAmount.toFixed(2)} will be sent as ${usdcAmount.toFixed(2)} USDC to your address.
+Your payout of USD ${input.usdAmount.toFixed(2)} will be sent as ${usdcAmount.toFixed(2)} USDC to your address on Moonbeam.
 
-The proposal has been submitted on Moonbeam and is awaiting Treasury Council approval.
+The proposal has been submitted on-chain and is awaiting Treasury Council approval.
 
 Thank you for your contributions to the Moonbeam ecosystem — Much appreciated!
 @yaron`;

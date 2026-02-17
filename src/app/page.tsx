@@ -83,6 +83,7 @@ export default function Home() {
     usdc: string;
     glmr: string;
     movr: string;
+    loading: boolean;
   } | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -178,14 +179,16 @@ export default function Home() {
 
   useEffect(() => {
     async function fetchBalances() {
+      setTreasuryBalances({ usdc: "Fetching...", glmr: "Fetching...", movr: "Fetching...", loading: true });
       try {
         const res = await fetch("/api/treasury-balances");
         if (res.ok) {
           const data = await res.json();
-          setTreasuryBalances(data);
+          setTreasuryBalances({ ...data, loading: false });
         }
       } catch (err) {
         console.error("Failed to fetch treasury balances:", err);
+        setTreasuryBalances({ usdc: "Error", glmr: "Error", movr: "Error", loading: false });
       }
     }
     fetchBalances();
@@ -350,8 +353,15 @@ export default function Home() {
               {/* Treasury Balances - shown below toggle */}
               {treasuryBalances && (
                 <div style={{ marginTop: 12, fontSize: 11, color: '#9CA3AF', fontFamily: 'monospace', textAlign: 'center' }}>
-                  <span style={{ color: '#39ff14', textShadow: '0 0 4px #39ff14' }}>Moonbeam: </span>
-                  {treasuryBalances.usdc} USDC · {treasuryBalances.glmr} GLMR · <span style={{ color: '#39ff14', textShadow: '0 0 4px #39ff14' }}>Moonriver: </span>{treasuryBalances.movr} MOVR
+                  {payoutType === "native" ? (
+                    <>
+                      <span style={{ color: '#39ff14', textShadow: '0 0 4px #39ff14' }}>Moonbeam: </span>{treasuryBalances.glmr} GLMR · <span style={{ color: '#39ff14', textShadow: '0 0 4px #39ff14' }}>Moonriver: </span>{treasuryBalances.movr} MOVR
+                    </>
+                  ) : (
+                    <>
+                      <span style={{ color: '#39ff14', textShadow: '0 0 4px #39ff14' }}>Moonbeam: </span>{treasuryBalances.usdc} USDC · <span style={{ color: '#39ff14', textShadow: '0 0 4px #39ff14' }}>Moonriver: </span>0 USDC
+                    </>
+                  )}
                 </div>
               )}
             </div>
@@ -476,6 +486,7 @@ export default function Home() {
                 }
               `}</style>
             </div>
+            {payoutType === "native" && (
             <div style={{ marginBottom: 20 }}>
               <div style={{ fontWeight: 600, marginBottom: 6 }}>Payout Ratio</div>
               <div style={{ 
@@ -704,6 +715,7 @@ export default function Home() {
                 </div>
               </div>
             </div>
+            )}
             <div style={{ marginBottom: 20 }}>
               <label style={{ display: "flex", alignItems: "center", gap: 8, fontWeight: 600 }}>
                 <input
