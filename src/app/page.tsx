@@ -66,6 +66,7 @@ function renderSummaryWithLinks(summary: string) {
   });
 }
 
+// Payoutor - Moonbeam Treasury Payout Tool
 export default function Home() {
   const [usdAmount, setUsdAmount] = useState("");
   const [currency, setCurrency] = useState<"USD" | "EUR">("USD");
