@@ -434,7 +434,7 @@ NOTE: Replace placeholder hash in Polkadot.js after submission
 
 Your payout of USD ${input.usdAmount.toFixed(2)} will be sent as ${usdcAmount.toFixed(2)} USDC to your address on Moonbeam.
 
-The proposal has been submitted on-chain and is awaiting Treasury Council approval.
+The proposal has been submitted on-chain and is awaiting approval from 3 Treasury Council members. This is expected to happen very soon.
 
 Thank you for your contributions to the Moonbeam ecosystem — Much appreciated!
 @yaron`;
