@@ -141,6 +141,7 @@ export default function Home() {
     recipient?: string;
   } | null>(null);
   const [showResult, setShowResult] = useState(false);
+  const [copyNotification, setCopyNotification] = useState<string | null>(null);
   const resultRef = useRef<HTMLDivElement>(null);
   const isWaitingForRate = currency === "EUR" && (fxRateLoading || !fxRate);
   const isSubmitDisabled = loading || isWaitingForRate;
@@ -260,8 +261,10 @@ export default function Home() {
     }
   }, [showResult]);
 
-  function handleCopy(text: string) {
+  function handleCopy(text: string, label?: string) {
     navigator.clipboard.writeText(text);
+    setCopyNotification(label || 'Copied!');
+    setTimeout(() => setCopyNotification(null), 2000);
   }
 
   function handleDownload(filename: string, text: string) {
@@ -807,6 +810,24 @@ export default function Home() {
           >
             {showResult && result && (
               <div className={styles.result}>
+                {copyNotification && (
+                  <div style={{ 
+                    position: 'fixed', 
+                    top: 20, 
+                    left: '50%', 
+                    transform: 'translateX(-50%)',
+                    background: '#39ff14', 
+                    color: '#0f1112', 
+                    padding: '10px 20px', 
+                    borderRadius: 6, 
+                    fontWeight: 600,
+                    fontSize: 14,
+                    boxShadow: '0 4px 12px rgba(57, 255, 20, 0.3)',
+                    zIndex: 1000
+                  }}>
+                    {copyNotification}
+                  </div>
+                )}
                 {/* Voting Links Section - different for USDC vs Native */}
                 <div style={{ marginBottom: 24, paddingBottom: 20, borderBottom: '1px solid #2d2d2d' }}>
                   <div style={{ fontSize: 14, fontWeight: 600, color: 'white', marginBottom: 10 }}>1. Submit Proposals</div>
