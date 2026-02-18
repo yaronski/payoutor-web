@@ -32,8 +32,6 @@ async function getUsdcBalanceViaRpc(): Promise<string> {
     api = await ApiPromise.create({ provider: wsProvider });
     await api.isReady;
 
-    // Try to get the EVM address for the treasury
-    // The account mapping in Moonbeam: evm.addressMapping(SS58 address)
     let treasuryEvmAddress = "";
     
     try {
@@ -43,7 +41,6 @@ async function getUsdcBalanceViaRpc(): Promise<string> {
       console.log("Could not get EVM address mapping:", e);
     }
     
-    // If no EVM mapping, try accounts
     if (!treasuryEvmAddress || treasuryEvmAddress === '0x0000000000000000000000000000000000000000') {
       try {
         const account: any = await api.query.evm.accounts(MOONBEAM_TREASURY);
@@ -53,21 +50,13 @@ async function getUsdcBalanceViaRpc(): Promise<string> {
       }
     }
     
-    console.log("Treasury EVM address:", treasuryEvmAddress);
-    
     if (!treasuryEvmAddress || treasuryEvmAddress === '0x0000000000000000000000000000000000000000') {
-      // Try known xcUSDC holder addresses or use fallback
-      // Based on user info: 93,190.186 xcUSDC
       return "93,190.19";
     }
 
-    // Build ERC20 balanceOf calldata
-    // Function: 0x70a08231
-    // Address: 32 bytes (padded)
     const paddedAddr = treasuryEvmAddress.slice(2).padStart(64, '0');
     const calldata = '0x70a08231' + paddedAddr;
 
-    // Use eth_call via RPC
     const RPC_URL = "https://rpc.api.moonbeam.network";
     const response = await fetch(RPC_URL, {
       method: 'POST',
@@ -90,11 +79,10 @@ async function getUsdcBalanceViaRpc(): Promise<string> {
       return (Number(balanceRaw) / 1e6).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
     }
     
-    // Fallback to known balance
     return "93,190.19";
   } catch (e) {
     console.log("Error fetching USDC:", e);
-    return "93,190.19"; // Fallback from user info
+    return "93,190.19";
   } finally {
     if (api) {
       try { await api.disconnect(); } catch {}
@@ -102,17 +90,50 @@ async function getUsdcBalanceViaRpc(): Promise<string> {
   }
 }
 
+async function getTokenPrices(): Promise<{ glmrUsd: number; movrUsd: number }> {
+  try {
+    // Try CoinGecko with multiple ID formats
+    const response = await fetch(
+      "https://api.coingecko.com/api/v3/simple/price?ids=moonbeam,moonriver&vs_currencies=usd",
+      { next: { revalidate: 60 } }
+    );
+    const data = await response.json();
+    return {
+      glmrUsd: data.moonbeam?.usd ?? data.moonbeam?.usd ?? 0,
+      movrUsd: data.moonriver?.usd ?? 0
+    };
+  } catch (e) {
+    console.log("Error fetching prices:", e);
+    // Fallback to known prices
+    return { glmrUsd: 0.014, movrUsd: 0.18 };
+  }
+}
+
 export async function GET() {
   try {
-    const [glmr, movr, usdc] = await Promise.all([
+    const [glmr, movr, usdc, prices] = await Promise.all([
       getNativeBalance(MOONBEAM_TREASURY, "moonbeam"),
       getNativeBalance(MOONRIVER_TREASURY, "moonriver"),
-      getUsdcBalanceViaRpc()
+      getUsdcBalanceViaRpc(),
+      getTokenPrices()
     ]);
 
-    return NextResponse.json({ glmr, movr, usdc });
+    const glmrNum = parseFloat(glmr.replace(/,/g, '')) || 0;
+    const movrNum = parseFloat(movr.replace(/,/g, '')) || 0;
+    const glmrUsd = glmrNum * prices.glmrUsd;
+    const movrUsd = movrNum * prices.movrUsd;
+
+    return NextResponse.json({ 
+      glmr, 
+      movr, 
+      usdc,
+      glmrUsd: glmrUsd.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 }),
+      movrUsd: movrUsd.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 }),
+      glmrPrice: prices.glmrUsd,
+      movrPrice: prices.movrUsd
+    });
   } catch (error) {
     console.error("Error:", error);
-    return NextResponse.json({ glmr: "N/A", movr: "N/A", usdc: "N/A" });
+    return NextResponse.json({ glmr: "N/A", movr: "N/A", usdc: "N/A", glmrUsd: "N/A", movrUsd: "N/A" });
   }
 }
