@@ -372,12 +372,13 @@ async function generateUsdcProposal(
     }
   };
   
-  // Use treasury.spend with asset location, amount, and beneficiary
-  // Parameters: assetKind, amount, beneficiary, validFrom (optional)
+  // Use treasury.spend with 4 params: assetKind, amount, beneficiary, validFrom
+  // validFrom is optional - pass null to use immediate payout
   const treasuryCall = api.tx.treasury.spend(
     assetLocation,
     amountRaw,
-    recipient
+    recipient,
+    null  // validFrom - null for immediate validity
   );
   
   const councilCall = api.tx.treasuryCouncilCollective.propose(threshold, treasuryCall, lengthBound);
