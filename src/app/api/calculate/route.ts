@@ -22,7 +22,7 @@ export async function POST(req: NextRequest) {
         proxy,
         proxyAddress,
       });
-      return NextResponse.json(result);
+      return NextResponse.json({ ...result, payoutType: 'usdc' });
     }
     
     // Handle native token payouts (existing logic)
@@ -63,7 +63,7 @@ export async function POST(req: NextRequest) {
       fxRate,
       fxDate,
     });
-    return NextResponse.json(result);
+    return NextResponse.json({ ...result, payoutType: 'native' });
   } catch (error: unknown) {
     const errorMessage = error instanceof Error ? error.message : 'Internal server error';
     return NextResponse.json({ error: errorMessage }, { status: 500 });

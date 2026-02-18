@@ -190,8 +190,8 @@ export async function calculatePayout(input: PayoutInput): Promise<PayoutDetails
   const movrRatioPct = Math.round(input.config.movrRatio * 100);
 
   const placeholderHash = '0x0000000000000000000000000000000000000000000000000000000000000000';
-  const glmrVoteUrl = `https://polkadot.js.org/apps/?rpc=wss%3A%2F%2Fwss.api.moonbeam.network#/council/vote/${moonbeamProposalIndex}`;
-  const movrVoteUrl = `https://polkadot.js.org/apps/?rpc=wss%3A%2F%2Fwss.api.moonriver.moonbeam.network#/council/vote/${moonriverProposalIndex}`;
+  const glmrVoteUrl = `https://polkadot.js.org/apps/?rpc=wss%3A%2F%2Fwss.api.moonbeam.network#/extrinsics/decode/${glmrVoteCallData.voteCallHex}`;
+  const movrVoteUrl = `https://polkadot.js.org/apps/?rpc=wss%3A%2F%2Fwss.api.moonriver.moonbeam.network#/extrinsics/decode/${movrVoteCallData.voteCallHex}`;
 
   const inputCurrency = input.inputCurrency || 'USD';
   const displayInputAmount = input.inputAmount || input.usdAmount;
@@ -409,11 +409,11 @@ export async function calculateUsdcPayout(input: UsdcPayoutInput): Promise<UsdcP
   const usdcVoteCallData = await generateVoteCall(moonbeamProposalIndex, input.config.moonbeamWs);
   
   const placeholderHash = '0x0000000000000000000000000000000000000000000000000000000000000000';
-  const glmrVoteUrl = `https://polkadot.js.org/apps/?rpc=wss%3A%2F%2Fwss.api.moonbeam.network#/council/vote/${moonbeamProposalIndex}`;
+  const usdcVoteUrl = `https://polkadot.js.org/apps/?rpc=wss%3A%2F%2Fwss.api.moonbeam.network#/extrinsics/decode/${usdcVoteCallData.voteCallHex}`;
   
   const summary = `==================================
 === USDC PAYOUT CALCULATION RESULTS ===
-==================================
+=================================
 
 USD Amount: ${input.usdAmount.toFixed(2)}
 USDC Amount: ${usdcAmount.toFixed(2)}
@@ -426,7 +426,7 @@ Moonbeam USDC Treasury Proposal
 - Council Proposal Call Data: ${usdcCallData.councilCallHex}
 - Decode Link: https://polkadot.js.org/apps/?rpc=wss%3A%2F%2Fwss.api.moonbeam.network#/extrinsics/decode/${usdcCallData.councilCallHex}
 
-Vote: index=${moonbeamProposalIndex} → ${glmrVoteUrl}
+Vote: index=${moonbeamProposalIndex} → ${usdcVoteUrl}
 NOTE: Replace placeholder hash in Polkadot.js after submission
 `;
   
