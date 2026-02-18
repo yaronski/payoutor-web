@@ -358,24 +358,16 @@ async function generateUsdcProposal(
   // USDC has 6 decimals
   const amountRaw = BigInt(Math.floor(usdcAmount * 1e6));
   
-  // Build asset location for xcUSDC on AssetHub
-  // xcUSDC: AssetHub (1000), Assets pallet (50), GeneralIndex 1984
-  const assetLocation = {
-    V3: {
-      parents: 0,
-      interior: {
-        X2: [
-          { PalletInstance: 50 },
-          { GeneralIndex: 1984 }
-        ]
-      }
-    }
-  };
+  // xcUSDC asset ID: 166377000701797186346254371275954761085
+  const assetId = BigInt('166377000701797186346254371275954761085');
+  
+  // Build asset_kind using WithId variant
+  // The asset_kind is an enum: { Native: Null } | { WithId: u128 }
+  const assetKind = { WithId: assetId };
   
   // Use treasury.spend with 4 params: assetKind, amount, beneficiary, validFrom
-  // validFrom is optional - pass null to use immediate payout
   const treasuryCall = api.tx.treasury.spend(
-    assetLocation,
+    assetKind,
     amountRaw,
     recipient,
     null  // validFrom - null for immediate validity
