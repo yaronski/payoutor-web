@@ -92,26 +92,37 @@ export default function Home() {
   const [result, setResult] = useState<{
     summary: string;
     forumReply: string;
-    glmrAmount: number;
-    movrAmount: number;
-    moonbeamProposalIndex: number;
-    moonriverProposalIndex: number;
-    glmrCallData: {
+    payoutType?: "native" | "usdc";
+    glmrAmount?: number;
+    movrAmount?: number;
+    usdcAmount?: number;
+    moonbeamProposalIndex?: number;
+    moonriverProposalIndex?: number;
+    glmrCallData?: {
       treasuryCallHex: string;
       treasuryCallHash: string;
       councilCallHex: string;
       councilCallHash: string;
     };
-    movrCallData: {
+    movrCallData?: {
       treasuryCallHex: string;
       treasuryCallHash: string;
       councilCallHex: string;
       councilCallHash: string;
     };
-    glmrVoteCallData: {
+    usdcCallData?: {
+      treasuryCallHex: string;
+      treasuryCallHash: string;
+      councilCallHex: string;
+      councilCallHash: string;
+    };
+    glmrVoteCallData?: {
       voteCallHex: string;
     };
-    movrVoteCallData: {
+    movrVoteCallData?: {
+      voteCallHex: string;
+    };
+    usdcVoteCallData?: {
       voteCallHex: string;
     };
     glmrProxyCallData?: {
@@ -127,6 +138,7 @@ export default function Home() {
       councilCallHash: string;
     };
     proxy?: boolean;
+    recipient?: string;
   } | null>(null);
   const [showResult, setShowResult] = useState(false);
   const resultRef = useRef<HTMLDivElement>(null);
@@ -795,46 +807,88 @@ export default function Home() {
           >
             {showResult && result && (
               <div className={styles.result}>
-                {/* Voting Links Section */}
+                {/* Voting Links Section - different for USDC vs Native */}
                 <div style={{ marginBottom: 24, paddingBottom: 20, borderBottom: '1px solid #2d2d2d' }}>
                   <div style={{ fontSize: 14, fontWeight: 600, color: 'white', marginBottom: 10 }}>1. Submit Proposals</div>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 20 }}>
-                    <a 
-                      href={`https://polkadot.js.org/apps/?rpc=wss%3A%2F%2Fwss.api.moonbeam.network#/extrinsics/decode/${result.glmrCallData.councilCallHex}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      style={{ display: 'block', padding: '10px 14px', background: '#1a1d1f', borderRadius: 6, color: '#39ff14', textDecoration: 'none', fontSize: 13, fontFamily: 'monospace', border: '1px solid #2d2d2d', textShadow: '0 0 4px #39ff14' }}
-                    >
-                      Moonbeam: Submit Proposal #{result.moonbeamProposalIndex}
-                    </a>
-                    <a 
-                      href={`https://polkadot.js.org/apps/?rpc=wss%3A%2F%2Fwss.api.moonriver.moonbeam.network#/extrinsics/decode/${result.movrCallData.councilCallHex}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      style={{ display: 'block', padding: '10px 14px', background: '#1a1d1f', borderRadius: 6, color: '#39ff14', textDecoration: 'none', fontSize: 13, fontFamily: 'monospace', border: '1px solid #2d2d2d', textShadow: '0 0 4px #39ff14' }}
-                    >
-                      Moonriver: Submit Proposal #{result.moonriverProposalIndex}
-                    </a>
+                    {result.payoutType === "usdc" ? (
+                      <>
+                        {result.usdcCallData && result.moonbeamProposalIndex !== undefined && (
+                          <a 
+                            href={`https://polkadot.js.org/apps/?rpc=wss%3A%2F%2Fwss.api.moonbeam.network#/extrinsics/decode/${result.usdcCallData.councilCallHex}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            style={{ display: 'block', padding: '10px 14px', background: '#1a1d1f', borderRadius: 6, color: '#39ff14', textDecoration: 'none', fontSize: 13, fontFamily: 'monospace', border: '1px solid #2d2d2d', textShadow: '0 0 4px #39ff14' }}
+                          >
+                            Moonbeam: Submit USDC Proposal #{result.moonbeamProposalIndex}
+                          </a>
+                        )}
+                      </>
+                    ) : (
+                      <>
+                        {result.glmrCallData && result.moonbeamProposalIndex !== undefined && (
+                          <a 
+                            href={`https://polkadot.js.org/apps/?rpc=wss%3A%2F%2Fwss.api.moonbeam.network#/extrinsics/decode/${result.glmrCallData.councilCallHex}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            style={{ display: 'block', padding: '10px 14px', background: '#1a1d1f', borderRadius: 6, color: '#39ff14', textDecoration: 'none', fontSize: 13, fontFamily: 'monospace', border: '1px solid #2d2d2d', textShadow: '0 0 4px #39ff14' }}
+                          >
+                            Moonbeam: Submit Proposal #{result.moonbeamProposalIndex}
+                          </a>
+                        )}
+                        {result.movrCallData && result.moonriverProposalIndex !== undefined && (
+                          <a 
+                            href={`https://polkadot.js.org/apps/?rpc=wss%3A%2F%2Fwss.api.moonriver.moonbeam.network#/extrinsics/decode/${result.movrCallData.councilCallHex}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            style={{ display: 'block', padding: '10px 14px', background: '#1a1d1f', borderRadius: 6, color: '#39ff14', textDecoration: 'none', fontSize: 13, fontFamily: 'monospace', border: '1px solid #2d2d2d', textShadow: '0 0 4px #39ff14' }}
+                          >
+                            Moonriver: Submit Proposal #{result.moonriverProposalIndex}
+                          </a>
+                        )}
+                      </>
+                    )}
                   </div>
 
                   <div style={{ fontSize: 14, fontWeight: 600, color: 'white', marginBottom: 10 }}>2. Vote AYE</div>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-                    <a 
-                      href={`https://polkadot.js.org/apps/?rpc=wss%3A%2F%2Fwss.api.moonbeam.network#/extrinsics/decode/${result.glmrVoteCallData.voteCallHex}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      style={{ display: 'block', padding: '10px 14px', background: '#1a1d1f', borderRadius: 6, color: '#39ff14', textDecoration: 'none', fontSize: 13, fontFamily: 'monospace', border: '1px solid #2d2d2d', textShadow: '0 0 4px #39ff14' }}
-                    >
-                      Moonbeam: Vote AYE (Proposal #{result.moonbeamProposalIndex})
-                    </a>
-                    <a 
-                      href={`https://polkadot.js.org/apps/?rpc=wss%3A%2F%2Fwss.api.moonriver.moonbeam.network#/extrinsics/decode/${result.movrVoteCallData.voteCallHex}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      style={{ display: 'block', padding: '10px 14px', background: '#1a1d1f', borderRadius: 6, color: '#39ff14', textDecoration: 'none', fontSize: 13, fontFamily: 'monospace', border: '1px solid #2d2d2d', textShadow: '0 0 4px #39ff14' }}
-                    >
-                      Moonriver: Vote AYE (Proposal #{result.moonriverProposalIndex})
-                    </a>
+                    {result.payoutType === "usdc" ? (
+                      <>
+                        {result.usdcVoteCallData && result.moonbeamProposalIndex !== undefined && (
+                          <a 
+                            href={`https://polkadot.js.org/apps/?rpc=wss%3A%2F%2Fwss.api.moonbeam.network#/extrinsics/decode/${result.usdcVoteCallData.voteCallHex}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            style={{ display: 'block', padding: '10px 14px', background: '#1a1d1f', borderRadius: 6, color: '#39ff14', textDecoration: 'none', fontSize: 13, fontFamily: 'monospace', border: '1px solid #2d2d2d', textShadow: '0 0 4px #39ff14' }}
+                          >
+                            Moonbeam: Vote AYE (USDC Proposal #{result.moonbeamProposalIndex})
+                          </a>
+                        )}
+                      </>
+                    ) : (
+                      <>
+                        {result.glmrVoteCallData && result.moonbeamProposalIndex !== undefined && (
+                          <a 
+                            href={`https://polkadot.js.org/apps/?rpc=wss%3A%2F%2Fwss.api.moonbeam.network#/extrinsics/decode/${result.glmrVoteCallData.voteCallHex}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            style={{ display: 'block', padding: '10px 14px', background: '#1a1d1f', borderRadius: 6, color: '#39ff14', textDecoration: 'none', fontSize: 13, fontFamily: 'monospace', border: '1px solid #2d2d2d', textShadow: '0 0 4px #39ff14' }}
+                          >
+                            Moonbeam: Vote AYE (Proposal #{result.moonbeamProposalIndex})
+                          </a>
+                        )}
+                        {result.movrVoteCallData && result.moonriverProposalIndex !== undefined && (
+                          <a 
+                            href={`https://polkadot.js.org/apps/?rpc=wss%3A%2F%2Fwss.api.moonriver.moonbeam.network#/extrinsics/decode/${result.movrVoteCallData.voteCallHex}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            style={{ display: 'block', padding: '10px 14px', background: '#1a1d1f', borderRadius: 6, color: '#39ff14', textDecoration: 'none', fontSize: 13, fontFamily: 'monospace', border: '1px solid #2d2d2d', textShadow: '0 0 4px #39ff14' }}
+                          >
+                            Moonriver: Vote AYE (Proposal #{result.moonriverProposalIndex})
+                          </a>
+                        )}
+                      </>
+                    )}
                   </div>
                   <div style={{ marginTop: 12, fontSize: 11, color: '#6b7280', fontStyle: 'italic' }}>
                     Note: Before voting, replace the placeholder hash (0x0000...) in Polkadot.js with the actual on-chain proposal hash
@@ -846,27 +900,39 @@ export default function Home() {
                 <button onClick={() => handleCopy(result.summary)} style={{ marginBottom: 18, fontSize: 14, padding: '8px 16px', borderRadius: 6, background: '#3D3D3D', color: 'white', border: 'none', fontWeight: 600, cursor: 'pointer', boxShadow: '0 2px 8px #1e90ff22', width: '100%' }}>Copy Full Summary</button>
                 <details>
                   <summary style={{ fontSize: 14, fontWeight: 600, color: 'white', cursor: 'pointer' }}>Show advanced details</summary>
-                  <div style={{ marginTop: 12 }}>
-                    <strong>GLMR Amount:</strong> {result.glmrAmount}
-                    <button onClick={() => handleCopy(result.glmrAmount.toString())} style={{ marginLeft: 8 }}>Copy</button>
-                  </div>
-                  <div>
-                    <strong>MOVR Amount:</strong> {result.movrAmount}
-                    <button onClick={() => handleCopy(result.movrAmount.toString())} style={{ marginLeft: 8 }}>Copy</button>
-                  </div>
-                  <div>
-                    <strong>GLMR Council Call Data:</strong>
-                    <pre>{JSON.stringify(result.glmrCallData, null, 2)}</pre>
-                    <button onClick={() => handleCopy(JSON.stringify(result.glmrCallData, null, 2))}>Copy</button>
-                    <button onClick={() => handleDownload("glmr_call_data.json", JSON.stringify(result.glmrCallData, null, 2))}>Download</button>
-                  </div>
-                  <br></br>
-                  <div>
-                    <strong>MOVR Council Call Data:</strong>
-                    <pre>{JSON.stringify(result.movrCallData, null, 2)}</pre>
-                    <button onClick={() => handleCopy(JSON.stringify(result.movrCallData, null, 2))}>Copy</button>
-                    <button onClick={() => handleDownload("movr_call_data.json", JSON.stringify(result.movrCallData, null, 2))}>Download</button>
-                  </div>
+                  {result.payoutType === "usdc" ? (
+                    <div style={{ marginTop: 12 }}>
+                      <strong>USDC Amount:</strong> {result.usdcAmount}
+                      {result.usdcAmount && <button onClick={() => handleCopy(result.usdcAmount?.toString() || "")} style={{ marginLeft: 8 }}>Copy</button>}
+                      <div>
+                        <strong>USDC Council Call Data:</strong>
+                        <pre>{JSON.stringify(result.usdcCallData, null, 2)}</pre>
+                        {result.usdcCallData && <><button onClick={() => handleCopy(JSON.stringify(result.usdcCallData, null, 2))}>Copy</button></>}
+                      </div>
+                    </div>
+                  ) : (
+                    <>
+                      <div style={{ marginTop: 12 }}>
+                        <strong>GLMR Amount:</strong> {result.glmrAmount}
+                        {result.glmrAmount && <button onClick={() => handleCopy(result.glmrAmount?.toString() || "")} style={{ marginLeft: 8 }}>Copy</button>}
+                      </div>
+                      <div>
+                        <strong>MOVR Amount:</strong> {result.movrAmount}
+                        {result.movrAmount && <button onClick={() => handleCopy(result.movrAmount?.toString() || "")} style={{ marginLeft: 8 }}>Copy</button>}
+                      </div>
+                      <div>
+                        <strong>GLMR Council Call Data:</strong>
+                        <pre>{JSON.stringify(result.glmrCallData, null, 2)}</pre>
+                        {result.glmrCallData && <button onClick={() => handleCopy(JSON.stringify(result.glmrCallData, null, 2))}>Copy</button>}
+                      </div>
+                      <br></br>
+                      <div>
+                        <strong>MOVR Council Call Data:</strong>
+                        <pre>{JSON.stringify(result.movrCallData, null, 2)}</pre>
+                        {result.movrCallData && <button onClick={() => handleCopy(JSON.stringify(result.movrCallData, null, 2))}>Copy</button>}
+                      </div>
+                    </>
+                  )}
                 </details>
 
                 {/* Forum Reply Section - at the end */}
