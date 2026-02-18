@@ -918,39 +918,36 @@ export default function Home() {
 
                 {/* Original Summary */}
                 <pre style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word', fontSize: 'clamp(11px, 2.5vw, 14px)', background: 'none', color: '#39ff14', marginBottom: 16, fontFamily: 'monospace', textShadow: '0 0 0px #39ff14, 0 0 4px #39ff14', overflowX: 'auto' }}>{renderSummaryWithLinks(result.summary)}</pre>
-                <button onClick={() => handleCopy(result.summary)} style={{ marginBottom: 18, fontSize: 14, padding: '8px 16px', borderRadius: 6, background: '#3D3D3D', color: 'white', border: 'none', fontWeight: 600, cursor: 'pointer', boxShadow: '0 2px 8px #1e90ff22', width: '100%' }}>Copy Full Summary</button>
+                <button onClick={() => handleCopy(result.summary, 'Summary copied!')} style={{ marginBottom: 18, fontSize: 14, padding: '8px 16px', borderRadius: 6, background: '#3D3D3D', color: 'white', border: 'none', fontWeight: 600, cursor: 'pointer', boxShadow: '0 2px 8px #1e90ff22', width: '100%' }}>Copy Full Summary</button>
                 <details>
                   <summary style={{ fontSize: 14, fontWeight: 600, color: 'white', cursor: 'pointer' }}>Show advanced details</summary>
                   {result.payoutType === "usdc" ? (
                     <div style={{ marginTop: 12 }}>
-                      <strong>USDC Amount:</strong> {result.usdcAmount}
-                      {result.usdcAmount && <button onClick={() => handleCopy(result.usdcAmount?.toString() || "")} style={{ marginLeft: 8 }}>Copy</button>}
-                      <div>
-                        <strong>USDC Council Call Data:</strong>
-                        <pre>{JSON.stringify(result.usdcCallData, null, 2)}</pre>
-                        {result.usdcCallData && <><button onClick={() => handleCopy(JSON.stringify(result.usdcCallData, null, 2))}>Copy</button></>}
-                      </div>
+                      <div><strong>USDC Amount:</strong> {result.usdcAmount}{result.usdcAmount && <button onClick={() => handleCopy(result.usdcAmount?.toString() || "", 'Amount copied!')} style={{ marginLeft: 8 }}>Copy</button>}</div>
+                      <div><strong>USDC Council Call Data:</strong></div>
+                      <pre>{result.usdcCallData ? JSON.stringify(result.usdcCallData, null, 2) : ''}</pre>
+                      {result.usdcCallData && <button onClick={() => handleCopy(JSON.stringify(result.usdcCallData, null, 2), 'Call data copied!')}>Copy</button>}
                     </div>
                   ) : (
                     <>
                       <div style={{ marginTop: 12 }}>
                         <strong>GLMR Amount:</strong> {result.glmrAmount}
-                        {result.glmrAmount && <button onClick={() => handleCopy(result.glmrAmount?.toString() || "")} style={{ marginLeft: 8 }}>Copy</button>}
+                        {result.glmrAmount && <button onClick={() => handleCopy(result.glmrAmount?.toString() || "", 'Amount copied!')} style={{ marginLeft: 8 }}>Copy</button>}
                       </div>
                       <div>
                         <strong>MOVR Amount:</strong> {result.movrAmount}
-                        {result.movrAmount && <button onClick={() => handleCopy(result.movrAmount?.toString() || "")} style={{ marginLeft: 8 }}>Copy</button>}
+                        {result.movrAmount && <button onClick={() => handleCopy(result.movrAmount?.toString() || "", 'Amount copied!')} style={{ marginLeft: 8 }}>Copy</button>}
                       </div>
                       <div>
                         <strong>GLMR Council Call Data:</strong>
                         <pre>{JSON.stringify(result.glmrCallData, null, 2)}</pre>
-                        {result.glmrCallData && <button onClick={() => handleCopy(JSON.stringify(result.glmrCallData, null, 2))}>Copy</button>}
+                        {result.glmrCallData && <button onClick={() => handleCopy(JSON.stringify(result.glmrCallData, null, 2), 'Call data copied!')}>Copy</button>}
                       </div>
                       <br></br>
                       <div>
                         <strong>MOVR Council Call Data:</strong>
                         <pre>{JSON.stringify(result.movrCallData, null, 2)}</pre>
-                        {result.movrCallData && <button onClick={() => handleCopy(JSON.stringify(result.movrCallData, null, 2))}>Copy</button>}
+                        {result.movrCallData && <button onClick={() => handleCopy(JSON.stringify(result.movrCallData, null, 2), 'Call data copied!')}>Copy</button>}
                       </div>
                     </>
                   )}
@@ -960,7 +957,7 @@ export default function Home() {
                 <div style={{ marginTop: 24, paddingTop: 20, borderTop: '1px solid #2d2d2d' }}>
                   <div style={{ fontSize: 14, fontWeight: 600, color: '#9CA3AF', marginBottom: 10 }}>3. Reply</div>
                   <pre style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word', fontSize: 'clamp(11px, 2.5vw, 13px)', background: 'none', color: '#39ff14', padding: 12, marginBottom: 12, fontFamily: 'monospace', textShadow: '0 0 0px #39ff14, 0 0 4px #39ff14' }}>{renderSummaryWithLinks(result.forumReply)}</pre>
-                  <button onClick={() => handleCopy(result.forumReply)} style={{ fontSize: 14, padding: '8px 16px', borderRadius: 6, background: '#3D3D3D', color: 'white', border: 'none', fontWeight: 600, cursor: 'pointer', boxShadow: '0 2px 8px #1e90ff22', width: '100%' }}>Copy Forum Reply</button>
+                  <button onClick={() => handleCopy(result.forumReply, 'Forum reply copied!')} style={{ fontSize: 14, padding: '8px 16px', borderRadius: 6, background: '#3D3D3D', color: 'white', border: 'none', fontWeight: 600, cursor: 'pointer', boxShadow: '0 2px 8px #1e90ff22', width: '100%' }}>Copy Forum Reply</button>
                 </div>
               </div>
             )}
