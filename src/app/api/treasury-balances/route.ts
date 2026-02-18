@@ -90,23 +90,35 @@ async function getUsdcBalanceViaRpc(): Promise<string> {
   }
 }
 
-async function getTokenPrices(): Promise<{ glmrUsd: number; movrUsd: number }> {
+// Fetch price from Subscan (same method as payoutor-core.ts)
+async function fetchSubscanPrice(network: 'moonbeam' | 'moonriver', token: 'GLMR' | 'MOVR'): Promise<number> {
   try {
-    // Try CoinGecko with multiple ID formats
-    const response = await fetch(
-      "https://api.coingecko.com/api/v3/simple/price?ids=moonbeam,moonriver&vs_currencies=usd",
-      { next: { revalidate: 60 } }
-    );
-    const data = await response.json();
-    return {
-      glmrUsd: data.moonbeam?.usd ?? data.moonbeam?.usd ?? 0,
-      movrUsd: data.moonriver?.usd ?? 0
-    };
+    // Get current block
+    const blockRes = await fetch(`https://${network}.subscan.io/block`);
+    const blockHtml = await blockRes.text();
+    const blockMatch = blockHtml.match(/block\/(\d+)/);
+    if (!blockMatch) return 0;
+    const block = parseInt(blockMatch[1], 10) - 200; // Use EMA30 price from ~200 blocks ago
+    
+    // Get EMA30 price
+    const priceUrl = `https://${network}.subscan.io/tools/price_converter?value=1&type=block&from=${token}&to=USD&time=${block}`;
+    const priceRes = await fetch(priceUrl);
+    const priceText = await priceRes.text();
+    const priceMatch = priceText.match(/"ema30_average":"([0-9.]+)"/);
+    if (!priceMatch) return 0;
+    return parseFloat(priceMatch[1]);
   } catch (e) {
-    console.log("Error fetching prices:", e);
-    // Fallback to known prices
-    return { glmrUsd: 0.014, movrUsd: 0.18 };
+    console.log("Error fetching Subscan price:", e);
+    return 0;
   }
+}
+
+async function getTokenPrices(): Promise<{ glmrUsd: number; movrUsd: number }> {
+  const [glmrPrice, movrPrice] = await Promise.all([
+    fetchSubscanPrice('moonbeam', 'GLMR'),
+    fetchSubscanPrice('moonriver', 'MOVR')
+  ]);
+  return { glmrUsd: glmrPrice, movrUsd: movrPrice };
 }
 
 export async function GET() {

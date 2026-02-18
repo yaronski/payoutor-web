@@ -342,7 +342,7 @@ export interface UsdcPayoutDetails {
 }
 
 // Generate USDC transfer call data via treasury
-// Uses the new Treasury flow: treasury.spend with assetKind for multi-asset support
+// Uses treasury.spendWithId for multi-asset treasury payouts on Moonbeam
 async function generateUsdcProposal(
   recipient: string,
   usdcAmount: number,
@@ -358,31 +358,15 @@ async function generateUsdcProposal(
   // USDC has 6 decimals
   const amountRaw = BigInt(Math.floor(usdcAmount * 1e6));
   
-  // Build the asset kind for treasury.spend
-  // USDC on AssetHub: parents:1, parachain:1000, pallet:50, generalIndex:1984
-  // The assetKind is a VersionedMultiLocation with the asset ID and amount
-  const assetKind = {
-    V3: {
-      id: {
-        Concrete: {
-          parents: 0,
-          interior: {
-            X2: [
-              { PalletInstance: 50 },
-              { GeneralIndex: 1984 }  // USDC asset ID on AssetHub
-            ]
-          }
-        }
-      },
-      fun: {
-        Fungible: amountRaw
-      }
-    }
-  };
+  // xcUSDC asset ID on Moonbeam/AssetHub
+  // This is the mapped asset ID for xcUSDC: 166377000701797186346254371275954761085
+  const assetId = BigInt('166377000701797186346254371275954761085');
   
-  // Use treasury.spend for multi-asset treasury payouts
-  const treasuryCall = api.tx.treasury.spend(
-    assetKind,
+  // Use treasury.spendWithId for multi-asset treasury payouts
+  // Parameters: assetId (u128), amount (u128), beneficiary (AccountId)
+  const treasuryCall = api.tx.treasury.spendWithId(
+    assetId,
+    amountRaw,
     recipient
   );
   

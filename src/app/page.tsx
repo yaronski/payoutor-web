@@ -355,22 +355,21 @@ export default function Home() {
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
                   {payoutType === "native" ? (
                     <>
-                      <div style={{ display: 'grid', gridTemplateColumns: '70px 1fr auto', gap: 8, alignItems: 'center' }}>
+                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 4, alignItems: 'center' }}>
                         <span style={{ color: '#39ff14', textShadow: '0 0 4px #39ff14' }}>Moonbeam</span>
                         <span style={{ fontVariantNumeric: 'tabular-nums', textAlign: 'right' }}>{treasuryBalances.glmr === "Fetching..." ? "Fetching..." : treasuryBalances.glmr + " GLMR"}</span>
-                        <span style={{ fontVariantNumeric: 'tabular-nums', textAlign: 'right', color: '#6b7280', minWidth: 90 }}>{treasuryBalances.glmrUsd === "Fetching..." ? "" : "$ " + treasuryBalances.glmrUsd}</span>
+                        <span style={{ fontVariantNumeric: 'tabular-nums', textAlign: 'right', color: '#6b7280' }}>{treasuryBalances.glmrUsd === "Fetching..." ? "" : "$ " + treasuryBalances.glmrUsd}</span>
                       </div>
-                      <div style={{ display: 'grid', gridTemplateColumns: '70px 1fr auto', gap: 8, alignItems: 'center' }}>
+                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 4, alignItems: 'center' }}>
                         <span style={{ color: '#39ff14', textShadow: '0 0 4px #39ff14' }}>Moonriver</span>
                         <span style={{ fontVariantNumeric: 'tabular-nums', textAlign: 'right' }}>{treasuryBalances.movr === "Fetching..." ? "Fetching..." : treasuryBalances.movr + " MOVR"}</span>
-                        <span style={{ fontVariantNumeric: 'tabular-nums', textAlign: 'right', color: '#6b7280', minWidth: 90 }}>{treasuryBalances.movrUsd === "Fetching..." ? "" : "$ " + treasuryBalances.movrUsd}</span>
+                        <span style={{ fontVariantNumeric: 'tabular-nums', textAlign: 'right', color: '#6b7280' }}>{treasuryBalances.movrUsd === "Fetching..." ? "" : "$ " + treasuryBalances.movrUsd}</span>
                       </div>
                     </>
                   ) : (
-                    <div style={{ display: 'grid', gridTemplateColumns: '70px 1fr auto', gap: 8, alignItems: 'center' }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 4, alignItems: 'center' }}>
                       <span style={{ color: '#39ff14', textShadow: '0 0 4px #39ff14' }}>Moonbeam</span>
                       <span style={{ fontVariantNumeric: 'tabular-nums', textAlign: 'right' }}>{treasuryBalances.usdc === "Fetching..." ? "Fetching..." : treasuryBalances.usdc + " USDC"}</span>
-                      <span style={{ fontVariantNumeric: 'tabular-nums', textAlign: 'right', color: '#6b7280', minWidth: 90 }}>{treasuryBalances.usdc === "Fetching..." ? "" : "$ " + treasuryBalances.usdc.replace(/,/g, '')}</span>
                     </div>
                   )}
                 </div>
