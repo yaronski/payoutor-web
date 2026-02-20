@@ -225,7 +225,7 @@ We've captured 30d EMA prices at [$${glmrPrice.toFixed(4)}](${glmrPriceLink}) fo
 Both proposals were put on-chain moments ago and are currently awaiting additional votes of members of the Treasury Council. Expect their confirmations and payouts to hit your wallets *very* soon.
 
 Thank you for your contributions to the Moonbeam ecosystem — Much appreciated!
-@yaron`;
+yaron`;
 
   return {
     summary,
@@ -440,7 +440,7 @@ Your payout of USD ${input.usdAmount.toFixed(2)} will be sent as ${usdcAmount.to
 The proposal has been submitted on-chain and is awaiting approval from 3 Treasury Council members. This is expected to happen very soon.
 
 Thank you for your contributions to the Moonbeam ecosystem — Much appreciated!
-@yaron`;
+yaron`;
   
   return {
     summary,
