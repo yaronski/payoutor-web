@@ -212,12 +212,15 @@ export async function calculatePayout(input: PayoutInput): Promise<PayoutDetails
     fxLine = `Your payout is a grand total of USD ${formatNumber(input.usdAmount)}.`;
   }
 
+  const glmrPriceLink = `https://moonbeam.subscan.io/tools/price_converter?value=1&type=block&from=GLMR&to=USD&time=${moonbeamBlock}`;
+  const movrPriceLink = `https://moonriver.subscan.io/tools/price_converter?value=1&type=block&from=MOVR&to=USD&time=${moonriverBlock}`;
+  
   const forumReply = `Hey @${input.recipient.slice(0, 6)}...${input.recipient.slice(-4)}
 
 ${fxLine}
 
 That USD total was divided between GLMR and MOVR tokens in a ${glmrRatioPct}:${movrRatioPct} ratio.
-We've captured 30d EMA prices at $${glmrPrice.toFixed(4)} (https://moonbeam.subscan.io/tools/price_converter?value=1&type=block&from=GLMR&to=USD&time=${moonbeamBlock}) for GLMR at block ${moonbeamBlock} (https://moonbeam.subscan.io/block/${moonbeamBlock}) and $${movrPrice.toFixed(4)} (https://moonriver.subscan.io/tools/price_converter?value=1&type=block&from=MOVR&to=USD&time=${moonriverBlock}) for MOVR at block ${moonriverBlock} (https://moonriver.subscan.io/block/${moonriverBlock}). This will result in a payout of ${formatTokenAmount(glmrAmount)} GLMR and ${formatTokenAmount(movrAmount)} MOVR.
+We've captured 30d EMA prices at [$${glmrPrice.toFixed(4)}](${glmrPriceLink}) for GLMR at block ${moonbeamBlock} and [$${movrPrice.toFixed(4)}](${movrPriceLink}) for MOVR at block ${moonriverBlock}. This will result in a payout of ${formatTokenAmount(glmrAmount)} GLMR and ${formatTokenAmount(movrAmount)} MOVR.
 
 Both proposals were put on-chain moments ago and are currently awaiting additional votes of members of the Treasury Council. Expect their confirmations and payouts to hit your wallets *very* soon.
 
