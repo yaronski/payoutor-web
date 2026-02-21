@@ -60,6 +60,8 @@ export interface PayoutDetails {
   moonriverBlock: number;
   moonbeamProposalIndex: number;
   moonriverProposalIndex: number;
+  moonbeamSpendIndex: number;
+  moonriverSpendIndex: number;
   glmrCallData: {
     treasuryCallHex: string;
     treasuryCallHash: string;
@@ -136,6 +138,16 @@ async function fetchProposalCount(network: 'moonbeam' | 'moonriver'): Promise<nu
   return Number(proposalCount);
 }
 
+// Helper: fetch current treasury spend count
+async function fetchSpendCount(network: 'moonbeam' | 'moonriver'): Promise<number> {
+  const wsProvider = new WsProvider(network === 'moonbeam' ? 'wss://wss.api.moonbeam.network' : 'wss://wss.api.moonriver.moonbeam.network');
+  const api = await ApiPromise.create({ provider: wsProvider });
+  await api.isReady;
+  const spendCount = await api.query.treasury.spendCount();
+  await api.disconnect();
+  return Number(spendCount);
+}
+
 
 
 // Calculate payout split
@@ -149,6 +161,9 @@ export async function calculatePayout(input: PayoutInput): Promise<PayoutDetails
   // Fetch current proposal counts (next index = count)
   const moonbeamProposalIndex = await fetchProposalCount('moonbeam');
   const moonriverProposalIndex = await fetchProposalCount('moonriver');
+  // Fetch current spend counts (next spend index = count)
+  const moonbeamSpendIndex = await fetchSpendCount('moonbeam');
+  const moonriverSpendIndex = await fetchSpendCount('moonriver');
   // USD splits
   const glmrUsd = input.usdAmount * input.config.glmrRatio;
   const movrUsd = input.usdAmount * input.config.movrRatio;
@@ -178,9 +193,9 @@ export async function calculatePayout(input: PayoutInput): Promise<PayoutDetails
   const glmrCloseCallData = await generateCloseCall(moonbeamProposalIndex, input.config.moonbeamWs);
   const movrCloseCallData = await generateCloseCall(moonriverProposalIndex, input.config.moonriverWs);
   
-  // Payout call data for claiming treasury funds
-  const glmrPayoutCallData = await generatePayoutCall(moonbeamProposalIndex, input.config.moonbeamWs);
-  const movrPayoutCallData = await generatePayoutCall(moonriverProposalIndex, input.config.moonriverWs);
+  // Payout call data for claiming treasury funds (uses spend index, not proposal index)
+  const glmrPayoutCallData = await generatePayoutCall(moonbeamSpendIndex, input.config.moonbeamWs);
+  const movrPayoutCallData = await generatePayoutCall(moonriverSpendIndex, input.config.moonriverWs);
   
   let glmrProxyCallData = undefined;
   let movrProxyCallData = undefined;
@@ -264,6 +279,8 @@ yaron`;
     moonriverBlock,
     moonbeamProposalIndex,
     moonriverProposalIndex,
+    moonbeamSpendIndex,
+    moonriverSpendIndex,
     glmrCallData,
     movrCallData,
     glmrVoteCallData,
@@ -400,6 +417,7 @@ export interface UsdcPayoutDetails {
   usdcAmount: number;
   moonbeamBlock: number;
   moonbeamProposalIndex: number;
+  moonbeamSpendIndex: number;
   usdcCallData: {
     treasuryCallHex: string;
     treasuryCallHash: string;
@@ -473,6 +491,7 @@ async function generateUsdcProposal(
 export async function calculateUsdcPayout(input: UsdcPayoutInput): Promise<UsdcPayoutDetails> {
   const moonbeamBlock = await fetchRecentBlock('moonbeam');
   const moonbeamProposalIndex = await fetchProposalCount('moonbeam');
+  const moonbeamSpendIndex = await fetchSpendCount('moonbeam');
   
   const usdcAmount = input.usdAmount; // USDC is 1:1 with USD
   
@@ -489,7 +508,7 @@ export async function calculateUsdcPayout(input: UsdcPayoutInput): Promise<UsdcP
   
   const usdcCloseCallData = await generateCloseCall(moonbeamProposalIndex, input.config.moonbeamWs);
   
-  const usdcPayoutCallData = await generatePayoutCall(moonbeamProposalIndex, input.config.moonbeamWs);
+  const usdcPayoutCallData = await generatePayoutCall(moonbeamSpendIndex, input.config.moonbeamWs);
   
   const placeholderHash = '0x0000000000000000000000000000000000000000000000000000000000000000';
   const usdcVoteUrl = `https://polkadot.js.org/apps/?rpc=wss%3A%2F%2Fwss.api.moonbeam.network#/extrinsics/decode/${usdcVoteCallData.voteCallHex}`;
@@ -529,6 +548,7 @@ yaron`;
     usdcAmount,
     moonbeamBlock,
     moonbeamProposalIndex,
+    moonbeamSpendIndex,
     usdcCallData,
     usdcVoteCallData,
     usdcCloseCallData,

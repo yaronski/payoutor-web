@@ -98,6 +98,8 @@ export default function Home() {
     usdcAmount?: number;
     moonbeamProposalIndex?: number;
     moonriverProposalIndex?: number;
+    moonbeamSpendIndex?: number;
+    moonriverSpendIndex?: number;
     glmrCallData?: {
       treasuryCallHex: string;
       treasuryCallHash: string;
@@ -1008,47 +1010,44 @@ export default function Home() {
                   </div>
 
                   <div style={{ fontSize: 14, fontWeight: 600, color: 'white', marginBottom: 10 }}>6. Claim Funds</div>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 8 }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 20 }}>
                     {result.payoutType === "usdc" ? (
                       <>
-                        {result.usdcPayoutCallData && result.moonbeamProposalIndex !== undefined && (
+                        {result.usdcPayoutCallData && result.moonbeamSpendIndex !== undefined && (
                           <a 
                             href={`https://polkadot.js.org/apps/?rpc=wss%3A%2F%2Fwss.api.moonbeam.network#/extrinsics/decode/${result.usdcPayoutCallData.payoutCallHex}`}
                             target="_blank"
                             rel="noopener noreferrer"
                             style={{ display: 'block', padding: '10px 14px', background: '#1a1d1f', borderRadius: 6, color: '#39ff14', textDecoration: 'none', fontSize: 13, fontFamily: 'monospace', border: '1px solid #2d2d2d', textShadow: '0 0 4px #39ff14' }}
                           >
-                            Moonbeam: Claim Funds (Spend #{result.moonbeamProposalIndex})
+                            Moonbeam: Claim Funds (Spend #{result.moonbeamSpendIndex})
                           </a>
                         )}
                       </>
                     ) : (
                       <>
-                        {result.glmrPayoutCallData && result.moonbeamProposalIndex !== undefined && (
+                        {result.glmrPayoutCallData && result.moonbeamSpendIndex !== undefined && (
                           <a 
                             href={`https://polkadot.js.org/apps/?rpc=wss%3A%2F%2Fwss.api.moonbeam.network#/extrinsics/decode/${result.glmrPayoutCallData.payoutCallHex}`}
                             target="_blank"
                             rel="noopener noreferrer"
                             style={{ display: 'block', padding: '10px 14px', background: '#1a1d1f', borderRadius: 6, color: '#39ff14', textDecoration: 'none', fontSize: 13, fontFamily: 'monospace', border: '1px solid #2d2d2d', textShadow: '0 0 4px #39ff14' }}
                           >
-                            Moonbeam: Claim Funds (Spend #{result.moonbeamProposalIndex})
+                            Moonbeam: Claim Funds (Spend #{result.moonbeamSpendIndex})
                           </a>
                         )}
-                        {result.movrPayoutCallData && result.moonriverProposalIndex !== undefined && (
+                        {result.movrPayoutCallData && result.moonriverSpendIndex !== undefined && (
                           <a 
                             href={`https://polkadot.js.org/apps/?rpc=wss%3A%2F%2Fwss.api.moonriver.moonbeam.network#/extrinsics/decode/${result.movrPayoutCallData.payoutCallHex}`}
                             target="_blank"
                             rel="noopener noreferrer"
                             style={{ display: 'block', padding: '10px 14px', background: '#1a1d1f', borderRadius: 6, color: '#39ff14', textDecoration: 'none', fontSize: 13, fontFamily: 'monospace', border: '1px solid #2d2d2d', textShadow: '0 0 4px #39ff14' }}
                           >
-                            Moonriver: Claim Funds (Spend #{result.moonriverProposalIndex})
+                            Moonriver: Claim Funds (Spend #{result.moonriverSpendIndex})
                           </a>
                         )}
                       </>
                     )}
-                  </div>
-                  <div style={{ fontSize: 11, color: '#9CA3AF', marginBottom: 20 }}>
-                    Find spend index: <a href="https://moonbeam.subscan.io/treasury_spend" target="_blank" rel="noopener noreferrer" style={{ color: '#39ff14' }}>Subscan Treasury Spend</a>
                   </div>
                 </div>
 
