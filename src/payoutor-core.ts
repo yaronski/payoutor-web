@@ -78,6 +78,18 @@ export interface PayoutDetails {
   movrVoteCallData: {
     voteCallHex: string;
   };
+  glmrCloseCallData: {
+    closeCallHex: string;
+  };
+  movrCloseCallData: {
+    closeCallHex: string;
+  };
+  glmrPayoutCallData: {
+    payoutCallHex: string;
+  };
+  movrPayoutCallData: {
+    payoutCallHex: string;
+  };
   glmrProxyCallData?: {
     treasuryCallHex: string;
     treasuryCallHash: string;
@@ -161,6 +173,14 @@ export async function calculatePayout(input: PayoutInput): Promise<PayoutDetails
   // Vote call data for voting AYE on the proposals
   const glmrVoteCallData = await generateVoteCall(moonbeamProposalIndex, input.config.moonbeamWs);
   const movrVoteCallData = await generateVoteCall(moonriverProposalIndex, input.config.moonriverWs);
+  
+  // Close call data for closing proposals after voting
+  const glmrCloseCallData = await generateCloseCall(moonbeamProposalIndex, input.config.moonbeamWs);
+  const movrCloseCallData = await generateCloseCall(moonriverProposalIndex, input.config.moonriverWs);
+  
+  // Payout call data for claiming treasury funds
+  const glmrPayoutCallData = await generatePayoutCall(moonbeamProposalIndex, input.config.moonbeamWs);
+  const movrPayoutCallData = await generatePayoutCall(moonriverProposalIndex, input.config.moonriverWs);
   
   let glmrProxyCallData = undefined;
   let movrProxyCallData = undefined;
@@ -248,6 +268,10 @@ yaron`;
     movrCallData,
     glmrVoteCallData,
     movrVoteCallData,
+    glmrCloseCallData,
+    movrCloseCallData,
+    glmrPayoutCallData,
+    movrPayoutCallData,
     glmrProxyCallData,
     movrProxyCallData,
     recipient: input.recipient,
@@ -308,6 +332,52 @@ export async function generateVoteCall(
   return result;
 }
 
+// Generate close extrinsic call data (for closing a council proposal after voting)
+export async function generateCloseCall(
+  proposalIndex: number,
+  wsEndpoint: string
+) {
+  const wsProvider = new WsProvider(wsEndpoint);
+  const api = await ApiPromise.create({ provider: wsProvider });
+  await api.isReady;
+  
+  const placeholderHash = '0x0000000000000000000000000000000000000000000000000000000000000000';
+  const refTime = 5000000000;
+  const proofSize = 100000;
+  const lengthBound = 10000;
+  
+  const closeCall = api.tx.treasuryCouncilCollective.close(
+    placeholderHash,
+    proposalIndex,
+    { refTime, proofSize },
+    lengthBound
+  );
+  
+  const result = {
+    closeCallHex: closeCall.method.toHex(),
+  };
+  await api.disconnect();
+  return result;
+}
+
+// Generate payout extrinsic call data (for claiming treasury funds)
+export async function generatePayoutCall(
+  spendIndex: number,
+  wsEndpoint: string
+) {
+  const wsProvider = new WsProvider(wsEndpoint);
+  const api = await ApiPromise.create({ provider: wsProvider });
+  await api.isReady;
+  
+  const payoutCall = api.tx.treasury.payout(spendIndex);
+  
+  const result = {
+    payoutCallHex: payoutCall.method.toHex(),
+  };
+  await api.disconnect();
+  return result;
+}
+
 // USDC on Moonbeam
 const USDC_MOONBEAM = '0xFFfffffF7D2B0B761Af01Ca8e25242976ac0aD7D';
 
@@ -338,6 +408,12 @@ export interface UsdcPayoutDetails {
   };
   usdcVoteCallData: {
     voteCallHex: string;
+  };
+  usdcCloseCallData: {
+    closeCallHex: string;
+  };
+  usdcPayoutCallData: {
+    payoutCallHex: string;
   };
   proxy?: boolean;
   proxyAddress?: string;
@@ -411,6 +487,10 @@ export async function calculateUsdcPayout(input: UsdcPayoutInput): Promise<UsdcP
   
   const usdcVoteCallData = await generateVoteCall(moonbeamProposalIndex, input.config.moonbeamWs);
   
+  const usdcCloseCallData = await generateCloseCall(moonbeamProposalIndex, input.config.moonbeamWs);
+  
+  const usdcPayoutCallData = await generatePayoutCall(moonbeamProposalIndex, input.config.moonbeamWs);
+  
   const placeholderHash = '0x0000000000000000000000000000000000000000000000000000000000000000';
   const usdcVoteUrl = `https://polkadot.js.org/apps/?rpc=wss%3A%2F%2Fwss.api.moonbeam.network#/extrinsics/decode/${usdcVoteCallData.voteCallHex}`;
   
@@ -451,6 +531,8 @@ yaron`;
     moonbeamProposalIndex,
     usdcCallData,
     usdcVoteCallData,
+    usdcCloseCallData,
+    usdcPayoutCallData,
     proxy: input.proxy,
     proxyAddress: input.proxyAddress,
     recipient: input.recipient,
