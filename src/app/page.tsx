@@ -828,7 +828,8 @@ export default function Home() {
                     {copyNotification}
                   </div>
                 )}
-                {/* Voting Links Section - different for USDC vs Native */}
+                
+                {/* Treasury Council Steps */}
                 <div style={{ marginBottom: 24, paddingBottom: 20, borderBottom: '1px solid #2d2d2d' }}>
                   <div style={{ fontSize: 14, fontWeight: 600, color: 'white', marginBottom: 10 }}>1. Submit Proposals</div>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 20 }}>
@@ -872,7 +873,7 @@ export default function Home() {
                   </div>
 
                   <div style={{ fontSize: 14, fontWeight: 600, color: 'white', marginBottom: 10 }}>2. Vote AYE</div>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 8 }}>
                     {result.payoutType === "usdc" ? (
                       <>
                         {result.usdcVoteCallData && result.moonbeamProposalIndex !== undefined && (
@@ -911,12 +912,85 @@ export default function Home() {
                       </>
                     )}
                   </div>
-                  <div style={{ marginTop: 12, fontSize: 11, color: '#6b7280', fontStyle: 'italic' }}>
+                  <div style={{ fontSize: 11, color: '#6b7280', fontStyle: 'italic', marginBottom: 20 }}>
                     Note: Before voting, replace the placeholder hash (0x0000...) in Polkadot.js with the actual on-chain proposal hash
+                  </div>
+
+                  <div style={{ fontSize: 14, fontWeight: 600, color: 'white', marginBottom: 10 }}>3. Check for 3 AYE TC member votes</div>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 20 }}>
+                    <a 
+                      href="https://polkadot.js.org/apps/?rpc=wss%3A%2F%2Fwss.api.moonbeam.network#/chainstate"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      style={{ display: 'block', padding: '10px 14px', background: '#1a1d1f', borderRadius: 6, color: '#39ff14', textDecoration: 'none', fontSize: 13, fontFamily: 'monospace', border: '1px solid #2d2d2d', textShadow: '0 0 4px #39ff14' }}
+                    >
+                      Moonbeam: Check voting state (treasuryCouncilCollective.voting)
+                    </a>
+                    {result.payoutType !== "usdc" && result.moonriverProposalIndex !== undefined && (
+                      <a 
+                        href="https://polkadot.js.org/apps/?rpc=wss%3A%2F%2Fwss.api.moonriver.moonbeam.network#/chainstate"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        style={{ display: 'block', padding: '10px 14px', background: '#1a1d1f', borderRadius: 6, color: '#39ff14', textDecoration: 'none', fontSize: 13, fontFamily: 'monospace', border: '1px solid #2d2d2d', textShadow: '0 0 4px #39ff14' }}
+                      >
+                        Moonriver: Check voting state (treasuryCouncilCollective.voting)
+                      </a>
+                    )}
+                  </div>
+
+                  <div style={{ fontSize: 14, fontWeight: 600, color: 'white', marginBottom: 10 }}>4. Close Proposal (treasuryCouncilCollective.close)</div>
+                  <div style={{ background: '#1a1d1f', borderRadius: 6, padding: 12, marginBottom: 20, border: '1px solid #2d2d2d' }}>
+                    <div style={{ fontSize: 12, color: '#9CA3AF', marginBottom: 8 }}>Moonbeam:</div>
+                    <div style={{ fontSize: 11, fontFamily: 'monospace', color: '#39ff14', marginBottom: 4 }}>
+                      Proposal hash: <span style={{ color: '#ff6b6b' }}>0x0000000000000000000000000000000000000000000000000000000000000000</span>
+                    </div>
+                    <div style={{ fontSize: 11, fontFamily: 'monospace', color: '#39ff14', marginBottom: 4 }}>
+                      Proposal index: <span style={{ color: 'white' }}>{result.moonbeamProposalIndex}</span>
+                    </div>
+                    <div style={{ fontSize: 11, fontFamily: 'monospace', color: '#39ff14', marginBottom: 4 }}>
+                      Weight (refTime): <span style={{ color: 'white' }}>5000000000</span>
+                    </div>
+                    <div style={{ fontSize: 11, fontFamily: 'monospace', color: '#39ff14', marginBottom: 4 }}>
+                      Weight (proofSize): <span style={{ color: 'white' }}>100000</span>
+                    </div>
+                    <div style={{ fontSize: 11, fontFamily: 'monospace', color: '#39ff14', marginBottom: 8 }}>
+                      Length bound: <span style={{ color: 'white' }}>10000</span>
+                    </div>
+                    {result.payoutType !== "usdc" && result.moonriverProposalIndex !== undefined && (
+                      <>
+                        <div style={{ fontSize: 12, color: '#9CA3AF', marginBottom: 8, marginTop: 12 }}>Moonriver:</div>
+                        <div style={{ fontSize: 11, fontFamily: 'monospace', color: '#39ff14', marginBottom: 4 }}>
+                          Proposal hash: <span style={{ color: '#ff6b6b' }}>0x0000000000000000000000000000000000000000000000000000000000000000</span>
+                        </div>
+                        <div style={{ fontSize: 11, fontFamily: 'monospace', color: '#39ff14', marginBottom: 8 }}>
+                          Proposal index: <span style={{ color: 'white' }}>{result.moonriverProposalIndex}</span>
+                        </div>
+                      </>
+                    )}
+                    <div style={{ fontSize: 11, color: '#ff6b6b', fontStyle: 'italic', marginTop: 8 }}>
+                      ⚠️ Replace placeholder proposal hash (0x0000...) with actual on-chain proposal hash before submitting!
+                    </div>
+                  </div>
+
+                  <div style={{ fontSize: 14, fontWeight: 600, color: 'white', marginBottom: 10 }}>5. Claim Funds (treasury.payout)</div>
+                  <div style={{ background: '#1a1d1f', borderRadius: 6, padding: 12, marginBottom: 8, border: '1px solid #2d2d2d' }}>
+                    <div style={{ fontSize: 11, fontFamily: 'monospace', color: '#39ff14', marginBottom: 8 }}>
+                      Index: <span style={{ color: 'white' }}>{result.payoutType === "usdc" ? result.moonbeamProposalIndex : `${result.moonbeamProposalIndex} (Moonbeam), ${result.moonriverProposalIndex} (Moonriver)`}</span>
+                    </div>
+                    <div style={{ fontSize: 11, color: '#9CA3AF' }}>
+                      Find spend index: <a href="https://moonbeam.subscan.io/treasury_spend" target="_blank" rel="noopener noreferrer" style={{ color: '#39ff14' }}>Subscan Treasury Spend</a>
+                    </div>
                   </div>
                 </div>
 
-                {/* Original Summary */}
+                {/* Forum Reply Section */}
+                <div style={{ marginBottom: 24, paddingBottom: 20, borderBottom: '1px solid #2d2d2d' }}>
+                  <div style={{ fontSize: 14, fontWeight: 600, color: 'white', marginBottom: 10 }}>6. Reply</div>
+                  <pre style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word', fontSize: 'clamp(11px, 2.5vw, 13px)', background: 'none', color: '#39ff14', padding: 12, marginBottom: 12, fontFamily: 'monospace', textShadow: '0 0 0px #39ff14, 0 0 4px #39ff14' }}>{renderSummaryWithLinks(result.forumReply)}</pre>
+                  <button onClick={() => handleCopy(result.forumReply, 'Forum reply copied!')} style={{ fontSize: 14, padding: '8px 16px', borderRadius: 6, background: '#3D3D3D', color: 'white', border: 'none', fontWeight: 600, cursor: 'pointer', boxShadow: '0 2px 8px #1e90ff22', width: '100%' }}>Copy Forum Reply</button>
+                </div>
+
+                {/* Original Summary - at the end */}
                 <pre style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word', fontSize: 'clamp(11px, 2.5vw, 14px)', background: 'none', color: '#39ff14', marginBottom: 16, fontFamily: 'monospace', textShadow: '0 0 0px #39ff14, 0 0 4px #39ff14', overflowX: 'auto' }}>{renderSummaryWithLinks(result.summary)}</pre>
                 <button onClick={() => handleCopy(result.summary, 'Summary copied!')} style={{ marginBottom: 18, fontSize: 14, padding: '8px 16px', borderRadius: 6, background: '#3D3D3D', color: 'white', border: 'none', fontWeight: 600, cursor: 'pointer', boxShadow: '0 2px 8px #1e90ff22', width: '100%' }}>Copy Full Summary</button>
                 <details>
@@ -952,13 +1026,6 @@ export default function Home() {
                     </>
                   )}
                 </details>
-
-                {/* Forum Reply Section - at the end */}
-                <div style={{ marginTop: 24, paddingTop: 20, borderTop: '1px solid #2d2d2d' }}>
-                  <div style={{ fontSize: 14, fontWeight: 600, color: '#9CA3AF', marginBottom: 10 }}>3. Reply</div>
-                  <pre style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word', fontSize: 'clamp(11px, 2.5vw, 13px)', background: 'none', color: '#39ff14', padding: 12, marginBottom: 12, fontFamily: 'monospace', textShadow: '0 0 0px #39ff14, 0 0 4px #39ff14' }}>{renderSummaryWithLinks(result.forumReply)}</pre>
-                  <button onClick={() => handleCopy(result.forumReply, 'Forum reply copied!')} style={{ fontSize: 14, padding: '8px 16px', borderRadius: 6, background: '#3D3D3D', color: 'white', border: 'none', fontWeight: 600, cursor: 'pointer', boxShadow: '0 2px 8px #1e90ff22', width: '100%' }}>Copy Forum Reply</button>
-                </div>
               </div>
             )}
           </div>
