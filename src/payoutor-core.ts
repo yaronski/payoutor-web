@@ -128,24 +128,17 @@ async function fetchEma30Price(network: 'moonbeam' | 'moonriver', token: 'GLMR' 
   return parseFloat(match[1]);
 }
 
-// Helper: fetch current council proposal count
-async function fetchProposalCount(network: 'moonbeam' | 'moonriver'): Promise<number> {
+// Helper: fetch current council proposal count and treasury spend count in one connection
+async function fetchCounts(network: 'moonbeam' | 'moonriver'): Promise<{ proposalCount: number; spendCount: number }> {
   const wsProvider = new WsProvider(network === 'moonbeam' ? 'wss://wss.api.moonbeam.network' : 'wss://wss.api.moonriver.moonbeam.network');
   const api = await ApiPromise.create({ provider: wsProvider });
   await api.isReady;
-  const proposalCount = await api.query.treasuryCouncilCollective.proposalCount();
+  const [proposalCount, spendCount] = await Promise.all([
+    api.query.treasuryCouncilCollective.proposalCount(),
+    api.query.treasury.spendCount(),
+  ]);
   await api.disconnect();
-  return Number(proposalCount);
-}
-
-// Helper: fetch current treasury spend count
-async function fetchSpendCount(network: 'moonbeam' | 'moonriver'): Promise<number> {
-  const wsProvider = new WsProvider(network === 'moonbeam' ? 'wss://wss.api.moonbeam.network' : 'wss://wss.api.moonriver.moonbeam.network');
-  const api = await ApiPromise.create({ provider: wsProvider });
-  await api.isReady;
-  const spendCount = await api.query.treasury.spendCount();
-  await api.disconnect();
-  return Number(spendCount);
+  return { proposalCount: Number(proposalCount), spendCount: Number(spendCount) };
 }
 
 
@@ -158,12 +151,15 @@ export async function calculatePayout(input: PayoutInput): Promise<PayoutDetails
   // Fetch prices
   const glmrPrice = await fetchEma30Price('moonbeam', 'GLMR', moonbeamBlock);
   const movrPrice = await fetchEma30Price('moonriver', 'MOVR', moonriverBlock);
-  // Fetch current proposal counts (next index = count)
-  const moonbeamProposalIndex = await fetchProposalCount('moonbeam');
-  const moonriverProposalIndex = await fetchProposalCount('moonriver');
-  // Fetch current spend counts (next spend index = count)
-  const moonbeamSpendIndex = await fetchSpendCount('moonbeam');
-  const moonriverSpendIndex = await fetchSpendCount('moonriver');
+  // Fetch current proposal counts and spend counts
+  const [moonbeamCounts, moonriverCounts] = await Promise.all([
+    fetchCounts('moonbeam'),
+    fetchCounts('moonriver'),
+  ]);
+  const moonbeamProposalIndex = moonbeamCounts.proposalCount;
+  const moonriverProposalIndex = moonriverCounts.proposalCount;
+  const moonbeamSpendIndex = moonbeamCounts.spendCount;
+  const moonriverSpendIndex = moonriverCounts.spendCount;
   // USD splits
   const glmrUsd = input.usdAmount * input.config.glmrRatio;
   const movrUsd = input.usdAmount * input.config.movrRatio;
@@ -490,8 +486,9 @@ async function generateUsdcProposal(
 // Calculate USDC payout
 export async function calculateUsdcPayout(input: UsdcPayoutInput): Promise<UsdcPayoutDetails> {
   const moonbeamBlock = await fetchRecentBlock('moonbeam');
-  const moonbeamProposalIndex = await fetchProposalCount('moonbeam');
-  const moonbeamSpendIndex = await fetchSpendCount('moonbeam');
+  const moonbeamCounts = await fetchCounts('moonbeam');
+  const moonbeamProposalIndex = moonbeamCounts.proposalCount;
+  const moonbeamSpendIndex = moonbeamCounts.spendCount;
   
   const usdcAmount = input.usdAmount; // USDC is 1:1 with USD
   
