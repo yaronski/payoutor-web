@@ -537,6 +537,28 @@ export default function Home() {
                   opacity: 0.7;
                 }
               `}</style>
+              {payoutType === "native" && (
+                <div style={{ marginTop: 10 }}>
+                  <label style={{ display: "flex", alignItems: "center", gap: 8, fontWeight: 500, fontSize: 14 }}>
+                    <input
+                      type="checkbox"
+                      checked={separateMoonriverAddress}
+                      onChange={e => setSeparateMoonriverAddress(e.target.checked)}
+                    />
+                    Separate Moonriver Address
+                  </label>
+                  {separateMoonriverAddress && (
+                    <input
+                      type="text"
+                      value={moonriverRecipient}
+                      onChange={e => setMoonriverRecipient(e.target.value)}
+                      placeholder="0x... (for MOVR payout)"
+                      required={separateMoonriverAddress}
+                      style={{ width: '100%', padding: 8, fontSize: 16, color: '#ffffff', marginTop: 8 }}
+                    />
+                  )}
+                </div>
+              )}
             </div>
             {payoutType === "native" && (
             <div style={{ marginBottom: 20 }}>
@@ -778,44 +800,16 @@ export default function Home() {
                 Proxy
               </label>
               {proxy && (
-                <div style={{ marginTop: 10 }}>
-                  <div style={{ fontWeight: 600, marginBottom: 6 }}>Proxy Address</div>
-                  <input
-                    type="text"
-                    value={proxyAddress}
-                    onChange={e => setProxyAddress(e.target.value)}
-                    placeholder="0x..."
-                    required={proxy}
-                    style={{ width: '100%', padding: 8, fontSize: 16 }}
-                  />
-                </div>
+                <input
+                  type="text"
+                  value={proxyAddress}
+                  onChange={e => setProxyAddress(e.target.value)}
+                  placeholder="0x..."
+                  required={proxy}
+                  style={{ width: '100%', padding: 8, fontSize: 16, marginTop: 10 }}
+                />
               )}
             </div>
-            {payoutType === "native" && (
-              <div style={{ marginBottom: 20 }}>
-                <label style={{ display: "flex", alignItems: "center", gap: 8, fontWeight: 600 }}>
-                  <input
-                    type="checkbox"
-                    checked={separateMoonriverAddress}
-                    onChange={e => setSeparateMoonriverAddress(e.target.checked)}
-                  />
-                  Separate Moonriver Address
-                </label>
-                {separateMoonriverAddress && (
-                  <div style={{ marginTop: 10 }}>
-                    <div style={{ fontWeight: 600, marginBottom: 6 }}>Moonriver Recipient</div>
-                    <input
-                      type="text"
-                      value={moonriverRecipient}
-                      onChange={e => setMoonriverRecipient(e.target.value)}
-                      placeholder="0x... (for MOVR payout)"
-                      required={separateMoonriverAddress}
-                      style={{ width: '100%', padding: 8, fontSize: 16, color: '#ffffff' }}
-                    />
-                  </div>
-                )}
-              </div>
-            )}
             <button
               type="submit"
               disabled={isSubmitDisabled}
