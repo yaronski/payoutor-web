@@ -4,7 +4,7 @@ import { calculatePayout, calculateUsdcPayout, PayoutConfig } from '../../../pay
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { payoutType, usdAmount, recipient, glmrRatio, movrRatio, councilThreshold, councilLengthBound, moonbeamWs, moonriverWs, proxy, proxyAddress } = body;
+    const { payoutType, usdAmount, recipient, glmrRatio, movrRatio, councilThreshold, councilLengthBound, moonbeamWs, moonriverWs, proxy, proxyAddress, separateMoonriverAddress, moonriverRecipient } = body;
     
     // Handle USDC payouts
     if (payoutType === "usdc") {
@@ -33,6 +33,11 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
     }
     
+    // Validate separate Moonriver address if enabled
+    if (separateMoonriverAddress && !moonriverRecipient) {
+      return NextResponse.json({ error: 'Moonriver recipient address is required when separate address is enabled' }, { status: 400 });
+    }
+    
     // Validate ratio values
     const finalGlmrRatio = glmrRatio ?? 0.5;
     const finalMovrRatio = movrRatio ?? 0.5;
@@ -58,6 +63,8 @@ export async function POST(req: NextRequest) {
       config, 
       proxy, 
       proxyAddress,
+      separateMoonriverAddress,
+      moonriverRecipient,
       inputAmount,
       inputCurrency,
       fxRate,

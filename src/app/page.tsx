@@ -79,6 +79,8 @@ export default function Home() {
   const [recipient, setRecipient] = useState("");
   const [proxy, setProxy] = useState(false);
   const [proxyAddress, setProxyAddress] = useState("");
+  const [separateMoonriverAddress, setSeparateMoonriverAddress] = useState(false);
+  const [moonriverRecipient, setMoonriverRecipient] = useState("");
   const [glmrRatio, setGlmrRatio] = useState(50); // Default 50% GLMR, 50% MOVR
   const [treasuryBalances, setTreasuryBalances] = useState<{
     usdc: string;
@@ -159,6 +161,7 @@ export default function Home() {
     };
     proxy?: boolean;
     recipient?: string;
+    moonriverRecipient?: string;
   } | null>(null);
   const [showResult, setShowResult] = useState(false);
   const [copyNotification, setCopyNotification] = useState<string | null>(null);
@@ -259,6 +262,8 @@ export default function Home() {
           recipient,
           proxy,
           proxyAddress: proxy ? proxyAddress : undefined,
+          separateMoonriverAddress,
+          moonriverRecipient: separateMoonriverAddress ? moonriverRecipient : undefined,
           glmrRatio: payoutType === "native" ? glmrRatio / 100 : 0,
           movrRatio: payoutType === "native" ? (100 - glmrRatio) / 100 : 0,
         }),
@@ -786,6 +791,31 @@ export default function Home() {
                 </div>
               )}
             </div>
+            {payoutType === "native" && (
+              <div style={{ marginBottom: 20 }}>
+                <label style={{ display: "flex", alignItems: "center", gap: 8, fontWeight: 600 }}>
+                  <input
+                    type="checkbox"
+                    checked={separateMoonriverAddress}
+                    onChange={e => setSeparateMoonriverAddress(e.target.checked)}
+                  />
+                  Separate Moonriver Address
+                </label>
+                {separateMoonriverAddress && (
+                  <div style={{ marginTop: 10 }}>
+                    <div style={{ fontWeight: 600, marginBottom: 6 }}>Moonriver Recipient</div>
+                    <input
+                      type="text"
+                      value={moonriverRecipient}
+                      onChange={e => setMoonriverRecipient(e.target.value)}
+                      placeholder="0x... (for MOVR payout)"
+                      required={separateMoonriverAddress}
+                      style={{ width: '100%', padding: 8, fontSize: 16, color: '#ffffff' }}
+                    />
+                  </div>
+                )}
+              </div>
+            )}
             <button
               type="submit"
               disabled={isSubmitDisabled}
