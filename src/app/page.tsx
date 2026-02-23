@@ -522,7 +522,7 @@ export default function Home() {
                 type="text"
                 value={recipient}
                 onChange={e => setRecipient(e.target.value)}
-                placeholder="0x..."
+                placeholder={separateMoonriverAddress ? "0x... (for GLMR payout)" : "0x..."}
                 required
                 style={{ 
                   width: '100%', 
