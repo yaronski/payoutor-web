@@ -45,8 +45,8 @@ const FX_SOURCE_REFERENCES: Record<
 };
 
 const COUNCIL_MEMBERS: Record<string, string> = {
-  "Yaron": "0x1CdC248174ec9e9c505fabDbb0E037B5AcaB5c13",
   "Simon": "0x4138574878c133d3A12009d6F54B8F26De700834",
+  "Yaron": "0x1CdC248174ec9e9c505fabDbb0E037B5AcaB5c13",
   "Member3": "0xB19CC53a12F734a9Ced967043F3B259F8b111617",
   "Member4": "0xB969639e3Cbf1e5a1d753efb2be09De4f34001f7",
   "Member5": "0xE5169Beb6241EB54813D082F643C179809F60A2F",
@@ -94,13 +94,14 @@ export default function Home() {
   const [glmrRatio, setGlmrRatio] = useState(50); // Default 50% GLMR, 50% MOVR
   
   // Documentation fields
-  const [submitterName, setSubmitterName] = useState("Yaron");
+  const [submitterName, setSubmitterName] = useState("Simon");
   const [projectLabel, setProjectLabel] = useState("");
   const [category, setCategory] = useState("Infrastructure");
   const [forumUrl, setForumUrl] = useState("");
   const [forumContent, setForumContent] = useState<string | null>(null);
   const [forumTitle, setForumTitle] = useState<string | null>(null);
   const [forumLoading, setForumLoading] = useState(false);
+  const [docsExpanded, setDocsExpanded] = useState(false);
   
   const [treasuryBalances, setTreasuryBalances] = useState<{
     usdc: string;
