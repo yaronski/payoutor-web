@@ -1536,7 +1536,7 @@ ${forumContent || ''}
                 </div>
 
                 {/* Advanced Details Section */}
-                <details style={{ marginBottom: 8 }}>
+                <details className="docs-details" style={{ marginBottom: 8 }}>
                   <summary style={{ fontSize: 13, fontWeight: 500, color: '#6b7280', cursor: 'pointer', userSelect: 'none', display: 'flex', alignItems: 'center', gap: 6 }}>
                     <span style={{ display: 'inline-block', width: 0, height: 0, borderLeft: '5px solid transparent', borderRight: '5px solid transparent', borderTop: '5px solid #6b7280', transition: 'transform 0.2s' }}></span>
                     Show advanced details
