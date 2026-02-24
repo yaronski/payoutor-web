@@ -41,7 +41,11 @@ a {
   }
 }
 
-/* Details/Summary triangle rotation - rotate right when open */
+/* Details/Summary triangle rotation */
+/* Collapsed: point right (►), Open: point down (▼) */
+details.docs-details summary span:first-child {
+  transform: rotate(-90deg);
+}
 details.docs-details[open] summary span:first-child {
-  transform: rotate(90deg);
+  transform: rotate(0deg);
 }

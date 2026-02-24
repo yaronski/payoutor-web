@@ -14,16 +14,14 @@ export async function POST(req: NextRequest) {
     }
     
     // Extract topic ID from URL
-    // URL format: https://forum.moonbeam.network/t/topic-slug/123
+    // URL format: https://forum.moonbeam.network/t/topic-slug/123 or /123/4 (with post number)
     const topicIdMatch = url.match(/\/t\/[^\/]+\/(\d+)/);
     if (!topicIdMatch) {
       return NextResponse.json({ error: 'Could not extract topic ID from URL' }, { status: 400 });
     }
     const topicId = topicIdMatch[1];
-    const postNumberMatch = url.match(/\/(\d+)$/);
-    const postNumber = postNumberMatch ? parseInt(postNumberMatch[1]) : 1;
     
-    // Use Discourse API to get topic and posts
+    // Use Discourse API to get topic and ALL posts
     const topicApiUrl = `https://forum.moonbeam.network/t/${topicId}.json`;
     
     const res = await fetch(topicApiUrl, {
@@ -34,7 +32,6 @@ export async function POST(req: NextRequest) {
     });
     
     if (!res.ok) {
-      // Fallback to HTML scraping if API fails
       return await fallbackToHtmlScraping(url);
     }
     
@@ -43,22 +40,30 @@ export async function POST(req: NextRequest) {
     // Extract title
     const title = data.title || '';
     
-    // Extract content from the specified post (or first post)
-    const postIndex = Math.max(0, (postNumber || 1) - 1);
+    // Get ALL posts from the topic
     const posts = data.post_stream?.posts || [];
-    const post = posts[postIndex] || posts[0];
     
-    if (!post || !post.cooked) {
+    if (posts.length === 0) {
       return await fallbackToHtmlScraping(url);
     }
     
-    // Convert HTML to markdown
-    let content = post.cooked;
-    content = convertHtmlToMarkdown(content);
+    // Combine all posts into one markdown document
+    let allContent = '';
+    
+    for (let i = 0; i < posts.length; i++) {
+      const post = posts[i];
+      if (post.cooked) {
+        // Add post header (except for first post)
+        if (i > 0) {
+          allContent += `\n\n---\n\n### Reply by ${post.username || 'Unknown'}\n\n`;
+        }
+        allContent += convertHtmlToMarkdown(post.cooked);
+      }
+    }
     
     return NextResponse.json({ 
       title,
-      content: content || 'Could not extract content from forum post. Please paste manually.'
+      content: allContent || 'Could not extract content from forum post. Please paste manually.'
     });
     
   } catch (error: unknown) {
@@ -92,15 +97,17 @@ async function fallbackToHtmlScraping(url: string) {
       title = titleMatch ? titleMatch[1].replace(' - Moonbeam Forum', '').trim() : '';
     }
     
-    // Try to find cooked content
+    // Try to find ALL cooked content (all posts)
     let content = '';
     const cookedMatches = html.match(/<div class="cooked"[^>]*>([\s\S]*?)<\/div>/g);
     if (cookedMatches && cookedMatches.length > 0) {
-      content = cookedMatches[0].replace(/<div class="cooked"[^>]*>/, '').replace(/<\/div>$/, '');
-    }
-    
-    if (content) {
-      content = convertHtmlToMarkdown(content);
+      for (let i = 0; i < cookedMatches.length; i++) {
+        const postContent = cookedMatches[i].replace(/<div class="cooked"[^>]*>/, '').replace(/<\/div>$/, '');
+        if (i > 0) {
+          content += '\n\n---\n\n### Reply\n\n';
+        }
+        content += convertHtmlToMarkdown(postContent);
+      }
     }
     
     return NextResponse.json({ 
@@ -117,17 +124,19 @@ async function fallbackToHtmlScraping(url: string) {
 
 function convertHtmlToMarkdown(html: string): string {
   return html
-    // Preserve links
-    .replace(/<a[^>]*href="([^"]*)"[^>]*>([^<]*)<\/a>/gi, '[$2]($1)')
-    // Preserve images  
+    // Preserve images (before links since they're similar)
     .replace(/<img[^>]*src="([^"]*)"[^>]*alt="([^"]*)"[^>]*\/?>/gi, '\n![$2]($1)\n')
     .replace(/<img[^>]*src="([^"]*)"[^>]*\/?>/gi, '\n![]($1)\n')
+    // Preserve links
+    .replace(/<a[^>]*href="([^"]*)"[^>]*>([^<]*)<\/a>/gi, '[$2]($1)')
     // Headers
     .replace(/<h1[^>]*>([^<]*)<\/h1>/gi, '\n# $1\n')
     .replace(/<h2[^>]*>([^<]*)<\/h2>/gi, '\n## $1\n')
     .replace(/<h3[^>]*>([^<]*)<\/h3>/gi, '\n### $1\n')
     // Lists
     .replace(/<li[^>]*>([\s\S]*?)<\/li>/gi, '- $1\n')
+    .replace(/<\/ul>/gi, '\n')
+    .replace(/<\/ol>/gi, '\n')
     // Paragraphs and breaks
     .replace(/<\/p>/gi, '\n\n')
     .replace(/<br\s*\/?>/gi, '\n')
@@ -141,6 +150,8 @@ function convertHtmlToMarkdown(html: string): string {
     // Code blocks
     .replace(/<pre[^>]*><code[^>]*>([\s\S]*?)<\/code><\/pre>/gi, '\n```\n$1\n```\n')
     .replace(/<code[^>]*>([^<]*)<\/code>/gi, '`$1`')
+    // Blockquotes
+    .replace(/<blockquote[^>]*>([\s\S]*?)<\/blockquote>/gi, '\n> $1\n')
     // Remove remaining HTML tags
     .replace(/<[^>]+>/g, '')
     // Clean HTML entities
