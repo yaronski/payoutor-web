@@ -41,7 +41,7 @@ a {
   }
 }
 
-/* Details/Summary triangle rotation */
+/* Details/Summary triangle rotation - rotate right when open */
 details.docs-details[open] summary span:first-child {
-  transform: rotate(90deg);
+  transform: rotate(-90deg);
 }

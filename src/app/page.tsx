@@ -1453,74 +1453,77 @@ ${forumContent || ''}
                           <div style={{ marginTop: 16 }}>
                             <div style={{ fontSize: 12, color: '#9CA3AF', marginBottom: 8 }}>README.md Table Rows</div>
                             {result.payoutType === "usdc" ? (
-                              <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                              <div style={{ display: 'flex', gap: 8, marginBottom: 12 }}>
                                 <button
                                   onClick={() => {
                                     const submitterAddress = COUNCIL_MEMBERS[submitterName] || "";
                                     const row = `| ${result.moonbeamProposalIndex} | ${result.moonbeamProposalIndex} | [${forumTitle || projectLabel || 'Treasury Proposal'}](moonbeam/MBTP${result.moonbeamProposalIndex}.md) | ${submitterAddress} | ${result.recipient || recipient} | ${result.usdcAmount?.toFixed(2) || '0'} USDC | approved |`;
-                                    handleCopy(row, 'README row copied!');
+                                    handleCopy(row, 'Copied!');
                                   }}
-                                  style={{ padding: '8px 12px', background: '#3D3D3D', color: 'white', border: 'none', borderRadius: 4, fontSize: 11, cursor: 'pointer', marginRight: 8 }}
+                                  style={{ padding: '6px 12px', background: '#3D3D3D', color: 'white', border: 'none', borderRadius: 4, fontSize: 11, cursor: 'pointer' }}
                                 >
-                                  Copy
+                                  Copy Row
                                 </button>
                                 <button
                                   onClick={() => {
                                     const submitterAddress = COUNCIL_MEMBERS[submitterName] || "";
                                     const row = `| ${result.moonbeamProposalIndex} | ${result.moonbeamProposalIndex} | [${forumTitle || projectLabel || 'Treasury Proposal'}](moonbeam/MBTP${result.moonbeamProposalIndex}.md) | ${submitterAddress} | ${result.recipient || recipient} | ${result.usdcAmount?.toFixed(2) || '0'} USDC | approved |`;
-                                    handleDownload(`README_moonbeam_row_${result.moonbeamProposalIndex}.txt`, row);
+                                    handleDownload(`README_row_${result.moonbeamProposalIndex}.md`, row);
                                   }}
-                                  style={{ padding: '8px 12px', background: '#3D3D3D', color: 'white', border: 'none', borderRadius: 4, fontSize: 11, cursor: 'pointer' }}
+                                  style={{ padding: '6px 12px', background: '#3D3D3D', color: 'white', border: 'none', borderRadius: 4, fontSize: 11, cursor: 'pointer' }}
                                 >
                                   Download
                                 </button>
                               </div>
                             ) : (
-                              <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                              <div style={{ display: 'flex', gap: 8, marginBottom: 12 }}>
                                 <button
                                   onClick={() => {
                                     const submitterAddress = COUNCIL_MEMBERS[submitterName] || "";
                                     const row = `| ${result.moonbeamProposalIndex} | ${result.moonbeamProposalIndex} | [${forumTitle || projectLabel || 'Treasury Proposal'}](moonbeam/MBTP${result.moonbeamProposalIndex}&MRTP${result.moonriverProposalIndex}.md) | ${submitterAddress} | ${result.recipient || recipient} | ${result.glmrAmount?.toFixed(4) || '0'} GLMR | approved |`;
-                                    handleCopy(row, 'Moonbeam README row copied!');
+                                    handleCopy(row, 'Copied!');
                                   }}
-                                  style={{ padding: '8px 12px', background: '#3D3D3D', color: 'white', border: 'none', borderRadius: 4, fontSize: 11, cursor: 'pointer', marginRight: 8 }}
+                                  style={{ padding: '6px 12px', background: '#3D3D3D', color: 'white', border: 'none', borderRadius: 4, fontSize: 11, cursor: 'pointer' }}
                                 >
-                                  Copy Moonbeam README Row
-                                </button>
-                                <button
-                                  onClick={() => {
-                                    const submitterAddress = COUNCIL_MEMBERS[submitterName] || "";
-                                    const row = `| ${result.moonbeamProposalIndex} | ${result.moonbeamProposalIndex} | [${forumTitle || projectLabel || 'Treasury Proposal'}](moonbeam/MBTP${result.moonbeamProposalIndex}&MRTP${result.moonriverProposalIndex}.md) | ${submitterAddress} | ${result.recipient || recipient} | ${result.glmrAmount?.toFixed(4) || '0'} GLMR | approved |`;
-                                    handleDownload(`README_moonbeam_row_${result.moonbeamProposalIndex}.txt`, row);
-                                  }}
-                                  style={{ padding: '8px 12px', background: '#3D3D3D', color: 'white', border: 'none', borderRadius: 4, fontSize: 11, cursor: 'pointer' }}
-                                >
-                                  Download
+                                  Copy MB Row
                                 </button>
                                 <button
                                   onClick={() => {
                                     const submitterAddress = COUNCIL_MEMBERS[submitterName] || "";
                                     const movrRecipientAddr = result.moonriverRecipient || result.recipient || recipient;
                                     const row = `| ${result.moonriverProposalIndex} | ${result.moonriverProposalIndex} | [${forumTitle || projectLabel || 'Treasury Proposal'}](moonriver/MRTP${result.moonriverProposalIndex}&MBTP${result.moonbeamProposalIndex}.md) | ${submitterAddress} | ${movrRecipientAddr} | ${result.movrAmount?.toFixed(4) || '0'} MOVR | approved |`;
-                                    handleCopy(row, 'Moonriver README row copied!');
+                                    handleCopy(row, 'Copied!');
                                   }}
-                                  style={{ padding: '8px 12px', background: '#3D3D3D', color: 'white', border: 'none', borderRadius: 4, fontSize: 11, cursor: 'pointer', marginRight: 8 }}
+                                  style={{ padding: '6px 12px', background: '#3D3D3D', color: 'white', border: 'none', borderRadius: 4, fontSize: 11, cursor: 'pointer' }}
                                 >
-                                  Copy Moonriver README Row
+                                  Copy MR Row
                                 </button>
                                 <button
                                   onClick={() => {
                                     const submitterAddress = COUNCIL_MEMBERS[submitterName] || "";
+                                    const moonbeamRow = `| ${result.moonbeamProposalIndex} | ${result.moonbeamProposalIndex} | [${forumTitle || projectLabel || 'Treasury Proposal'}](moonbeam/MBTP${result.moonbeamProposalIndex}&MRTP${result.moonriverProposalIndex}.md) | ${submitterAddress} | ${result.recipient || recipient} | ${result.glmrAmount?.toFixed(4) || '0'} GLMR | approved |`;
                                     const movrRecipientAddr = result.moonriverRecipient || result.recipient || recipient;
-                                    const row = `| ${result.moonriverProposalIndex} | ${result.moonriverProposalIndex} | [${forumTitle || projectLabel || 'Treasury Proposal'}](moonriver/MRTP${result.moonriverProposalIndex}&MBTP${result.moonbeamProposalIndex}.md) | ${submitterAddress} | ${movrRecipientAddr} | ${result.movrAmount?.toFixed(4) || '0'} MOVR | approved |`;
-                                    handleDownload(`README_moonriver_row_${result.moonriverProposalIndex}.txt`, row);
+                                    const moonriverRow = `| ${result.moonriverProposalIndex} | ${result.moonriverProposalIndex} | [${forumTitle || projectLabel || 'Treasury Proposal'}](moonriver/MRTP${result.moonriverProposalIndex}&MBTP${result.moonbeamProposalIndex}.md) | ${submitterAddress} | ${movrRecipientAddr} | ${result.movrAmount?.toFixed(4) || '0'} MOVR | approved |`;
+                                    const readme = `# Moonbeam Treasury Proposals\n\n| ID | Motion | Proposal | Submitter | Beneficiary | Reward | Status |\n|----|--------|----------|-----------|-------------|--------|--------|\n${moonbeamRow}\n\n# Moonriver Treasury Proposals\n\n| ID | Motion | Proposal | Submitter | Beneficiary | Reward | Status |\n|----|--------|----------|-----------|-------------|--------|--------|\n${moonriverRow}\n`;
+                                    handleDownload(`README_MBTP${result.moonbeamProposalIndex}&MRTP${result.moonriverProposalIndex}.md`, readme);
                                   }}
-                                  style={{ padding: '8px 12px', background: '#3D3D3D', color: 'white', border: 'none', borderRadius: 4, fontSize: 11, cursor: 'pointer' }}
+                                  style={{ padding: '6px 12px', background: '#3D3D3D', color: 'white', border: 'none', borderRadius: 4, fontSize: 11, cursor: 'pointer' }}
                                 >
-                                  Download
+                                  Download README.md
                                 </button>
                               </div>
                             )}
+                            {/* Show README preview */}
+                            <div style={{ marginTop: 8, padding: 8, background: '#0f1112', borderRadius: 4, border: '1px solid #2d2d2d' }}>
+                              <pre style={{ fontSize: 10, color: '#39ff14', fontFamily: 'monospace', margin: 0, whiteSpace: 'pre-wrap', textShadow: '0 0 4px #39ff14' }}>
+                                <div style={{ color: '#9CA3AF', marginBottom: 4 }}>README.md</div>
+{result.payoutType === "usdc" ? (
+  `| ${result.moonbeamProposalIndex} | ${result.moonbeamProposalIndex} | [${forumTitle || projectLabel || 'Treasury Proposal'}](moonbeam/MBTP${result.moonbeamProposalIndex}.md) | ${COUNCIL_MEMBERS[submitterName] || ""} | ${result.recipient || recipient} | ${result.usdcAmount?.toFixed(2) || '0'} USDC | approved |`
+) : (
+  `| ${result.moonbeamProposalIndex} | ${result.moonbeamProposalIndex} | [${forumTitle || projectLabel || 'Treasury Proposal'}](moonbeam/MBTP${result.moonbeamProposalIndex}&MRTP${result.moonriverProposalIndex}.md) | ${COUNCIL_MEMBERS[submitterName] || ""} | ${result.recipient || recipient} | ${result.glmrAmount?.toFixed(4) || '0'} GLMR | approved |\n| ${result.moonriverProposalIndex} | ${result.moonriverProposalIndex} | [${forumTitle || projectLabel || 'Treasury Proposal'}](moonriver/MRTP${result.moonriverProposalIndex}&MBTP${result.moonbeamProposalIndex}.md) | ${COUNCIL_MEMBERS[submitterName] || ""} | ${result.moonriverRecipient || result.recipient || recipient} | ${result.movrAmount?.toFixed(4) || '0'} MOVR | approved |`
+)}
+                              </pre>
+                            </div>
                           </div>
                         </div>
                       )}
