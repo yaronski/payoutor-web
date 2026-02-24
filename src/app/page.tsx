@@ -931,26 +931,28 @@ export default function Home() {
               marginRight: 'auto',
             }}
           >
+            {/* Copy notification - always visible when active */}
+            {copyNotification && (
+              <div style={{ 
+                position: 'fixed', 
+                top: 20, 
+                left: '50%', 
+                transform: 'translateX(-50%)',
+                background: '#39ff14', 
+                color: '#0f1112', 
+                padding: '10px 20px', 
+                borderRadius: 6, 
+                fontWeight: 600,
+                fontSize: 14,
+                boxShadow: '0 4px 12px rgba(57, 255, 20, 0.3)',
+                zIndex: 1000
+              }}>
+                {copyNotification}
+              </div>
+            )}
+            
             {showResult && result && (
               <div className={styles.result}>
-                {copyNotification && (
-                  <div style={{ 
-                    position: 'fixed', 
-                    top: 20, 
-                    left: '50%', 
-                    transform: 'translateX(-50%)',
-                    background: '#39ff14', 
-                    color: '#0f1112', 
-                    padding: '10px 20px', 
-                    borderRadius: 6, 
-                    fontWeight: 600,
-                    fontSize: 14,
-                    boxShadow: '0 4px 12px rgba(57, 255, 20, 0.3)',
-                    zIndex: 1000
-                  }}>
-                    {copyNotification}
-                  </div>
-                )}
                 
                 {/* Treasury Council Steps */}
                 <div style={{ marginBottom: 24, paddingBottom: 20, borderBottom: '1px solid #2d2d2d' }}>
