@@ -165,3 +165,7 @@ a.secondary {
     filter: invert();
   }
 }
+
+.docsDetails[open] .triangleIcon {
+  transform: rotate(90deg);
+}

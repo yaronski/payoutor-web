@@ -40,3 +40,8 @@ a {
     color-scheme: dark;
   }
 }
+
+/* Details/Summary triangle rotation */
+details.docs-details[open] summary span:first-child {
+  transform: rotate(90deg);
+}

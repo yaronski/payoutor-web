@@ -1155,7 +1155,7 @@ export default function Home() {
                 </div>
 
                 {/* Step 7: Export & Documentation */}
-                <details style={{ marginBottom: 24 }}>
+                <details className="docs-details" style={{ marginBottom: 24 }}>
                   <summary style={{ fontSize: 14, fontWeight: 600, color: '#6b7280', cursor: 'pointer', userSelect: 'none', display: 'flex', alignItems: 'center', gap: 6 }}>
                     <span style={{ display: 'inline-block', width: 0, height: 0, borderLeft: '5px solid transparent', borderRight: '5px solid transparent', borderTop: '5px solid #6b7280', transition: 'transform 0.2s' }}></span>
                     7. Export & Documentation
@@ -1578,8 +1578,8 @@ ${forumContent || ''}
           <div style={{ textAlign: 'center', marginTop: 32, marginBottom: 24, fontSize: 11, color: '#6b7280', fontStyle: 'italic' }}>
             Disclaimer: This tool is provided as-is. Always double-check all calculations and on-chain data before submitting any proposals or votes.
           </div>
-        </div>
-      </main>
-    </div>
-  );
+         </div>
+       </main>
+     </div>
+   );
 }
