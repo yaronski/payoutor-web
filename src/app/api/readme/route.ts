@@ -22,27 +22,71 @@ export async function POST(req: NextRequest) {
     
     if (payoutType === 'usdc') {
       // For USDC, only add to Moonbeam section
-      // Find the Moonbeam table header and add the row after it
-      const moonbeamSectionMatch = readme.match(/(## Moonbeam[\s\S]*?\|.*\|.*\|.*\|.*\|.*\|.*\|.*\|)/);
-      if (moonbeamSectionMatch) {
-        const insertPoint = moonbeamSectionMatch.index! + moonbeamSectionMatch[0].length;
-        readme = readme.slice(0, insertPoint) + '\n' + moonbeamRow + readme.slice(insertPoint);
+      // Find the Moonbeam section header and the table header row
+      const lines = readme.split('\n');
+      let insertIndex = -1;
+      let inMoonbeamSection = false;
+      
+      for (let i = 0; i < lines.length; i++) {
+        if (lines[i].startsWith('## Moonbeam')) {
+          inMoonbeamSection = true;
+        } else if (inMoonbeamSection && lines[i].startsWith('## ')) {
+          // Reached next section, stop
+          break;
+        } else if (inMoonbeamSection && lines[i].startsWith('|') && lines[i].includes('Status')) {
+          // Found table header, next line is separator, insert after that
+          insertIndex = i + 2; // After header and separator
+          break;
+        }
+      }
+      
+      if (insertIndex > 0) {
+        lines.splice(insertIndex, 0, moonbeamRow);
+        readme = lines.join('\n');
       }
     } else {
       // For native payouts, add to both sections
-      // Find Moonbeam section and add row
-      const moonbeamSectionMatch = readme.match(/(## Moonbeam[\s\S]*?\|.*\|.*\|.*\|.*\|.*\|.*\|.*\|)/);
-      if (moonbeamSectionMatch) {
-        const insertPoint = moonbeamSectionMatch.index! + moonbeamSectionMatch[0].length;
-        readme = readme.slice(0, insertPoint) + '\n' + moonbeamRow + readme.slice(insertPoint);
+      const lines = readme.split('\n');
+      
+      // Find Moonbeam section
+      let moonbeamInsertIndex = -1;
+      let inMoonbeamSection = false;
+      
+      for (let i = 0; i < lines.length; i++) {
+        if (lines[i].startsWith('## Moonbeam')) {
+          inMoonbeamSection = true;
+        } else if (inMoonbeamSection && lines[i].startsWith('## ')) {
+          break;
+        } else if (inMoonbeamSection && lines[i].startsWith('|') && lines[i].includes('Status')) {
+          moonbeamInsertIndex = i + 2;
+          break;
+        }
       }
       
-      // Find Moonriver section and add row
-      const moonriverSectionMatch = readme.match(/(## Moonriver[\s\S]*?\|.*\|.*\|.*\|.*\|.*\|.*\|.*\|)/);
-      if (moonriverSectionMatch) {
-        const insertPoint = moonriverSectionMatch.index! + moonriverSectionMatch[0].length;
-        readme = readme.slice(0, insertPoint) + '\n' + moonriverRow + readme.slice(insertPoint);
+      // Find Moonriver section
+      let moonriverInsertIndex = -1;
+      let inMoonriverSection = false;
+      
+      for (let i = 0; i < lines.length; i++) {
+        if (lines[i].startsWith('## Moonriver')) {
+          inMoonriverSection = true;
+        } else if (inMoonriverSection && lines[i].startsWith('## ')) {
+          break;
+        } else if (inMoonriverSection && lines[i].startsWith('|') && lines[i].includes('Status')) {
+          moonriverInsertIndex = i + 2;
+          break;
+        }
       }
+      
+      // Insert rows (in reverse order to maintain correct indices)
+      if (moonriverInsertIndex > 0) {
+        lines.splice(moonriverInsertIndex, 0, moonriverRow);
+      }
+      if (moonbeamInsertIndex > 0) {
+        lines.splice(moonbeamInsertIndex, 0, moonbeamRow);
+      }
+      
+      readme = lines.join('\n');
     }
     
     return NextResponse.json({ readme });
