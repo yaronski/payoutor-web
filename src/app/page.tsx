@@ -1154,11 +1154,11 @@ export default function Home() {
                   </div>
                 </div>
 
-                {/* Step 7: Export & Documentation */}
+                {/* Step 7: Data Documentation */}
                 <details className="docs-details" style={{ marginBottom: 24 }}>
                   <summary style={{ fontSize: 14, fontWeight: 600, color: '#6b7280', cursor: 'pointer', userSelect: 'none', display: 'flex', alignItems: 'center', gap: 6 }}>
                     <span style={{ display: 'inline-block', width: 0, height: 0, borderLeft: '5px solid transparent', borderRight: '5px solid transparent', borderTop: '5px solid #6b7280', transition: 'transform 0.2s' }}></span>
-                    7. Export & Documentation
+                    7. Data Documentation
                   </summary>
                   <div style={{ marginTop: 16 }}>
                     {/* Google Sheets Export */}
