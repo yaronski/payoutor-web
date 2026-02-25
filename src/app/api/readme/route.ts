@@ -22,20 +22,17 @@ export async function POST(req: NextRequest) {
     
     if (payoutType === 'usdc') {
       // For USDC, only add to Moonbeam section
-      // Find the Moonbeam section header and the table header row
       const lines = readme.split('\n');
       let insertIndex = -1;
       let inMoonbeamSection = false;
       
       for (let i = 0; i < lines.length; i++) {
-        if (lines[i].startsWith('## Moonbeam')) {
+        if (lines[i].startsWith('### Moonbeam')) {
           inMoonbeamSection = true;
-        } else if (inMoonbeamSection && lines[i].startsWith('## ')) {
-          // Reached next section, stop
+        } else if (inMoonbeamSection && lines[i].startsWith('### ')) {
           break;
         } else if (inMoonbeamSection && lines[i].startsWith('|') && lines[i].includes('Status')) {
-          // Found table header, next line is separator, insert after that
-          insertIndex = i + 2; // After header and separator
+          insertIndex = i + 2;
           break;
         }
       }
@@ -53,9 +50,9 @@ export async function POST(req: NextRequest) {
       let inMoonbeamSection = false;
       
       for (let i = 0; i < lines.length; i++) {
-        if (lines[i].startsWith('## Moonbeam')) {
+        if (lines[i].startsWith('### Moonbeam')) {
           inMoonbeamSection = true;
-        } else if (inMoonbeamSection && lines[i].startsWith('## ')) {
+        } else if (inMoonbeamSection && lines[i].startsWith('### ')) {
           break;
         } else if (inMoonbeamSection && lines[i].startsWith('|') && lines[i].includes('Status')) {
           moonbeamInsertIndex = i + 2;
@@ -68,9 +65,9 @@ export async function POST(req: NextRequest) {
       let inMoonriverSection = false;
       
       for (let i = 0; i < lines.length; i++) {
-        if (lines[i].startsWith('## Moonriver')) {
+        if (lines[i].startsWith('### Moonriver')) {
           inMoonriverSection = true;
-        } else if (inMoonriverSection && lines[i].startsWith('## ')) {
+        } else if (inMoonriverSection && lines[i].startsWith('### ')) {
           break;
         } else if (inMoonriverSection && lines[i].startsWith('|') && lines[i].includes('Status')) {
           moonriverInsertIndex = i + 2;
