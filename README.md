@@ -1,6 +1,8 @@
-# Payoutor
+# Payoutor Web
 
 A comprehensive treasury payout tool for Moonbeam Treasury Council members. Built with Next.js, it streamlines the entire payout process from calculation to documentation, supporting both native tokens (GLMR/MOVR) and USDC payouts.
+
+**Live**: [https://payoutor-web.vercel.app/](https://payoutor-web.vercel.app/)
 
 ## Features
 
@@ -93,24 +95,12 @@ npm start
 - `/src/app/api/treasury-balances/` - Treasury balance fetching
 - `/src/app/api/fx-rate/` - EUR/USD exchange rate fetching
 
-## Live Deployment
-
-Production: [https://payoutor-web.vercel.app/](https://payoutor-web.vercel.app/)
-
 ## Security
 
 - Automated security monitoring via Dependabot (monthly scans)
 - Manual review required for all security updates
 - Only production dependencies monitored
 - CI/CD pipeline runs linting and tests on all PRs
-
-## Roadmap / Ideas
-
-- [ ] Batch payout processing
-- [ ] Historical payout tracking
-- [ ] Price alerts for treasury rebalancing
-- [ ] Multi-sig support
-- [ ] Automated forum post creation
 
 ## Contributing
 
