@@ -1,0 +1,18 @@
+version: 2
+updates:
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "monthly"
+    open-pull-requests-limit: 3
+    allow:
+      - dependency-type: "production"
+    only: 
+      - security-updates
+    reviewers:
+      - "yaronski"
+    assignees:
+      - "yaronski"
+    commit-message:
+      prefix: "security"
+      include: "scope"
