@@ -47,9 +47,9 @@ const FX_SOURCE_REFERENCES: Record<
 const COUNCIL_MEMBERS: Record<string, string> = {
   "Simon": "0x4138574878c133d3A12009d6F54B8F26De700834",
   "Yaron": "0x1CdC248174ec9e9c505fabDbb0E037B5AcaB5c13",
-  "Member3": "0xB19CC53a12F734a9Ced967043F3B259F8b111617",
-  "Member4": "0xB969639e3Cbf1e5a1d753efb2be09De4f34001f7",
-  "Member5": "0xE5169Beb6241EB54813D082F643C179809F60A2F",
+  "Aaron": "0xB19CC53a12F734a9Ced967043F3B259F8b111617",
+  "Michele": "0xB969639e3Cbf1e5a1d753efb2be09De4f34001f7",
+  "Sicco": "0xE5169Beb6241EB54813D082F643C179809F60A2F",
 };
 
 const CATEGORIES = ["Infrastructure", "Wallet", "Tooling", "Explorer", "DeFi", "NFT", "Education", "Other"];
@@ -183,6 +183,7 @@ export default function Home() {
     proxy?: boolean;
     recipient?: string;
     moonriverRecipient?: string;
+    usdAmount?: number;
   } | null>(null);
   const [showResult, setShowResult] = useState(false);
   const [copyNotification, setCopyNotification] = useState<string | null>(null);
@@ -1195,13 +1196,14 @@ export default function Home() {
                       <button
                         onClick={() => {
                             const submitterAddress = COUNCIL_MEMBERS[submitterName] || "";
+                            const totalUsd = result.usdAmount || 0;
                             const row = [
                               result.moonbeamProposalIndex || "",
                               result.moonbeamProposalIndex || "",
                               "approveProposal",
                               submitterAddress,
                               result.recipient || recipient,
-                              `https://github.com/moonbeam-foundation/treasury/blob/main/moonbeam/MBTP${result.moonbeamProposalIndex}.md`,
+                              "",
                               result.usdcCallData?.treasuryCallHash || "",
                               "Aye",
                               "",
@@ -1209,11 +1211,12 @@ export default function Home() {
                               `Q${Math.ceil((new Date().getMonth() + 1) / 3)}`,
                               projectLabel || category,
                               category,
+                              "USDC",
                               result.usdcAmount?.toFixed(2) || "0",
                               "0",
-                              `$${result.usdcAmount?.toFixed(2) || "0"}`,
+                              `$${totalUsd.toFixed(2)}`,
                               "100%",
-                              `$${result.usdcAmount?.toFixed(2) || "0"}`,
+                              `${result.usdcAmount?.toFixed(2) || "0"} USDC`,
                             ].join('\t');
                             handleCopy(row, 'Moonbeam row copied!');
                           }}
@@ -1226,13 +1229,14 @@ export default function Home() {
                           <button
                               onClick={() => {
                               const submitterAddress = COUNCIL_MEMBERS[submitterName] || "";
+                              const totalUsd = result.usdAmount || 0;
                               const row = [
                                 result.moonbeamProposalIndex || "",
                                 result.moonbeamProposalIndex || "",
                                 "approveProposal",
                                 submitterAddress,
                                 result.recipient || recipient,
-                                `https://github.com/moonbeam-foundation/treasury/blob/main/moonbeam/MBTP${result.moonbeamProposalIndex}&MRTP${result.moonriverProposalIndex}.md`,
+                                "",
                                 result.glmrCallData?.treasuryCallHash || "",
                                 "Aye",
                                 "",
@@ -1240,11 +1244,12 @@ export default function Home() {
                                 `Q${Math.ceil((new Date().getMonth() + 1) / 3)}`,
                                 projectLabel || category,
                                 category,
+                                "GLMR",
                                 result.glmrAmount?.toFixed(2) || "0",
                                 "0",
-                                "",
+                                `$${totalUsd.toFixed(2)}`,
                                 `${glmrRatio}%`,
-                                "",
+                                `${result.glmrAmount?.toFixed(2) || "0"} GLMR`,
                               ].join('\t');
                               handleCopy(row, 'Moonbeam row copied!');
                             }}
@@ -1256,13 +1261,15 @@ export default function Home() {
                               onClick={() => {
                               const submitterAddress = COUNCIL_MEMBERS[submitterName] || "";
                               const movrRecipientAddr = result.moonriverRecipient || result.recipient || recipient;
+                              const totalUsd = result.usdAmount || 0;
+                              const movrRatio = 100 - glmrRatio;
                               const row = [
                                 result.moonriverProposalIndex || "",
                                 result.moonriverProposalIndex || "",
                                 "approveProposal",
                                 submitterAddress,
                                 movrRecipientAddr,
-                                `https://github.com/moonbeam-foundation/treasury/blob/main/moonriver/MRTP${result.moonriverProposalIndex}&MBTP${result.moonbeamProposalIndex}.md`,
+                                "",
                                 result.movrCallData?.treasuryCallHash || "",
                                 "Aye",
                                 "",
@@ -1270,11 +1277,12 @@ export default function Home() {
                                 `Q${Math.ceil((new Date().getMonth() + 1) / 3)}`,
                                 projectLabel || category,
                                 category,
+                                "MOVR",
                                 result.movrAmount?.toFixed(2) || "0",
                                 "0",
-                                "",
-                                `${100 - glmrRatio}%`,
-                                "",
+                                `$${totalUsd.toFixed(2)}`,
+                                `${movrRatio}%`,
+                                `${result.movrAmount?.toFixed(2) || "0"} MOVR`,
                               ].join('\t');
                               handleCopy(row, 'Moonriver row copied!');
                             }}
