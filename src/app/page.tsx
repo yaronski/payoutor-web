@@ -1071,7 +1071,9 @@ export default function Home() {
                   {/* Forum Reply Section - Step 3 */}
                   <div style={{ marginBottom: 24, paddingBottom: 20, borderBottom: '1px solid #2d2d2d' }}>
                     <div style={{ fontSize: 14, fontWeight: 600, color: 'white', marginBottom: 10 }}>3. Reply</div>
-                    <pre style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word', fontSize: 'clamp(11px, 2.5vw, 13px)', background: 'none', color: '#39ff14', padding: 12, marginBottom: 12, fontFamily: 'monospace', textShadow: '0 0 0px #39ff14, 0 0 4px #39ff14' }}>{renderSummaryWithLinks(result.forumReply)}</pre>
+                    <div style={{ background: 'rgba(57, 255, 20, 0.05)', borderRadius: 8, padding: 12, marginBottom: 12, border: '1px solid rgba(57, 255, 20, 0.15)' }}>
+                      <pre style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word', fontSize: 'clamp(11px, 2.5vw, 13px)', background: 'none', color: '#39ff14', padding: 0, marginBottom: 0, fontFamily: 'monospace', textShadow: '0 0 0px #39ff14, 0 0 4px #39ff14' }}>{renderSummaryWithLinks(result.forumReply)}</pre>
+                    </div>
                     <button onClick={() => handleCopy(result.forumReply, 'Forum reply copied!')} style={{ fontSize: 14, padding: '8px 16px', borderRadius: 6, background: '#3D3D3D', color: 'white', border: 'none', fontWeight: 600, cursor: 'pointer', boxShadow: '0 2px 8px #1e90ff22', width: '100%' }}>Copy Forum Reply</button>
                   </div>
 
@@ -1183,19 +1185,15 @@ export default function Home() {
                   </div>
                 </div>
 
-                {/* Step 7: Export & Documentation */}
-                <details className="docs-details" style={{ marginBottom: 24 }}>
-                  <summary style={{ fontSize: 14, fontWeight: 600, color: '#6b7280', cursor: 'pointer', userSelect: 'none', display: 'flex', alignItems: 'center', gap: 6 }}>
-                    <span style={{ display: 'inline-block', width: 0, height: 0, borderLeft: '5px solid transparent', borderRight: '5px solid transparent', borderTop: '5px solid #6b7280', transition: 'transform 0.2s' }}></span>
-                    7. Export & Documentation
-                  </summary>
-                  <div style={{ marginTop: 16 }}>
-                    {/* Google Sheets Export */}
-                    <div style={{ marginBottom: 20, padding: 16, background: '#1a1d1f', borderRadius: 8, border: '1px solid #2d2d2d' }}>
-                      <div style={{ fontWeight: 600, marginBottom: 12, color: 'white', fontSize: 13 }}>Google Sheets Row</div>
-                      {result.payoutType === "usdc" ? (
-                        <button
-                          onClick={() => {
+                {/* Step 7: Documentation */}
+                <div style={{ marginBottom: 24, paddingBottom: 20, borderBottom: '1px solid #2d2d2d' }}>
+                  <div style={{ fontSize: 14, fontWeight: 600, color: 'white', marginBottom: 10 }}>7. Documentation</div>
+                  {/* Google Sheets Export */}
+                  <div style={{ marginBottom: 20, padding: 16, background: '#1a1d1f', borderRadius: 8, border: '1px solid #2d2d2d' }}>
+                    <div style={{ fontWeight: 600, marginBottom: 12, color: 'white', fontSize: 13 }}>Google Sheets Row</div>
+                    {result.payoutType === "usdc" ? (
+                      <button
+                        onClick={() => {
                             const submitterAddress = COUNCIL_MEMBERS[submitterName] || "";
                             const row = [
                               result.moonbeamProposalIndex || "",
@@ -1576,53 +1574,16 @@ ${forumContent || ''}
                         </div>
                       )}
                     </div>
-                  </div>
-                </details>
+                </div>
 
                 {/* Summary Section */}
                 <div style={{ marginBottom: 24, paddingBottom: 20, borderBottom: '1px solid #2d2d2d' }}>
                   <div style={{ fontSize: 14, fontWeight: 600, color: 'white', marginBottom: 10 }}>Summary</div>
-                  <pre style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word', fontSize: 'clamp(11px, 2.5vw, 14px)', background: 'none', color: '#39ff14', padding: 0, marginBottom: 12, fontFamily: 'monospace', textShadow: '0 0 0px #39ff14, 0 0 4px #39ff14', overflowX: 'auto' }}>{renderSummaryWithLinks(result.summary)}</pre>
+                  <div style={{ background: 'rgba(57, 255, 20, 0.05)', borderRadius: 8, padding: 12, marginBottom: 12, border: '1px solid rgba(57, 255, 20, 0.15)' }}>
+                    <pre style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word', fontSize: 'clamp(11px, 2.5vw, 14px)', background: 'none', color: '#39ff14', padding: 0, marginBottom: 0, fontFamily: 'monospace', textShadow: '0 0 0px #39ff14, 0 0 4px #39ff14', overflowX: 'auto' }}>{renderSummaryWithLinks(result.summary)}</pre>
+                  </div>
                   <button onClick={() => handleCopy(result.summary, 'Summary copied!')} style={{ fontSize: 14, padding: '8px 16px', borderRadius: 6, background: '#3D3D3D', color: 'white', border: 'none', fontWeight: 600, cursor: 'pointer', boxShadow: '0 2px 8px #1e90ff22', width: '100%' }}>Copy Full Summary</button>
                 </div>
-
-                {/* Advanced Details Section */}
-                <details className="docs-details" style={{ marginBottom: 8 }}>
-                  <summary style={{ fontSize: 13, fontWeight: 500, color: '#6b7280', cursor: 'pointer', userSelect: 'none', display: 'flex', alignItems: 'center', gap: 6 }}>
-                    <span style={{ display: 'inline-block', width: 0, height: 0, borderLeft: '5px solid transparent', borderRight: '5px solid transparent', borderTop: '5px solid #6b7280', transition: 'transform 0.2s' }}></span>
-                    Show advanced details
-                  </summary>
-                  <div style={{ marginTop: 16, background: '#1a1d1f', borderRadius: 8, padding: 16, border: '1px solid #2d2d2d' }}>
-                    {result.payoutType === "usdc" ? (
-                      <div style={{ fontFamily: 'monospace', fontSize: 12, color: '#9CA3AF' }}>
-                        <div style={{ marginBottom: 12 }}>
-                          <span style={{ color: '#6b7280' }}>USDC Amount:</span> <span style={{ color: 'white' }}>{result.usdcAmount}</span>
-                          {result.usdcAmount && <button onClick={() => handleCopy(result.usdcAmount?.toString() || "", 'Amount copied!')} style={{ marginLeft: 8, fontSize: 11, padding: '2px 8px', borderRadius: 4, background: '#3D3D3D', color: 'white', border: 'none', cursor: 'pointer' }}>Copy</button>}
-                        </div>
-                        <div style={{ marginBottom: 4, color: '#6b7280' }}>USDC Council Call Data:</div>
-                        <pre style={{ fontSize: 11, color: 'white', background: '#0f1112', padding: 12, borderRadius: 6, overflowX: 'auto', marginBottom: 12 }}>{result.usdcCallData ? JSON.stringify(result.usdcCallData, null, 2) : ''}</pre>
-                        {result.usdcCallData && <button onClick={() => handleCopy(JSON.stringify(result.usdcCallData, null, 2), 'Call data copied!')} style={{ fontSize: 11, padding: '4px 12px', borderRadius: 4, background: '#3D3D3D', color: 'white', border: 'none', cursor: 'pointer' }}>Copy</button>}
-                      </div>
-                    ) : (
-                      <div style={{ fontFamily: 'monospace', fontSize: 12, color: '#9CA3AF' }}>
-                        <div style={{ marginBottom: 12 }}>
-                          <span style={{ color: '#6b7280' }}>GLMR Amount:</span> <span style={{ color: 'white' }}>{result.glmrAmount}</span>
-                          {result.glmrAmount && <button onClick={() => handleCopy(result.glmrAmount?.toString() || "", 'Amount copied!')} style={{ marginLeft: 8, fontSize: 11, padding: '2px 8px', borderRadius: 4, background: '#3D3D3D', color: 'white', border: 'none', cursor: 'pointer' }}>Copy</button>}
-                        </div>
-                        <div style={{ marginBottom: 12 }}>
-                          <span style={{ color: '#6b7280' }}>MOVR Amount:</span> <span style={{ color: 'white' }}>{result.movrAmount}</span>
-                          {result.movrAmount && <button onClick={() => handleCopy(result.movrAmount?.toString() || "", 'Amount copied!')} style={{ marginLeft: 8, fontSize: 11, padding: '2px 8px', borderRadius: 4, background: '#3D3D3D', color: 'white', border: 'none', cursor: 'pointer' }}>Copy</button>}
-                        </div>
-                        <div style={{ marginBottom: 4, color: '#6b7280' }}>GLMR Council Call Data:</div>
-                        <pre style={{ fontSize: 11, color: 'white', background: '#0f1112', padding: 12, borderRadius: 6, overflowX: 'auto', marginBottom: 12 }}>{result.glmrCallData ? JSON.stringify(result.glmrCallData, null, 2) : ''}</pre>
-                        {result.glmrCallData && <button onClick={() => handleCopy(JSON.stringify(result.glmrCallData, null, 2), 'Call data copied!')} style={{ fontSize: 11, padding: '4px 12px', borderRadius: 4, background: '#3D3D3D', color: 'white', border: 'none', cursor: 'pointer', marginBottom: 16 }}>Copy</button>}
-                        <div style={{ marginTop: 16, marginBottom: 4, color: '#6b7280' }}>MOVR Council Call Data:</div>
-                        <pre style={{ fontSize: 11, color: 'white', background: '#0f1112', padding: 12, borderRadius: 6, overflowX: 'auto', marginBottom: 12 }}>{result.movrCallData ? JSON.stringify(result.movrCallData, null, 2) : ''}</pre>
-                        {result.movrCallData && <button onClick={() => handleCopy(JSON.stringify(result.movrCallData, null, 2), 'Call data copied!')} style={{ fontSize: 11, padding: '4px 12px', borderRadius: 4, background: '#3D3D3D', color: 'white', border: 'none', cursor: 'pointer' }}>Copy</button>}
-                      </div>
-                    )}
-                  </div>
-                </details>
               </div>
             )}
           </div>
