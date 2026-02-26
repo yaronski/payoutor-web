@@ -1484,51 +1484,100 @@ ${forumContent || ''}
 
                           {/* README.md Download */}
                           <div style={{ marginTop: 16 }}>
-                            <div style={{ fontSize: 12, color: '#9CA3AF', marginBottom: 8 }}>README.md Download</div>
+                            <div style={{ fontSize: 11, fontFamily: 'monospace', color: '#39ff14', marginBottom: 4 }}>
+                              README.md
+                            </div>
+                            <div style={{ fontSize: 12, color: '#9CA3AF', marginBottom: 8 }}>Generated updated Readme.md file</div>
                             {result.payoutType === "usdc" ? (
-                              <button
-                                onClick={async () => {
-                                  const submitterAddress = COUNCIL_MEMBERS[submitterName] || "";
-                                  const moonbeamRow = `| ${result.moonbeamProposalIndex} | ${result.moonbeamProposalIndex} | [${forumTitle || projectLabel || 'Treasury Proposal'}](moonbeam/MBTP${result.moonbeamProposalIndex}.md) | ${submitterAddress} | ${result.recipient || recipient} | ${result.usdcAmount?.toFixed(2) || '0'} USDC | approved |`;
-                                  try {
-                                    const res = await fetch("/api/readme", {
-                                      method: "POST",
-                                      headers: { "Content-Type": "application/json" },
-                                      body: JSON.stringify({ moonbeamRow, moonriverRow: '', payoutType: 'usdc' }),
-                                    });
-                                    const data = await res.json();
-                                    handleDownload(`README.md`, data.readme);
-                                  } catch (err) {
-                                    handleDownload(`README.md`, `# Moonbeam Treasury Proposals\n\n| ID | Motion | Proposal | Submitter | Beneficiary | Reward | Status |\n|----|--------|----------|-----------|-------------|--------|--------|\n${moonbeamRow}\n`);
-                                  }
-                                }}
-                                style={{ width: '100%', padding: '8px 12px', background: '#3D3D3D', color: 'white', border: 'none', borderRadius: 4, fontSize: 12, fontWeight: 600, cursor: 'pointer' }}
-                              >
-                                Download Updated README.md
-                              </button>
+                              <div style={{ marginBottom: 12 }}>
+                                <button
+                                  onClick={async () => {
+                                    const submitterAddress = COUNCIL_MEMBERS[submitterName] || "";
+                                    const moonbeamRow = `| ${result.moonbeamProposalIndex} | ${result.moonbeamProposalIndex} | [${forumTitle || projectLabel || 'Treasury Proposal'}](moonbeam/MBTP${result.moonbeamProposalIndex}.md) | ${submitterAddress} | ${result.recipient || recipient} | ${result.usdcAmount?.toFixed(2) || '0'} USDC | approved |`;
+                                    try {
+                                      const res = await fetch("/api/readme", {
+                                        method: "POST",
+                                        headers: { "Content-Type": "application/json" },
+                                        body: JSON.stringify({ moonbeamRow, moonriverRow: '', payoutType: 'usdc' }),
+                                      });
+                                      const data = await res.json();
+                                      handleDownload(`README.md`, data.readme);
+                                    } catch (err) {
+                                      handleDownload(`README.md`, `# Moonbeam Treasury Proposals\n\n| ID | Motion | Proposal | Submitter | Beneficiary | Reward | Status |\n|----|--------|----------|-----------|-------------|--------|--------|\n${moonbeamRow}\n`);
+                                    }
+                                  }}
+                                  style={{ padding: '6px 12px', background: '#3D3D3D', color: 'white', border: 'none', borderRadius: 4, fontSize: 11, cursor: 'pointer', marginRight: 8 }}
+                                >
+                                  Download
+                                </button>
+                                <button
+                                  onClick={async () => {
+                                    const submitterAddress = COUNCIL_MEMBERS[submitterName] || "";
+                                    const moonbeamRow = `| ${result.moonbeamProposalIndex} | ${result.moonbeamProposalIndex} | [${forumTitle || projectLabel || 'Treasury Proposal'}](moonbeam/MBTP${result.moonbeamProposalIndex}.md) | ${submitterAddress} | ${result.recipient || recipient} | ${result.usdcAmount?.toFixed(2) || '0'} USDC | approved |`;
+                                    try {
+                                      const res = await fetch("/api/readme", {
+                                        method: "POST",
+                                        headers: { "Content-Type": "application/json" },
+                                        body: JSON.stringify({ moonbeamRow, moonriverRow: '', payoutType: 'usdc' }),
+                                      });
+                                      const data = await res.json();
+                                      handleCopy(data.readme, 'README.md copied!');
+                                    } catch (err) {
+                                      handleCopy(`# Moonbeam Treasury Proposals\n\n| ID | Motion | Proposal | Submitter | Beneficiary | Reward | Status |\n|----|--------|----------|-----------|-------------|--------|--------|\n${moonbeamRow}\n`, 'README.md copied!');
+                                    }
+                                  }}
+                                  style={{ padding: '6px 12px', background: '#3D3D3D', color: 'white', border: 'none', borderRadius: 4, fontSize: 11, cursor: 'pointer' }}
+                                >
+                                  Copy
+                                </button>
+                              </div>
                             ) : (
-                              <button
-                                onClick={async () => {
-                                  const submitterAddress = COUNCIL_MEMBERS[submitterName] || "";
-                                  const moonbeamRow = `| ${result.moonbeamProposalIndex} | ${result.moonbeamProposalIndex} | [${forumTitle || projectLabel || 'Treasury Proposal'}](moonbeam/MBTP${result.moonbeamProposalIndex}&MRTP${result.moonriverProposalIndex}.md) | ${submitterAddress} | ${result.recipient || recipient} | ${result.glmrAmount?.toFixed(4) || '0'} GLMR | approved |`;
-                                  const movrRecipientAddr = result.moonriverRecipient || result.recipient || recipient;
-                                  const moonriverRow = `| ${result.moonriverProposalIndex} | ${result.moonriverProposalIndex} | [${forumTitle || projectLabel || 'Treasury Proposal'}](moonriver/MRTP${result.moonriverProposalIndex}&MBTP${result.moonbeamProposalIndex}.md) | ${submitterAddress} | ${movrRecipientAddr} | ${result.movrAmount?.toFixed(4) || '0'} MOVR | approved |`;
-                                  try {
-                                    const res = await fetch("/api/readme", {
-                                      method: "POST",
-                                      headers: { "Content-Type": "application/json" },
-                                      body: JSON.stringify({ moonbeamRow, moonriverRow, payoutType: 'native' }),
-                                    });
-                                    const data = await res.json();
-                                    handleDownload(`README.md`, data.readme);
-                                  } catch (err) {
-                                    handleDownload(`README.md`, `# Moonbeam Treasury Proposals\n\n| ID | Motion | Proposal | Submitter | Beneficiary | Reward | Status |\n|----|--------|----------|-----------|-------------|--------|--------|\n${moonbeamRow}\n\n# Moonriver Treasury Proposals\n\n| ID | Motion | Proposal | Submitter | Beneficiary | Reward | Status |\n|----|--------|----------|-----------|-------------|--------|--------|\n${moonriverRow}\n`);
-                                  }
-                                }}
-                                style={{ width: '100%', padding: '8px 12px', background: '#3D3D3D', color: 'white', border: 'none', borderRadius: 4, fontSize: 12, fontWeight: 600, cursor: 'pointer' }}
-                              >
-                                Download Updated README.md
-                              </button>
+                              <div style={{ marginBottom: 12 }}>
+                                <button
+                                  onClick={async () => {
+                                    const submitterAddress = COUNCIL_MEMBERS[submitterName] || "";
+                                    const moonbeamRow = `| ${result.moonbeamProposalIndex} | ${result.moonbeamProposalIndex} | [${forumTitle || projectLabel || 'Treasury Proposal'}](moonbeam/MBTP${result.moonbeamProposalIndex}&MRTP${result.moonriverProposalIndex}.md) | ${submitterAddress} | ${result.recipient || recipient} | ${result.glmrAmount?.toFixed(4) || '0'} GLMR | approved |`;
+                                    const movrRecipientAddr = result.moonriverRecipient || result.recipient || recipient;
+                                    const moonriverRow = `| ${result.moonriverProposalIndex} | ${result.moonriverProposalIndex} | [${forumTitle || projectLabel || 'Treasury Proposal'}](moonriver/MRTP${result.moonriverProposalIndex}&MBTP${result.moonbeamProposalIndex}.md) | ${submitterAddress} | ${movrRecipientAddr} | ${result.movrAmount?.toFixed(4) || '0'} MOVR | approved |`;
+                                    try {
+                                      const res = await fetch("/api/readme", {
+                                        method: "POST",
+                                        headers: { "Content-Type": "application/json" },
+                                        body: JSON.stringify({ moonbeamRow, moonriverRow, payoutType: 'native' }),
+                                      });
+                                      const data = await res.json();
+                                      handleDownload(`README.md`, data.readme);
+                                    } catch (err) {
+                                      handleDownload(`README.md`, `# Moonbeam Treasury Proposals\n\n| ID | Motion | Proposal | Submitter | Beneficiary | Reward | Status |\n|----|--------|----------|-----------|-------------|--------|--------|\n${moonbeamRow}\n\n# Moonriver Treasury Proposals\n\n| ID | Motion | Proposal | Submitter | Beneficiary | Reward | Status |\n|----|--------|----------|-----------|-------------|--------|--------|\n${moonriverRow}\n`);
+                                    }
+                                  }}
+                                  style={{ padding: '6px 12px', background: '#3D3D3D', color: 'white', border: 'none', borderRadius: 4, fontSize: 11, cursor: 'pointer', marginRight: 8 }}
+                                >
+                                  Download
+                                </button>
+                                <button
+                                  onClick={async () => {
+                                    const submitterAddress = COUNCIL_MEMBERS[submitterName] || "";
+                                    const moonbeamRow = `| ${result.moonbeamProposalIndex} | ${result.moonbeamProposalIndex} | [${forumTitle || projectLabel || 'Treasury Proposal'}](moonbeam/MBTP${result.moonbeamProposalIndex}&MRTP${result.moonriverProposalIndex}.md) | ${submitterAddress} | ${result.recipient || recipient} | ${result.glmrAmount?.toFixed(4) || '0'} GLMR | approved |`;
+                                    const movrRecipientAddr = result.moonriverRecipient || result.recipient || recipient;
+                                    const moonriverRow = `| ${result.moonriverProposalIndex} | ${result.moonriverProposalIndex} | [${forumTitle || projectLabel || 'Treasury Proposal'}](moonriver/MRTP${result.moonriverProposalIndex}&MBTP${result.moonbeamProposalIndex}.md) | ${submitterAddress} | ${movrRecipientAddr} | ${result.movrAmount?.toFixed(4) || '0'} MOVR | approved |`;
+                                    try {
+                                      const res = await fetch("/api/readme", {
+                                        method: "POST",
+                                        headers: { "Content-Type": "application/json" },
+                                        body: JSON.stringify({ moonbeamRow, moonriverRow, payoutType: 'native' }),
+                                      });
+                                      const data = await res.json();
+                                      handleCopy(data.readme, 'README.md copied!');
+                                    } catch (err) {
+                                      handleCopy(`# Moonbeam Treasury Proposals\n\n| ID | Motion | Proposal | Submitter | Beneficiary | Reward | Status |\n|----|--------|----------|-----------|-------------|--------|--------|\n${moonbeamRow}\n\n# Moonriver Treasury Proposals\n\n| ID | Motion | Proposal | Submitter | Beneficiary | Reward | Status |\n|----|--------|----------|-----------|-------------|--------|--------|\n${moonriverRow}\n`, 'README.md copied!');
+                                    }
+                                  }}
+                                  style={{ padding: '6px 12px', background: '#3D3D3D', color: 'white', border: 'none', borderRadius: 4, fontSize: 11, cursor: 'pointer' }}
+                                >
+                                  Copy
+                                </button>
+                              </div>
                             )}
                             {/* GitHub repo link */}
                             <div style={{ marginTop: 8, marginBottom: 8 }}>
