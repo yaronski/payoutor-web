@@ -352,6 +352,26 @@ export default function Home() {
 
   return (
     <div className={styles.page}>
+      {/* Copy notification - at the very top level */}
+      {copyNotification && (
+        <div style={{ 
+          position: 'fixed', 
+          top: 20, 
+          left: '50%', 
+          transform: 'translateX(-50%)',
+          background: '#39ff14', 
+          color: '#0f1112', 
+          padding: '12px 24px', 
+          borderRadius: 8, 
+          fontWeight: 700,
+          fontSize: 14,
+          boxShadow: '0 4px 20px rgba(57, 255, 20, 0.5)',
+          zIndex: 999999,
+          animation: 'fadeIn 0.2s ease-out'
+        }}>
+          {copyNotification}
+        </div>
+      )}
       <main className={styles.main} style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'center', paddingTop: 24, padding: '20px' }}>
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%', maxWidth: 800 }}>
           {/* ASCII Art */}
@@ -958,27 +978,6 @@ export default function Home() {
               marginRight: 'auto',
             }}
           >
-            {/* Copy notification - always visible when active */}
-            {copyNotification && (
-              <div style={{ 
-                position: 'fixed', 
-                top: 20, 
-                left: '50%', 
-                transform: 'translateX(-50%)',
-                background: '#39ff14', 
-                color: '#0f1112', 
-                padding: '12px 24px', 
-                borderRadius: 8, 
-                fontWeight: 700,
-                fontSize: 14,
-                boxShadow: '0 4px 20px rgba(57, 255, 20, 0.5)',
-                zIndex: 99999,
-                animation: 'fadeIn 0.2s ease-out'
-              }}>
-                {copyNotification}
-              </div>
-            )}
-            
             {showResult && result && (
               <div className={styles.result}>
                 
@@ -1343,9 +1342,8 @@ export default function Home() {
                       </div>
 
                       {/* Generated Files */}
-                      {(forumContent || result.payoutType === "native") && (
-                        <div style={{ marginTop: 16 }}>
-                          <div style={{ fontSize: 12, color: '#9CA3AF', marginBottom: 8 }}>Generated .md Files</div>
+                      <div style={{ marginTop: 16 }}>
+                        <div style={{ fontSize: 12, color: '#9CA3AF', marginBottom: 8 }}>Generated .md Files</div>
                           
                           {result.payoutType === "usdc" ? (
                             <div style={{ marginBottom: 12 }}>
@@ -1597,12 +1595,11 @@ ${forumContent || ''}
                                   </div>
                                 </>
                               )}
-                             </div>
-                           </div>
-                         </div>
-                       )}
-                    </div>
-                </div>
+                              </div>
+                            </div>
+                          </div>
+                     </div>
+                 </div>
 
                 {/* Summary Section */}
                 <div style={{ marginBottom: 24, paddingBottom: 20, borderBottom: '1px solid #2d2d2d' }}>
