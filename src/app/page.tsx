@@ -1192,8 +1192,42 @@ export default function Home() {
                   <div style={{ marginBottom: 20, padding: 16, background: '#1a1d1f', borderRadius: 8, border: '1px solid #2d2d2d' }}>
                     <div style={{ fontWeight: 600, marginBottom: 12, color: 'white', fontSize: 13 }}>Google Sheets Row</div>
                     {result.payoutType === "usdc" ? (
-                      <button
+                      <div
                         onClick={() => {
+                          const submitterAddress = COUNCIL_MEMBERS[submitterName] || "";
+                          const totalUsd = result.usdAmount || 0;
+                          const row = [
+                            result.moonbeamProposalIndex || "",
+                            result.moonbeamProposalIndex || "",
+                            "approveProposal",
+                            submitterAddress,
+                            result.recipient || recipient,
+                            "",
+                            result.usdcCallData?.treasuryCallHash || "",
+                            "Aye",
+                            "",
+                            new Date().toISOString().slice(0, 19).replace('T', ' '),
+                            `Q${Math.ceil((new Date().getMonth() + 1) / 3)}`,
+                            projectLabel || category,
+                            category,
+                            "USDC",
+                            result.usdcAmount?.toFixed(2) || "0",
+                            "0",
+                            `$${totalUsd.toFixed(2)}`,
+                            "100%",
+                            `${result.usdcAmount?.toFixed(2) || "0"} USDC`,
+                          ].join('\t');
+                          handleCopy(row, 'Google Sheet row copied!');
+                        }}
+                        style={{ cursor: 'pointer', padding: '8px 10px', background: 'rgba(57, 255, 20, 0.05)', borderRadius: 4, marginBottom: 4 }}
+                        title="Click to copy"
+                      >
+                        <pre style={{ fontSize: 10, color: '#39ff14', fontFamily: 'monospace', margin: 0, whiteSpace: 'pre-wrap', textShadow: '0 0 4px #39ff14' }}>{`${[result.moonbeamProposalIndex || "", result.moonbeamProposalIndex || "", "approveProposal", COUNCIL_MEMBERS[submitterName] || "", result.recipient || recipient, "", result.usdcCallData?.treasuryCallHash || "", "Aye", "", new Date().toISOString().slice(0, 19).replace('T', ' '), `Q${Math.ceil((new Date().getMonth() + 1) / 3)}`, projectLabel || category, category, "USDC", result.usdcAmount?.toFixed(2) || "0", "0", `$${(result.usdAmount || 0).toFixed(2)}`, "100%", `${result.usdcAmount?.toFixed(2) || "0"} USDC`].join('\t')}`}</pre>
+                      </div>
+                    ) : (
+                      <>
+                        <div
+                          onClick={() => {
                             const submitterAddress = COUNCIL_MEMBERS[submitterName] || "";
                             const totalUsd = result.usdAmount || 0;
                             const row = [
@@ -1203,95 +1237,64 @@ export default function Home() {
                               submitterAddress,
                               result.recipient || recipient,
                               "",
-                              result.usdcCallData?.treasuryCallHash || "",
+                              result.glmrCallData?.treasuryCallHash || "",
                               "Aye",
                               "",
                               new Date().toISOString().slice(0, 19).replace('T', ' '),
                               `Q${Math.ceil((new Date().getMonth() + 1) / 3)}`,
                               projectLabel || category,
                               category,
-                              "USDC",
-                              result.usdcAmount?.toFixed(2) || "0",
+                              "GLMR",
+                              result.glmrAmount?.toFixed(2) || "0",
                               "0",
                               `$${totalUsd.toFixed(2)}`,
-                              "100%",
-                              `${result.usdcAmount?.toFixed(2) || "0"} USDC`,
+                              `${glmrRatio}%`,
+                              `${result.glmrAmount?.toFixed(2) || "0"} GLMR`,
                             ].join('\t');
-                            handleCopy(row, 'Moonbeam row copied!');
+                            handleCopy(row, 'Google Sheet row copied!');
                           }}
-                          style={{ width: '100%', padding: '10px 14px', background: '#3D3D3D', borderRadius: 6, color: 'white', border: 'none', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}
+                          style={{ cursor: 'pointer', padding: '8px 10px', background: 'rgba(57, 255, 20, 0.05)', borderRadius: 4, marginBottom: 8 }}
+                          title="Click to copy"
                         >
-                          Copy Moonbeam Row (USDC)
-                        </button>
-                      ) : (
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-                          <button
-                              onClick={() => {
-                              const submitterAddress = COUNCIL_MEMBERS[submitterName] || "";
-                              const totalUsd = result.usdAmount || 0;
-                              const row = [
-                                result.moonbeamProposalIndex || "",
-                                result.moonbeamProposalIndex || "",
-                                "approveProposal",
-                                submitterAddress,
-                                result.recipient || recipient,
-                                "",
-                                result.glmrCallData?.treasuryCallHash || "",
-                                "Aye",
-                                "",
-                                new Date().toISOString().slice(0, 19).replace('T', ' '),
-                                `Q${Math.ceil((new Date().getMonth() + 1) / 3)}`,
-                                projectLabel || category,
-                                category,
-                                "GLMR",
-                                result.glmrAmount?.toFixed(2) || "0",
-                                "0",
-                                `$${totalUsd.toFixed(2)}`,
-                                `${glmrRatio}%`,
-                                `${result.glmrAmount?.toFixed(2) || "0"} GLMR`,
-                              ].join('\t');
-                              handleCopy(row, 'Moonbeam row copied!');
-                            }}
-                            style={{ padding: '10px 14px', background: '#3D3D3D', borderRadius: 6, color: 'white', border: 'none', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}
-                          >
-                            Copy Moonbeam Row (GLMR)
-                          </button>
-                          <button
-                              onClick={() => {
-                              const submitterAddress = COUNCIL_MEMBERS[submitterName] || "";
-                              const movrRecipientAddr = result.moonriverRecipient || result.recipient || recipient;
-                              const totalUsd = result.usdAmount || 0;
-                              const movrRatio = 100 - glmrRatio;
-                              const row = [
-                                result.moonriverProposalIndex || "",
-                                result.moonriverProposalIndex || "",
-                                "approveProposal",
-                                submitterAddress,
-                                movrRecipientAddr,
-                                "",
-                                result.movrCallData?.treasuryCallHash || "",
-                                "Aye",
-                                "",
-                                new Date().toISOString().slice(0, 19).replace('T', ' '),
-                                `Q${Math.ceil((new Date().getMonth() + 1) / 3)}`,
-                                projectLabel || category,
-                                category,
-                                "MOVR",
-                                result.movrAmount?.toFixed(2) || "0",
-                                "0",
-                                `$${totalUsd.toFixed(2)}`,
-                                `${movrRatio}%`,
-                                `${result.movrAmount?.toFixed(2) || "0"} MOVR`,
-                              ].join('\t');
-                              handleCopy(row, 'Moonriver row copied!');
-                            }}
-                            style={{ padding: '10px 14px', background: '#3D3D3D', borderRadius: 6, color: 'white', border: 'none', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}
-                          >
-                            Copy Moonriver Row (MOVR)
-                          </button>
+                          <pre style={{ fontSize: 10, color: '#39ff14', fontFamily: 'monospace', margin: 0, whiteSpace: 'pre-wrap', textShadow: '0 0 4px #39ff14' }}>{`${[result.moonbeamProposalIndex || "", result.moonbeamProposalIndex || "", "approveProposal", COUNCIL_MEMBERS[submitterName] || "", result.recipient || recipient, "", result.glmrCallData?.treasuryCallHash || "", "Aye", "", new Date().toISOString().slice(0, 19).replace('T', ' '), `Q${Math.ceil((new Date().getMonth() + 1) / 3)}`, projectLabel || category, category, "GLMR", result.glmrAmount?.toFixed(2) || "0", "0", `$${(result.usdAmount || 0).toFixed(2)}`, `${glmrRatio}%`, `${result.glmrAmount?.toFixed(2) || "0"} GLMR`].join('\t')}`}</pre>
                         </div>
-                      )}
-                    </div>
+                        <div
+                          onClick={() => {
+                            const submitterAddress = COUNCIL_MEMBERS[submitterName] || "";
+                            const movrRecipientAddr = result.moonriverRecipient || result.recipient || recipient;
+                            const totalUsd = result.usdAmount || 0;
+                            const movrRatio = 100 - glmrRatio;
+                            const row = [
+                              result.moonriverProposalIndex || "",
+                              result.moonriverProposalIndex || "",
+                              "approveProposal",
+                              submitterAddress,
+                              movrRecipientAddr,
+                              "",
+                              result.movrCallData?.treasuryCallHash || "",
+                              "Aye",
+                              "",
+                              new Date().toISOString().slice(0, 19).replace('T', ' '),
+                              `Q${Math.ceil((new Date().getMonth() + 1) / 3)}`,
+                              projectLabel || category,
+                              category,
+                              "MOVR",
+                              result.movrAmount?.toFixed(2) || "0",
+                              "0",
+                              `$${totalUsd.toFixed(2)}`,
+                              `${movrRatio}%`,
+                              `${result.movrAmount?.toFixed(2) || "0"} MOVR`,
+                            ].join('\t');
+                            handleCopy(row, 'Google Sheet row copied!');
+                          }}
+                          style={{ cursor: 'pointer', padding: '8px 10px', background: 'rgba(57, 255, 20, 0.05)', borderRadius: 4 }}
+                          title="Click to copy"
+                        >
+                          <pre style={{ fontSize: 10, color: '#39ff14', fontFamily: 'monospace', margin: 0, whiteSpace: 'pre-wrap', textShadow: '0 0 4px #39ff14' }}>{`${[result.moonriverProposalIndex || "", result.moonriverProposalIndex || "", "approveProposal", COUNCIL_MEMBERS[submitterName] || "", result.moonriverRecipient || result.recipient || recipient, "", result.movrCallData?.treasuryCallHash || "", "Aye", "", new Date().toISOString().slice(0, 19).replace('T', ' '), `Q${Math.ceil((new Date().getMonth() + 1) / 3)}`, projectLabel || category, category, "MOVR", result.movrAmount?.toFixed(2) || "0", "0", `$${(result.usdAmount || 0).toFixed(2)}`, `${100 - glmrRatio}%`, `${result.movrAmount?.toFixed(2) || "0"} MOVR`].join('\t')}`}</pre>
+                        </div>
+                      </>
+                    )}
+                  </div>
 
                     {/* GitHub Documentation */}
                     <div style={{ padding: 16, background: '#1a1d1f', borderRadius: 8, border: '1px solid #2d2d2d' }}>
@@ -1484,10 +1487,10 @@ ${forumContent || ''}
 
                           {/* README.md Download */}
                           <div style={{ marginTop: 16 }}>
-                            <div style={{ fontSize: 11, fontFamily: 'monospace', color: '#39ff14', marginBottom: 4 }}>
+                            <div style={{ fontSize: 12, color: '#9CA3AF', marginBottom: 4 }}>Generated updated Readme.md file</div>
+                            <div style={{ fontSize: 11, fontFamily: 'monospace', color: '#39ff14', marginBottom: 8 }}>
                               README.md
                             </div>
-                            <div style={{ fontSize: 12, color: '#9CA3AF', marginBottom: 8 }}>Generated updated Readme.md file</div>
                             {result.payoutType === "usdc" ? (
                               <div style={{ marginBottom: 12 }}>
                                 <button
