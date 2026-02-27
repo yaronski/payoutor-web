@@ -28,6 +28,7 @@ export async function POST(req: NextRequest) {
     let moonbeamInsertIndex = -1;
     let moonriverInsertIndex = -1;
     let inMoonbeam = false;
+    let lastMoonbeamDataRowIndex = -1;
     
     for (let i = 0; i < lines.length; i++) {
       const line = lines[i];
@@ -39,17 +40,23 @@ export async function POST(req: NextRequest) {
         continue;
       }
       
-      // Track when exiting Moonbeam section
+      // Track when exiting Moonbeam section - insert right before ### Moonriver
       if (trimmed === '### Moonriver') {
-        // Insert BEFORE ### Moonriver (after last Moonbeam data row)
-        moonbeamInsertIndex = i;
+        // Find position right after last data row, skipping empty lines
+        if (lastMoonbeamDataRowIndex > 0) {
+          // Insert immediately after the last data row
+          moonbeamInsertIndex = lastMoonbeamDataRowIndex + 1;
+        } else {
+          // Fallback: insert before ### Moonriver
+          moonbeamInsertIndex = i;
+        }
         inMoonbeam = false;
         continue;
       }
       
-      // Find last data row in Moonbeam section (lines starting with |)
+      // Find last data row in Moonbeam section (lines starting with |, not |---)
       if (inMoonbeam && trimmed.startsWith('|') && !trimmed.startsWith('|---')) {
-        moonbeamInsertIndex = i + 1; // Insert AFTER this row
+        lastMoonbeamDataRowIndex = i;
       }
     }
     
