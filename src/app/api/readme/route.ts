@@ -27,15 +27,29 @@ export async function POST(req: NextRequest) {
     
     let moonbeamInsertIndex = -1;
     let moonriverInsertIndex = -1;
+    let inMoonbeam = false;
     
     for (let i = 0; i < lines.length; i++) {
       const line = lines[i];
       const trimmed = line.trim();
       
-      // For Moonbeam: Find where Moonbeam section ends (before ### Moonriver)
-      if (trimmed === '### Moonriver' && moonbeamInsertIndex === -1) {
-        moonbeamInsertIndex = i;
+      // Track when entering Moonbeam section
+      if (trimmed === '### Moonbeam') {
+        inMoonbeam = true;
         continue;
+      }
+      
+      // Track when exiting Moonbeam section
+      if (trimmed === '### Moonriver') {
+        // Insert BEFORE ### Moonriver (after last Moonbeam data row)
+        moonbeamInsertIndex = i;
+        inMoonbeam = false;
+        continue;
+      }
+      
+      // Find last data row in Moonbeam section (lines starting with |)
+      if (inMoonbeam && trimmed.startsWith('|') && !trimmed.startsWith('|---')) {
+        moonbeamInsertIndex = i + 1; // Insert AFTER this row
       }
     }
     
