@@ -1219,9 +1219,10 @@ export default function Home() {
                           ].join('\t');
                           handleCopy(row, 'Google Sheet row copied!');
                         }}
-                        style={{ cursor: 'pointer', padding: '8px 10px', background: 'rgba(57, 255, 20, 0.05)', borderRadius: 4, marginBottom: 4 }}
+                        style={{ cursor: 'pointer', padding: '8px 10px', background: 'rgba(57, 255, 20, 0.05)', borderRadius: 4, marginBottom: 4, position: 'relative' }}
                         title="Click to copy"
                       >
+                        <svg style={{ position: 'absolute', top: 4, right: 4 }} width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#39ff14" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
                         <pre style={{ fontSize: 10, color: '#39ff14', fontFamily: 'monospace', margin: 0, whiteSpace: 'pre-wrap', textShadow: '0 0 4px #39ff14' }}>{`${[result.moonbeamProposalIndex || "", result.moonbeamProposalIndex || "", "approveProposal", COUNCIL_MEMBERS[submitterName] || "", result.recipient || recipient, "", result.usdcCallData?.treasuryCallHash || "", "Aye", "", new Date().toISOString().slice(0, 19).replace('T', ' '), `Q${Math.ceil((new Date().getMonth() + 1) / 3)}`, projectLabel || category, category, "USDC", result.usdcAmount?.toFixed(2) || "0", "0", `$${(result.usdAmount || 0).toFixed(2)}`, "100%", `${result.usdcAmount?.toFixed(2) || "0"} USDC`].join('\t')}`}</pre>
                       </div>
                     ) : (
@@ -1253,9 +1254,10 @@ export default function Home() {
                             ].join('\t');
                             handleCopy(row, 'Google Sheet row copied!');
                           }}
-                          style={{ cursor: 'pointer', padding: '8px 10px', background: 'rgba(57, 255, 20, 0.05)', borderRadius: 4, marginBottom: 8 }}
+                          style={{ cursor: 'pointer', padding: '8px 10px', background: 'rgba(57, 255, 20, 0.05)', borderRadius: 4, marginBottom: 8, position: 'relative' }}
                           title="Click to copy"
                         >
+                          <svg style={{ position: 'absolute', top: 4, right: 4 }} width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#39ff14" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
                           <pre style={{ fontSize: 10, color: '#39ff14', fontFamily: 'monospace', margin: 0, whiteSpace: 'pre-wrap', textShadow: '0 0 4px #39ff14' }}>{`${[result.moonbeamProposalIndex || "", result.moonbeamProposalIndex || "", "approveProposal", COUNCIL_MEMBERS[submitterName] || "", result.recipient || recipient, "", result.glmrCallData?.treasuryCallHash || "", "Aye", "", new Date().toISOString().slice(0, 19).replace('T', ' '), `Q${Math.ceil((new Date().getMonth() + 1) / 3)}`, projectLabel || category, category, "GLMR", result.glmrAmount?.toFixed(2) || "0", "0", `$${(result.usdAmount || 0).toFixed(2)}`, `${glmrRatio}%`, `${result.glmrAmount?.toFixed(2) || "0"} GLMR`].join('\t')}`}</pre>
                         </div>
                         <div
@@ -1287,9 +1289,10 @@ export default function Home() {
                             ].join('\t');
                             handleCopy(row, 'Google Sheet row copied!');
                           }}
-                          style={{ cursor: 'pointer', padding: '8px 10px', background: 'rgba(57, 255, 20, 0.05)', borderRadius: 4 }}
+                          style={{ cursor: 'pointer', padding: '8px 10px', background: 'rgba(57, 255, 20, 0.05)', borderRadius: 4, position: 'relative' }}
                           title="Click to copy"
                         >
+                          <svg style={{ position: 'absolute', top: 4, right: 4 }} width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#39ff14" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
                           <pre style={{ fontSize: 10, color: '#39ff14', fontFamily: 'monospace', margin: 0, whiteSpace: 'pre-wrap', textShadow: '0 0 4px #39ff14' }}>{`${[result.moonriverProposalIndex || "", result.moonriverProposalIndex || "", "approveProposal", COUNCIL_MEMBERS[submitterName] || "", result.moonriverRecipient || result.recipient || recipient, "", result.movrCallData?.treasuryCallHash || "", "Aye", "", new Date().toISOString().slice(0, 19).replace('T', ' '), `Q${Math.ceil((new Date().getMonth() + 1) / 3)}`, projectLabel || category, category, "MOVR", result.movrAmount?.toFixed(2) || "0", "0", `$${(result.usdAmount || 0).toFixed(2)}`, `${100 - glmrRatio}%`, `${result.movrAmount?.toFixed(2) || "0"} MOVR`].join('\t')}`}</pre>
                         </div>
                       </>
@@ -1615,9 +1618,10 @@ ${forumContent || ''}
                                     const row = `| ${result.moonbeamProposalIndex} | ${result.moonbeamProposalIndex} | [${forumTitle || projectLabel || 'Treasury Proposal'}](moonbeam/MBTP${result.moonbeamProposalIndex}.md) | ${submitterAddress} | ${result.recipient || recipient} | ${result.usdcAmount?.toFixed(2) || '0'} USDC | approved |`;
                                     handleCopy(row, 'Row copied!');
                                   }}
-                                  style={{ cursor: 'pointer', padding: '4px 6px', background: 'rgba(57, 255, 20, 0.05)', borderRadius: 4, marginBottom: 4 }}
+                                  style={{ cursor: 'pointer', padding: '4px 6px', background: 'rgba(57, 255, 20, 0.05)', borderRadius: 4, marginBottom: 4, position: 'relative' }}
                                   title="Click to copy"
                                 >
+                                  <svg style={{ position: 'absolute', top: 2, right: 2 }} width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#39ff14" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
                                   <pre style={{ fontSize: 10, color: '#39ff14', fontFamily: 'monospace', margin: 0, whiteSpace: 'pre-wrap', textShadow: '0 0 4px #39ff14' }}>{`| ${result.moonbeamProposalIndex} | ${result.moonbeamProposalIndex} | [${forumTitle || projectLabel || 'Treasury Proposal'}](moonbeam/MBTP${result.moonbeamProposalIndex}.md) | ${COUNCIL_MEMBERS[submitterName] || ""} | ${result.recipient || recipient} | ${result.usdcAmount?.toFixed(2) || '0'} USDC | approved |`}</pre>
                                 </div>
                               ) : (
@@ -1628,9 +1632,10 @@ ${forumContent || ''}
                                       const row = `| ${result.moonbeamProposalIndex} | ${result.moonbeamProposalIndex} | [${forumTitle || projectLabel || 'Treasury Proposal'}](moonbeam/MBTP${result.moonbeamProposalIndex}&MRTP${result.moonriverProposalIndex}.md) | ${submitterAddress} | ${result.recipient || recipient} | ${result.glmrAmount?.toFixed(4) || '0'} GLMR | approved |`;
                                       handleCopy(row, 'Moonbeam row copied!');
                                     }}
-                                    style={{ cursor: 'pointer', padding: '4px 6px', background: 'rgba(57, 255, 20, 0.05)', borderRadius: 4, marginBottom: 4 }}
+                                    style={{ cursor: 'pointer', padding: '4px 6px', background: 'rgba(57, 255, 20, 0.05)', borderRadius: 4, marginBottom: 4, position: 'relative' }}
                                     title="Click to copy"
                                   >
+                                    <svg style={{ position: 'absolute', top: 2, right: 2 }} width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#39ff14" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
                                     <pre style={{ fontSize: 10, color: '#39ff14', fontFamily: 'monospace', margin: 0, whiteSpace: 'pre-wrap', textShadow: '0 0 4px #39ff14' }}>{`| ${result.moonbeamProposalIndex} | ${result.moonbeamProposalIndex} | [${forumTitle || projectLabel || 'Treasury Proposal'}](moonbeam/MBTP${result.moonbeamProposalIndex}&MRTP${result.moonriverProposalIndex}.md) | ${COUNCIL_MEMBERS[submitterName] || ""} | ${result.recipient || recipient} | ${result.glmrAmount?.toFixed(4) || '0'} GLMR | approved |`}</pre>
                                   </div>
                                   <div
@@ -1640,9 +1645,10 @@ ${forumContent || ''}
                                       const row = `| ${result.moonriverProposalIndex} | ${result.moonriverProposalIndex} | [${forumTitle || projectLabel || 'Treasury Proposal'}](moonriver/MRTP${result.moonriverProposalIndex}&MBTP${result.moonbeamProposalIndex}.md) | ${submitterAddress} | ${movrRecipientAddr} | ${result.movrAmount?.toFixed(4) || '0'} MOVR | approved |`;
                                       handleCopy(row, 'Moonriver row copied!');
                                     }}
-                                    style={{ cursor: 'pointer', padding: '4px 6px', background: 'rgba(57, 255, 20, 0.05)', borderRadius: 4 }}
+                                    style={{ cursor: 'pointer', padding: '4px 6px', background: 'rgba(57, 255, 20, 0.05)', borderRadius: 4, position: 'relative' }}
                                     title="Click to copy"
                                   >
+                                    <svg style={{ position: 'absolute', top: 2, right: 2 }} width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#39ff14" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
                                     <pre style={{ fontSize: 10, color: '#39ff14', fontFamily: 'monospace', margin: 0, whiteSpace: 'pre-wrap', textShadow: '0 0 4px #39ff14' }}>{`| ${result.moonriverProposalIndex} | ${result.moonriverProposalIndex} | [${forumTitle || projectLabel || 'Treasury Proposal'}](moonriver/MRTP${result.moonriverProposalIndex}&MBTP${result.moonbeamProposalIndex}.md) | ${COUNCIL_MEMBERS[submitterName] || ""} | ${result.moonriverRecipient || result.recipient || recipient} | ${result.movrAmount?.toFixed(4) || '0'} MOVR | approved |`}</pre>
                                   </div>
                                 </>
@@ -1658,9 +1664,10 @@ ${forumContent || ''}
                   <div style={{ fontSize: 14, fontWeight: 600, color: 'white', marginBottom: 10 }}>Summary</div>
                   <div 
                     onClick={() => handleCopy(result.summary, 'Summary copied!')}
-                    style={{ cursor: 'pointer', background: 'rgba(57, 255, 20, 0.05)', borderRadius: 8, padding: 12, border: '1px solid rgba(57, 255, 20, 0.15)' }}
+                    style={{ cursor: 'pointer', background: 'rgba(57, 255, 20, 0.05)', borderRadius: 8, padding: 12, border: '1px solid rgba(57, 255, 20, 0.15)', position: 'relative' }}
                     title="Click to copy"
                   >
+                    <svg style={{ position: 'absolute', top: 8, right: 8 }} width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#39ff14" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
                     <pre style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word', fontSize: 'clamp(11px, 2.5vw, 14px)', background: 'none', color: '#39ff14', padding: 0, marginBottom: 0, fontFamily: 'monospace', textShadow: '0 0 0px #39ff14, 0 0 4px #39ff14', overflowX: 'auto' }}>{renderSummaryWithLinks(result.summary)}</pre>
                   </div>
                 </div>
