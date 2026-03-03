@@ -1687,7 +1687,11 @@ ${forumContent || ''}
             )}
           </div>
           <div style={{ textAlign: 'center', marginTop: 32, marginBottom: 24, fontSize: 11, color: '#6b7280', fontStyle: 'italic' }}>
-            This tool is provided free of charge &amp; and open source (<a href="https://github.com/yaronski/payoutor-web" target="_blank" rel="noopener noreferrer" style={{ color: '#6b7280', textDecoration: 'underline' }}>GitHub</a>). If you found this useful and want to <a href="https://buymeacoffee.com/yaronski" target="_blank" rel="noopener noreferrer" style={{ color: '#6b7280', textDecoration: 'underline' }}>fuel my fire</a>: https://buymeacoffee.com/yaronski (except if you are Simon because I owe you for life! &lt;3). Always double-check all calculations and on-chain data before submitting any proposals or votes.
+            This tool is provided free of charge &amp; and open source.<br/>
+            <a href="https://github.com/yaronski/payoutor-web" target="_blank" rel="noopener noreferrer" style={{ color: '#6b7280', textDecoration: 'underline' }}>GitHub</a><br/>
+            If you found this useful and want to fuel my fire:<br/>
+            <a href="https://buymeacoffee.com/yaronski" target="_blank" rel="noopener noreferrer" style={{ color: '#6b7280', textDecoration: 'underline' }}>https://buymeacoffee.com/yaronski</a> (except if you are Simon because I owe you for life! &lt;3)<br/>
+            Always double-check all calculations and on-chain data before submitting any proposals or votes.
           </div>
          </div>
        </main>
