@@ -1358,6 +1358,7 @@ export default function Home() {
                               </div>
                               <button
                                 onClick={() => {
+                                  const submitterDisplayName = submitterName.charAt(0).toUpperCase() + submitterName.slice(1);
                                   const md = `# [${forumTitle || projectLabel || 'Treasury Proposal'}](${forumUrl || ''})
 
 ${forumContent || ''}
@@ -1367,6 +1368,7 @@ ${forumContent || ''}
 *Proposal ID: ${result.moonbeamProposalIndex}*
 *Beneficiary: ${result.recipient || recipient}*
 *Reward: ${result.usdcAmount?.toFixed(2) || '0'} USDC*
+*Submitted by: ${submitterDisplayName}*
 `;
                                   handleDownload(`MBTP${result.moonbeamProposalIndex}.md`, md);
                                 }}
@@ -1376,6 +1378,7 @@ ${forumContent || ''}
                               </button>
                               <button
                                 onClick={() => {
+                                  const submitterDisplayName = submitterName.charAt(0).toUpperCase() + submitterName.slice(1);
                                   const md = `# [${forumTitle || projectLabel || 'Treasury Proposal'}](${forumUrl || ''})
 
 ${forumContent || ''}
@@ -1385,6 +1388,7 @@ ${forumContent || ''}
 *Proposal ID: ${result.moonbeamProposalIndex}*
 *Beneficiary: ${result.recipient || recipient}*
 *Reward: ${result.usdcAmount?.toFixed(2) || '0'} USDC*
+*Submitted by: ${submitterDisplayName}*
 `;
                                   handleCopy(md, 'Moonbeam .md copied!');
                                 }}
@@ -1402,6 +1406,7 @@ ${forumContent || ''}
                                 </div>
                                 <button
                                   onClick={() => {
+                                    const submitterDisplayName = submitterName.charAt(0).toUpperCase() + submitterName.slice(1);
                                     const md = `# [${forumTitle || projectLabel || 'Treasury Proposal'}](${forumUrl || ''})
 
 ${forumContent || ''}
@@ -1412,6 +1417,7 @@ ${forumContent || ''}
 *Moonriver Proposal ID: ${result.moonriverProposalIndex}*
 *Beneficiary: ${result.recipient || recipient}${result.moonriverRecipient ? ` / ${result.moonriverRecipient}` : ''}*
 *Reward: ${result.glmrAmount?.toFixed(4) || '0'} GLMR*
+*Submitted by: ${submitterDisplayName}*
 `;
                                     handleDownload(`MBTP${result.moonbeamProposalIndex}&MRTP${result.moonriverProposalIndex}.md`, md);
                                   }}
@@ -1421,6 +1427,7 @@ ${forumContent || ''}
                                 </button>
                                 <button
                                   onClick={() => {
+                                    const submitterDisplayName = submitterName.charAt(0).toUpperCase() + submitterName.slice(1);
                                     const md = `# [${forumTitle || projectLabel || 'Treasury Proposal'}](${forumUrl || ''})
 
 ${forumContent || ''}
@@ -1431,6 +1438,7 @@ ${forumContent || ''}
 *Moonriver Proposal ID: ${result.moonriverProposalIndex}*
 *Beneficiary: ${result.recipient || recipient}${result.moonriverRecipient ? ` / ${result.moonriverRecipient}` : ''}*
 *Reward: ${result.glmrAmount?.toFixed(4) || '0'} GLMR*
+*Submitted by: ${submitterDisplayName}*
 `;
                                     handleCopy(md, 'Moonbeam .md copied!');
                                   }}
@@ -1446,6 +1454,7 @@ ${forumContent || ''}
                                 </div>
                                 <button
                                   onClick={() => {
+                                    const submitterDisplayName = submitterName.charAt(0).toUpperCase() + submitterName.slice(1);
                                     const movrRecipientAddr = result.moonriverRecipient || result.recipient || recipient;
                                     const md = `# [${forumTitle || projectLabel || 'Treasury Proposal'}](${forumUrl || ''})
 
@@ -1457,6 +1466,7 @@ ${forumContent || ''}
 *Moonriver Proposal ID: ${result.moonriverProposalIndex}*
 *Beneficiary: ${movrRecipientAddr}*
 *Reward: ${result.movrAmount?.toFixed(4) || '0'} MOVR*
+*Submitted by: ${submitterDisplayName}*
 `;
                                     handleDownload(`MRTP${result.moonriverProposalIndex}&MBTP${result.moonbeamProposalIndex}.md`, md);
                                   }}
@@ -1466,6 +1476,7 @@ ${forumContent || ''}
                                 </button>
                                 <button
                                   onClick={() => {
+                                    const submitterDisplayName = submitterName.charAt(0).toUpperCase() + submitterName.slice(1);
                                     const movrRecipientAddr = result.moonriverRecipient || result.recipient || recipient;
                                     const md = `# [${forumTitle || projectLabel || 'Treasury Proposal'}](${forumUrl || ''})
 
@@ -1477,6 +1488,7 @@ ${forumContent || ''}
 *Moonriver Proposal ID: ${result.moonriverProposalIndex}*
 *Beneficiary: ${movrRecipientAddr}*
 *Reward: ${result.movrAmount?.toFixed(4) || '0'} MOVR*
+*Submitted by: ${submitterDisplayName}*
 `;
                                     handleCopy(md, 'Moonriver .md copied!');
                                   }}
@@ -1675,7 +1687,7 @@ ${forumContent || ''}
             )}
           </div>
           <div style={{ textAlign: 'center', marginTop: 32, marginBottom: 24, fontSize: 11, color: '#6b7280', fontStyle: 'italic' }}>
-            Disclaimer: This tool is provided as-is. Always double-check all calculations and on-chain data before submitting any proposals or votes.
+            This tool is provided free of charge &amp; and open source (<a href="https://github.com/yaronski/payoutor-web" target="_blank" rel="noopener noreferrer" style={{ color: '#6b7280', textDecoration: 'underline' }}>GitHub</a>). If you found this useful and want to <a href="https://buymeacoffee.com/yaronski" target="_blank" rel="noopener noreferrer" style={{ color: '#6b7280', textDecoration: 'underline' }}>fuel my fire</a>: https://buymeacoffee.com/yaronski (except if you are Simon because I owe you for life! &lt;3). Always double-check all calculations and on-chain data before submitting any proposals or votes.
           </div>
          </div>
        </main>
