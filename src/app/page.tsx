@@ -1687,8 +1687,8 @@ ${forumContent || ''}
             )}
           </div>
           <div style={{ textAlign: 'center', marginTop: 32, marginBottom: 24, fontSize: 11, color: '#6b7280', fontStyle: 'italic' }}>
-            This tool is provided free of charge &amp; and <a href="https://github.com/yaronski/payoutor-web" target="_blank" rel="noopener noreferrer" style={{ color: '#6b7280', textDecoration: 'underline' }}>open source</a>.<br/>
-            If you found this useful and want to <a href="https://buymeacoffee.com/yaronski" target="_blank" rel="noopener noreferrer" style={{ color: '#6b7280', textDecoration: 'underline' }}>fuel my fire</a> (except if you are Simon because I owe you for life).<br/>
+            This tool is provided free of charge &amp; <a href="https://github.com/yaronski/payoutor-web" target="_blank" rel="noopener noreferrer" style={{ color: '#6b7280', textDecoration: 'underline' }}>open source</a>.<br/>
+            If you found this useful feel free to <a href="https://buymeacoffee.com/yaronski" target="_blank" rel="noopener noreferrer" style={{ color: '#6b7280', textDecoration: 'underline' }}>fuel my fire</a> — Except if you are Simon because I owe you for life, already.<br/>
             Always double-check all calculations and on-chain data before submitting any proposals or votes.
           </div>
          </div>
