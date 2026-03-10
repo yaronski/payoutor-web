@@ -189,7 +189,7 @@ export default function Home() {
   const [copyNotification, setCopyNotification] = useState<string | null>(null);
   const resultRef = useRef<HTMLDivElement>(null);
   const isWaitingForRate = currency === "EUR" && (fxRateLoading || !fxRate);
-  const isSubmitDisabled = loading || isWaitingForRate;
+  const isSubmitDisabled = loading || isWaitingForRate || !recipient || !usdAmount || parseFloat(usdAmount.replace(/,/g, '')) <= 0;
   const fxMetaText = [fxSource, fxLastUpdated]
     .filter((part): part is string => Boolean(part))
     .join(" · ");
@@ -944,13 +944,13 @@ export default function Home() {
                 padding: '14px 32px',
                 fontSize: 18,
                 fontWeight: 700,
-                background: '#3D3D3D',
-                color: 'white',
+                background: isSubmitDisabled ? '#3D3D3D' : '#39ff14',
+                color: isSubmitDisabled ? '#666' : '#000',
                 border: 'none',
                 borderRadius: 8,
                 cursor: isSubmitDisabled ? 'not-allowed' : 'pointer',
-                boxShadow: '0 2px 8px rgba(30,144,255,0.12)',
-                transition: 'background 0.2s',
+                boxShadow: isSubmitDisabled ? 'none' : '0 2px 12px #39ff1466',
+                transition: 'background 0.2s, color 0.2s',
                 width: '100%'
               }}
             >
@@ -1686,9 +1686,9 @@ ${forumContent || ''}
               </div>
             )}
           </div>
-          <div style={{ textAlign: 'center', marginTop: 32, marginBottom: 24, fontSize: 11, color: '#6b7280', fontStyle: 'italic' }}>
-            This tool is provided free of charge &amp; <a href="https://github.com/yaronski/payoutor-web" target="_blank" rel="noopener noreferrer" style={{ color: '#6b7280', textDecoration: 'underline' }}>open source</a>.<br/>
-            If you found this useful feel free to <a href="https://buymeacoffee.com/yaronski" target="_blank" rel="noopener noreferrer" style={{ color: '#6b7280', textDecoration: 'underline' }}>fuel my fire</a> — Except if you are Simon because I owe you for life, already.<br/>
+          <div style={{ textAlign: 'center', marginTop: 32, marginBottom: 24, fontSize: 12, color: '#39ff14', fontFamily: 'monospace', textShadow: '0 0 4px #39ff14' }}>
+            This tool is provided free of charge &amp; <a href="https://github.com/yaronski/payoutor-web" target="_blank" rel="noopener noreferrer" style={{ color: '#39ff14', textDecoration: 'underline', textShadow: '0 0 4px #39ff14' }}>open source</a>.<br/>
+            If you found this useful feel free to <a href="https://buymeacoffee.com/yaronski" target="_blank" rel="noopener noreferrer" style={{ color: '#39ff14', textDecoration: 'underline', textShadow: '0 0 4px #39ff14' }}>fuel my fire</a> — Except if you are Simon because I owe you for life, already.<br/>
             Always double-check all calculations and on-chain data before submitting any proposals or votes.
           </div>
          </div>
