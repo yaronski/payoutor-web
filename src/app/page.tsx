@@ -109,7 +109,10 @@ export default function Home() {
     movr: string;
     glmrUsd: string;
     movrUsd: string;
-  }>({ usdc: "Fetching...", glmr: "Fetching...", movr: "Fetching...", glmrUsd: "Fetching...", movrUsd: "Fetching..." });
+    hydrationGlmr: string;
+    hydrationUsdc: string;
+    hydrationGlmrUsd: string;
+  }>({ usdc: "Fetching...", glmr: "Fetching...", movr: "Fetching...", glmrUsd: "Fetching...", movrUsd: "Fetching...", hydrationGlmr: "Fetching...", hydrationUsdc: "Fetching...", hydrationGlmrUsd: "Fetching..." });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [result, setResult] = useState<{
@@ -247,7 +250,7 @@ export default function Home() {
         }
       } catch (err) {
         console.error("Failed to fetch treasury balances:", err);
-        setTreasuryBalances({ usdc: "Error", glmr: "Error", movr: "Error", glmrUsd: "Error", movrUsd: "Error" });
+        setTreasuryBalances({ usdc: "Error", glmr: "Error", movr: "Error", glmrUsd: "Error", movrUsd: "Error", hydrationGlmr: "Error", hydrationUsdc: "Error", hydrationGlmrUsd: "Error" });
       }
     }
     fetchBalances();
@@ -474,13 +477,25 @@ export default function Home() {
                         <span style={{ fontVariantNumeric: 'tabular-nums', textAlign: 'right' }}>{treasuryBalances.movr === "Fetching..." ? "Fetching..." : treasuryBalances.movr + " MOVR"}</span>
                         <span style={{ fontVariantNumeric: 'tabular-nums', textAlign: 'right', color: '#6b7280' }}>{treasuryBalances.movrUsd === "Fetching..." ? "" : "$ " + treasuryBalances.movrUsd}</span>
                       </div>
+                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 4, alignItems: 'center', borderTop: '1px solid #2d2d2d', paddingTop: 4, marginTop: 2 }}>
+                        <span style={{ color: '#39ff14', textShadow: '0 0 4px #39ff14' }}>Hydration</span>
+                        <span style={{ fontVariantNumeric: 'tabular-nums', textAlign: 'right' }}>{treasuryBalances.hydrationGlmr === "Fetching..." ? "Fetching..." : treasuryBalances.hydrationGlmr + " GLMR"}</span>
+                        <span style={{ fontVariantNumeric: 'tabular-nums', textAlign: 'right', color: '#6b7280' }}>{treasuryBalances.hydrationGlmrUsd === "Fetching..." ? "" : "$ " + treasuryBalances.hydrationGlmrUsd}</span>
+                      </div>
                     </>
                   ) : (
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 4, alignItems: 'center' }}>
-                      <span style={{ color: '#39ff14', textShadow: '0 0 4px #39ff14' }}>Moonbeam</span>
-                      <span style={{ fontVariantNumeric: 'tabular-nums', textAlign: 'right' }}>{treasuryBalances.usdc === "Fetching..." ? "Fetching..." : treasuryBalances.usdc + " USDC"}</span>
-                      <span style={{ fontVariantNumeric: 'tabular-nums', textAlign: 'right', color: '#6b7280' }}>{treasuryBalances.usdc === "Fetching..." ? "" : "$ " + treasuryBalances.usdc}</span>
-                    </div>
+                    <>
+                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 4, alignItems: 'center' }}>
+                        <span style={{ color: '#39ff14', textShadow: '0 0 4px #39ff14' }}>Moonbeam</span>
+                        <span style={{ fontVariantNumeric: 'tabular-nums', textAlign: 'right' }}>{treasuryBalances.usdc === "Fetching..." ? "Fetching..." : treasuryBalances.usdc + " USDC"}</span>
+                        <span style={{ fontVariantNumeric: 'tabular-nums', textAlign: 'right', color: '#6b7280' }}>{treasuryBalances.usdc === "Fetching..." ? "" : "$ " + treasuryBalances.usdc}</span>
+                      </div>
+                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 4, alignItems: 'center', borderTop: '1px solid #2d2d2d', paddingTop: 4, marginTop: 2 }}>
+                        <span style={{ color: '#39ff14', textShadow: '0 0 4px #39ff14' }}>Hydration</span>
+                        <span style={{ fontVariantNumeric: 'tabular-nums', textAlign: 'right' }}>{treasuryBalances.hydrationUsdc === "Fetching..." ? "Fetching..." : treasuryBalances.hydrationUsdc + " USDC"}</span>
+                        <span style={{ fontVariantNumeric: 'tabular-nums', textAlign: 'right', color: '#6b7280' }}>{treasuryBalances.hydrationUsdc === "Fetching..." ? "" : "$ " + treasuryBalances.hydrationUsdc}</span>
+                      </div>
+                    </>
                   )}
                 </div>
               </div>
