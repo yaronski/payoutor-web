@@ -4,60 +4,6 @@ import { ApiPromise, WsProvider } from "@polkadot/api";
 const MOONBEAM_TREASURY = "0x6d6f646c70792f74727372790000000000000000";
 const MOONRIVER_TREASURY = "0x6d6f646c70792f74727372790000000000000000";
 const XCUSDC_ADDRESS = "0xFFFFFFFF7D2B0B761AF01CA8E25242976AC0AD7D";
-const HYDRATION_WS = "wss://rpc.hydration.network";
-const MOONBEAM_PARA_ID = 2004;
-const HYDRATION_GLMR_ASSET_ID = 16;
-const HYDRATION_USDC_ASSET_ID = 21;
-
-function moonbeamSovereignOnHydration(): string {
-  const sibl = Buffer.from("sibl");
-  const paraId = Buffer.alloc(4);
-  paraId.writeUInt32LE(MOONBEAM_PARA_ID);
-  return "0x" + Buffer.concat([sibl, paraId, Buffer.alloc(24)]).toString("hex");
-}
-
-function withTimeout<T>(ms: number, fallback: T): (p: Promise<T>) => Promise<T> {
-  return (p) => Promise.race([
-    p,
-    new Promise<T>((resolve) => setTimeout(() => resolve(fallback), ms)),
-  ]);
-}
-
-const HYDRATION_FALLBACK = { glmr: "N/A", usdc: "N/A" };
-
-async function getHydrationBalances(): Promise<{ glmr: string; usdc: string }> {
-  let api: ApiPromise | null = null;
-  try {
-    const wsProvider = new WsProvider(HYDRATION_WS, false);
-    const connected = new Promise<void>((resolve, reject) => {
-      wsProvider.on("connected", resolve);
-      wsProvider.on("error", reject);
-      setTimeout(() => reject(new Error("WS connect timeout")), 15_000);
-    });
-    wsProvider.connect();
-    await connected;
-    api = await ApiPromise.create({ provider: wsProvider });
-    await api.isReady;
-    const account = moonbeamSovereignOnHydration();
-    const [glmrData, usdcData]: any[] = await Promise.all([
-      api.query.tokens.accounts(account, HYDRATION_GLMR_ASSET_ID),
-      api.query.tokens.accounts(account, HYDRATION_USDC_ASSET_ID),
-    ]);
-    const glmrRaw = glmrData.free.toBigInt();
-    const usdcRaw = usdcData.free.toBigInt();
-    return {
-      glmr: (Number(glmrRaw) / 1e18).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 }),
-      usdc: (Number(usdcRaw) / 1e6).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 }),
-    };
-  } catch (e) {
-    console.log("Error fetching Hydration balances:", e);
-    return HYDRATION_FALLBACK;
-  } finally {
-    if (api) {
-      try { await api.disconnect(); } catch {}
-    }
-  }
-}
 
 async function getNativeBalance(address: string, network: "moonbeam" | "moonriver"): Promise<string> {
   let api: ApiPromise | null = null;
@@ -177,24 +123,17 @@ async function getTokenPrices(): Promise<{ glmrUsd: number; movrUsd: number }> {
 
 export async function GET() {
   try {
-    const hydrationPromise = withTimeout(20_000, HYDRATION_FALLBACK)(getHydrationBalances());
-
-    const [glmr, movr, usdc, prices, hydration] = await Promise.all([
+    const [glmr, movr, usdc, prices] = await Promise.all([
       getNativeBalance(MOONBEAM_TREASURY, "moonbeam"),
       getNativeBalance(MOONRIVER_TREASURY, "moonriver"),
       getUsdcBalanceViaRpc(),
-      getTokenPrices(),
-      hydrationPromise,
+      getTokenPrices()
     ]);
 
     const glmrNum = parseFloat(glmr.replace(/,/g, '')) || 0;
     const movrNum = parseFloat(movr.replace(/,/g, '')) || 0;
     const glmrUsd = glmrNum * prices.glmrUsd;
     const movrUsd = movrNum * prices.movrUsd;
-
-    const hydrationGlmrNum = parseFloat(hydration.glmr.replace(/,/g, '')) || 0;
-    const hydrationUsdcNum = parseFloat(hydration.usdc.replace(/,/g, '')) || 0;
-    const hydrationGlmrUsd = hydrationGlmrNum * prices.glmrUsd;
 
     return NextResponse.json({ 
       glmr, 
@@ -203,13 +142,10 @@ export async function GET() {
       glmrUsd: glmrUsd.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 }),
       movrUsd: movrUsd.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 }),
       glmrPrice: prices.glmrUsd,
-      movrPrice: prices.movrUsd,
-      hydrationGlmr: hydration.glmr,
-      hydrationUsdc: hydration.usdc,
-      hydrationGlmrUsd: hydrationGlmrUsd.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 }),
+      movrPrice: prices.movrUsd
     });
   } catch (error) {
     console.error("Error:", error);
-    return NextResponse.json({ glmr: "N/A", movr: "N/A", usdc: "N/A", glmrUsd: "N/A", movrUsd: "N/A", hydrationGlmr: "N/A", hydrationUsdc: "N/A", hydrationGlmrUsd: "N/A" });
+    return NextResponse.json({ glmr: "N/A", movr: "N/A", usdc: "N/A", glmrUsd: "N/A", movrUsd: "N/A" });
   }
 }
