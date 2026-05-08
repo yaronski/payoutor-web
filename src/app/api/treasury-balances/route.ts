@@ -16,10 +16,26 @@ function moonbeamSovereignOnHydration(): string {
   return "0x" + Buffer.concat([sibl, paraId, Buffer.alloc(24)]).toString("hex");
 }
 
+function withTimeout<T>(ms: number, fallback: T): (p: Promise<T>) => Promise<T> {
+  return (p) => Promise.race([
+    p,
+    new Promise<T>((resolve) => setTimeout(() => resolve(fallback), ms)),
+  ]);
+}
+
+const HYDRATION_FALLBACK = { glmr: "N/A", usdc: "N/A" };
+
 async function getHydrationBalances(): Promise<{ glmr: string; usdc: string }> {
   let api: ApiPromise | null = null;
   try {
-    const wsProvider = new WsProvider(HYDRATION_WS);
+    const wsProvider = new WsProvider(HYDRATION_WS, false);
+    const connected = new Promise<void>((resolve, reject) => {
+      wsProvider.on("connected", resolve);
+      wsProvider.on("error", reject);
+      setTimeout(() => reject(new Error("WS connect timeout")), 15_000);
+    });
+    wsProvider.connect();
+    await connected;
     api = await ApiPromise.create({ provider: wsProvider });
     await api.isReady;
     const account = moonbeamSovereignOnHydration();
@@ -35,7 +51,7 @@ async function getHydrationBalances(): Promise<{ glmr: string; usdc: string }> {
     };
   } catch (e) {
     console.log("Error fetching Hydration balances:", e);
-    return { glmr: "N/A", usdc: "N/A" };
+    return HYDRATION_FALLBACK;
   } finally {
     if (api) {
       try { await api.disconnect(); } catch {}
@@ -161,12 +177,14 @@ async function getTokenPrices(): Promise<{ glmrUsd: number; movrUsd: number }> {
 
 export async function GET() {
   try {
+    const hydrationPromise = withTimeout(20_000, HYDRATION_FALLBACK)(getHydrationBalances());
+
     const [glmr, movr, usdc, prices, hydration] = await Promise.all([
       getNativeBalance(MOONBEAM_TREASURY, "moonbeam"),
       getNativeBalance(MOONRIVER_TREASURY, "moonriver"),
       getUsdcBalanceViaRpc(),
       getTokenPrices(),
-      getHydrationBalances()
+      hydrationPromise,
     ]);
 
     const glmrNum = parseFloat(glmr.replace(/,/g, '')) || 0;
