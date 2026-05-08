@@ -8,7 +8,7 @@ const HYDRATION_ENDPOINTS = [
 ];
 const MOONBEAM_PARA_ID = 2004;
 const HYDRATION_GLMR_ASSET_ID = 16;
-const HYDRATION_USDC_ASSET_ID = 21;
+const HYDRATION_USDC_ASSET_ID = 22;
 
 function moonbeamSovereignOnHydration(): string {
   const sibl = Buffer.from("sibl");
@@ -60,9 +60,10 @@ async function getHydrationBalances(): Promise<{ glmr: string; usdc: string; glm
         api.query.tokens.accounts(account, HYDRATION_USDC_ASSET_ID),
       ]);
 
-      const glmrRaw = glmrData.free.toBigInt();
+      const glmrFree = glmrData.free.toBigInt();
+      const glmrReserved = glmrData.reserved.toBigInt();
       const usdcRaw = usdcData.free.toBigInt();
-      const glmrNum = Number(glmrRaw) / 1e18;
+      const glmrNum = Number(glmrFree + glmrReserved) / 1e18;
       const usdcNum = Number(usdcRaw) / 1e6;
 
       const glmrPrice = await fetchSubscanGlmrPrice();
